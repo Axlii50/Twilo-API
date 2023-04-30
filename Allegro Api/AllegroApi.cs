@@ -11,6 +11,8 @@ using Allegro_Api.Models.Offer;
 using System.Net.Http.Json;
 using Allegro_Api.Models.Product;
 using Allegro_Api.Models.category.CategorySuggestions;
+using System.Xml.Linq;
+using Allegro_Api.Models.category.Parameters;
 
 namespace Allegro_Api
 {
@@ -219,9 +221,6 @@ namespace Allegro_Api
 
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}");
 
-
-            //throw new NotImplementedException();
-
             return odp;
         }
 
@@ -273,7 +272,7 @@ namespace Allegro_Api
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async Task<CategorySuggestion> GetSuggestionOfCategory(string name)
+        public async Task<CategorySuggestionModel> GetSuggestionOfCategory(string name)
         {
             HttpClient client = new HttpClient();
 
@@ -284,9 +283,25 @@ namespace Allegro_Api
 
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/matching-categories?name={name}");
 
-            var suggestion = JsonConvert.DeserializeObject<CategorySuggestion>(odp.Content.ReadAsStringAsync().Result);
+            var suggestion = JsonConvert.DeserializeObject<CategorySuggestionModel>(odp.Content.ReadAsStringAsync().Result);
 
             return suggestion;
+        }
+
+        public async Task<CategoryParametersModel> GetCategoryParameters(string categoryID)
+        {
+            HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/categories/{categoryID}/parameters");
+
+            var parameters = JsonConvert.DeserializeObject<CategoryParametersModel>(odp.Content.ReadAsStringAsync().Result);
+
+            return parameters;
         }
     }
 }

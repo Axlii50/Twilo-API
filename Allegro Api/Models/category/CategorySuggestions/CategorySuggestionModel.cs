@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Allegro_Api.Models.category.CategorySuggestions
 {
-    public class CategorySuggestion
+    public class CategorySuggestionModel
     {
         public CategoryNode[] matchingCategories { get; set; }
     }
