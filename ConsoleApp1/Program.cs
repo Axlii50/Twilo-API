@@ -32,11 +32,6 @@ while (!access)
     Thread.Sleep(5000);
 }
 
-
-var tttt = await AllegroApi.GetSuggestionOfCategory("LIT. FAKTU / PUBLICYSTYKA");
-var tttt2 = await AllegroApi.GetSuggestionOfCategory("Wściekłość i duma (dodruk 2018)");
-var tttt3 = await AllegroApi.GetSuggestionOfCategory("LIT. FAKTU / PUBLICYSTYKA Wściekłość i duma (dodruk 2018)");
-
 //string[] test = { "LIT. PIĘKNA / FANTASTYKA", "LIT. PIĘKNA / POWIEŚĆ", "LIT. PIĘKNA / FANTASTYKA", "HISTORIA / POWSZECHNA / II WOJNA ŚWIATOWA", "PEDAGOGIKA", "RELIGIE / RELIGIOZNAWSTWO", "LIT. POPULARNONAUKOWA", "RELIGIE / PUBLICYSTYKA", "LIT. FAKTU / PUBLICYSTYKA", "POLITYKA", "SZTUKA", "PARAPSYCHOLOGIA", "LIT. FAKTU / FELIETONY", "EZOTERYKA" };
 //string[] test2 = { "Wicehrabia przepołowiony", "Baron drzewołaz", "Rycerz nieistniejący ", "W stronę ciemności. Rozmowy z komendantem Treblinki", "Drama. Teatr przebudzenia", "Życie codzienne w Palestynie w czasach Chrystusa", "Święta i obyczaje żydowskie", "Żydzi, świat, pieniądze", "Wściekłość i duma (dodruk 2018)", "Siła rozumu (dodruk 2018)", "Mała historia fotografii", "Kabała", "Droga Człowieka Według Nauczania Chasydów", "Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia" };
 
