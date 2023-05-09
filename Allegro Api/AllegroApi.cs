@@ -3,7 +3,7 @@ using System;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Nodes;
-
+using System.Drawing;
 using Newtonsoft;
 using Newtonsoft.Json;
 using System.Reflection.Metadata;
@@ -13,6 +13,9 @@ using Allegro_Api.Models.Product;
 using Allegro_Api.Models.category.CategorySuggestions;
 using System.Xml.Linq;
 using Allegro_Api.Models.category.Parameters;
+using System.Drawing.Imaging;
+using System.Net;
+using Image = Allegro_Api.Models.Image;
 
 namespace Allegro_Api
 {
@@ -25,8 +28,9 @@ namespace Allegro_Api
         //Allegro URLs
         private string AllegroAuthURL = "https://allegro.pl/auth/oauth/device";
         private string AllegoTokenURL = "https://allegro.pl/auth/oauth/token";
-        private string AllegroBaseURL = "https://api.allegro.pl";
-        private string environment = "allegro.pl";
+        private string AllegroUploadURL = $"https://upload.{environment}/sale/images";
+        private string AllegroBaseURL = $"https://api.{environment}";
+        private static string environment = "allegro.pl";
 
         private string DeviceCode = string.Empty;
 
@@ -41,6 +45,9 @@ namespace Allegro_Api
 
         public AllegroApi(string ClientID, string ClientSecret)
         {
+            if (!Directory.Exists("Images"))
+                Directory.CreateDirectory("Images");
+
             this.ClientID = ClientID;
             this.ClientSecret = ClientSecret;
         }
@@ -223,6 +230,7 @@ namespace Allegro_Api
 
             return odp;
         }
+        #endregion
 
         /// <summary>
         /// zwraca wszystkie dane na temat oferty not implemneted
@@ -245,9 +253,7 @@ namespace Allegro_Api
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-proposals", content);
 
             return odp;
-        } 
-        #endregion
-
+        }
 
         ///// <summary>
         ///// only for developmnet purpose 
@@ -266,6 +272,43 @@ namespace Allegro_Api
 
         //    return odp;
         //}
+
+
+        /// <summary>
+        /// return url to uploaded image
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public async Task<string> UploadImage(Stream image)
+        {
+            //save and convert image to jpeg from jpg
+            Bitmap mapa = new Bitmap(image);
+            string photoguid = Guid.NewGuid().ToString().Substring(0, 7);
+            mapa.Save($"Images/{photoguid}.jpeg", ImageFormat.Jpeg);
+
+            //upload image
+            WebRequest request = WebRequest.Create(AllegroUploadURL);
+            request.Method = "POST";
+            byte[] byteArray = File.ReadAllBytes($"Images/{photoguid}.jpeg");
+            request.ContentType = "image/jpeg";
+            request.ContentLength = byteArray.Length;
+            request.Headers.Add("Authorization", "Bearer " + AccessToken);
+            Stream dataStream = request.GetRequestStream();
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            dataStream.Close();
+            WebResponse response = request.GetResponse();
+
+            //retreview response string
+            var responsecontent = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+            //Deserialize url to object
+            ImageUpload imageurl = JsonConvert.DeserializeObject<ImageUpload>(responsecontent);
+
+            //delete saved image
+            File.Delete($"Images/{photoguid}.jpeg");
+
+            return imageurl.location;
+        }
 
         /// <summary>
         /// get suggestion based on item name
