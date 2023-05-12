@@ -172,6 +172,7 @@ while (!access)
 
 var d = AllegroApi.GetCategoryParameters("66791").Result;
 
+
 Console.WriteLine("");
 
 
