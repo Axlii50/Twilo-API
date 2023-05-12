@@ -8,6 +8,7 @@ namespace Allegro_Api.Models.Product.ProductComponents
 {
     public class Options
     {
-        public bool identifiesProduct { get; set; }
+        //public bool identifiesProduct { get; set; }
+        public string ambiguousValueId { get; set; }
     }
 }

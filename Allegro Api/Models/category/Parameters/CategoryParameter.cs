@@ -21,5 +21,7 @@ namespace Allegro_Api.Models.category.Parameters
         //TODO displayedIF variable
 
         public string unit { get; set; }
+
+        public DictionaryObject[] dictionary { get; set; }
     }
 }

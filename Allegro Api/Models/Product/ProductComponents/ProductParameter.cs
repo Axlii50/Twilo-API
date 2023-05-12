@@ -15,12 +15,12 @@ namespace Allegro_Api.Models.Product.ProductComponents
 
         public string[] values { get; set; }
 
-        //public string[] valuesIds { get; set; }
+        public string[] valuesIds { get; set; }
 
         //public string[] valuesLabels { get; set; }
 
         //public string unit { get;set; }
 
-        //public Options options { get; set; }
+        public Options options { get; set; }
     }
 }

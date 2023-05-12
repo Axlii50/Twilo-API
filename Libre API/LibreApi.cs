@@ -34,14 +34,20 @@ namespace Libre_API
 
         public async Task<List<Book>> GetAllBooks(int minimalMagazineCount)
         {
-            var Data = DownloadDane2().Result;
 
-            System.Diagnostics.Debug.WriteLine(Data.ReadAsStringAsync().Result);
+#if !DEBUG
+            var Data = DownloadDane2().Result;
+#endif
+
+            //System.Diagnostics.Debug.WriteLine(Data.ReadAsStringAsync().Result);
 
             XmlSerializer serializer = new XmlSerializer(typeof(Books));
 
+#if !DEBUG
             StreamReader rd = new StreamReader(Data.ReadAsStream(),Encoding.UTF8);
-//StreamReader rd = new StreamReader("Dane2 (2).xml", Encoding.UTF8);
+#else
+            StreamReader rd = new StreamReader("Dane2 (2).xml", Encoding.UTF8);
+#endif
 
             var books = (Books)serializer.Deserialize(rd);
 

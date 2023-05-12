@@ -19,6 +19,15 @@ using Image = Allegro_Api.Models.Image;
 
 namespace Allegro_Api
 {
+
+    //typy okładek oraz id
+    //twarda 75_2
+    //twarda z obwolutą 75_4
+    //miekka 75_1
+    //miekka ze skrzydełkami 75_306417
+    //miekka z obwolutą 75_3
+    //zintegrowana 75_5
+
     public class AllegroApi
     {
         //client informations
@@ -249,11 +258,39 @@ namespace Allegro_Api
             string json = JsonConvert.SerializeObject(product);
 
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
-
+            System.Diagnostics.Debug.WriteLine("Test :" +json);
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-proposals", content);
+
+            
 
             return odp;
         }
+
+        public async Task<HttpResponseMessage> CheckForProduct(string productEan)
+        {
+            HttpClient client = new HttpClient();
+
+            System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            var productmodel = new CheckForProductModel()
+            {
+                ean = productEan
+            };
+
+            string json = JsonConvert.SerializeObject(productmodel);
+
+            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?ean={productEan}");
+
+            return odp;
+        }
+
+
 
         ///// <summary>
         ///// only for developmnet purpose 
@@ -341,6 +378,8 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/categories/{categoryID}/parameters");
+
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             var parameters = JsonConvert.DeserializeObject<CategoryParametersModel>(odp.Content.ReadAsStringAsync().Result);
 
