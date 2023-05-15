@@ -294,7 +294,8 @@ namespace Allegro_Api
 
             System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
-            AllegroProduct product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products[0];
+            //troche do przerobienia w celu unikniecnia wartosci null
+            AllegroProduct product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
 
             return product;
         }
@@ -320,7 +321,7 @@ namespace Allegro_Api
             allegrooffer.stock.available = baseValue.value;
 
             allegrooffer.payments = new Models.Offer.offerComponents.Payments();
-            allegrooffer.payments.invoice = "VAT"; //DO dopytania
+            allegrooffer.payments.invoice = "VAT";
             
             allegrooffer.name = offerName;
 
@@ -443,7 +444,7 @@ namespace Allegro_Api
 
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/categories/{categoryID}/parameters");
 
-            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             var parameters = JsonConvert.DeserializeObject<CategoryParametersModel>(odp.Content.ReadAsStringAsync().Result);
 
