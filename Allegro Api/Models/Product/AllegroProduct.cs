@@ -17,6 +17,6 @@ namespace Allegro_Api.Models.Product
 
         public CategoryParameter[] parameters { get; set; }
 
-        public string[] images { get; set; }
+        public Image[] images { get; set; }
     }
 }

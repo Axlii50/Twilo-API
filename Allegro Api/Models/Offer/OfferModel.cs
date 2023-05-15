@@ -1,4 +1,5 @@
 ﻿using Allegro_Api.Models.Offer.offerComponents;
+using Allegro_Api.Models.Offer.offerComponents.publications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +23,27 @@ namespace Allegro_Api.Models.Offer
 
         public ProductItem[] productset { get; set;  }
 
+        public Base category { get; set; }
+
+        public Publication publication { get; set; }
+
+        //b2b
+
+        //attachments
+
+        //fundrasingCampaing
+
+        //additionalServices
+
         public Stock stock { get; set; }
 
         public SellingMode sellingMode { get; set; }
 
+        public string[] images { get; set; }
 
+        //TaxSetttings
 
-
+        //messageTosellerSettings
 
     }
 }
