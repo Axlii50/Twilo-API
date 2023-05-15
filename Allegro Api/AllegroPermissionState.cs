@@ -32,8 +32,6 @@ namespace Allegro_Api
 		allegro_api_messaging = 65536,
 		allegro_api_fulfillment_read = 131072,
 		allegro_api_fulfillment_write = 262144
-
-		
 	}
 
 	public static class AllegroPermissionStateClass

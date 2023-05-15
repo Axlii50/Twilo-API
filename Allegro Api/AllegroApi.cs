@@ -16,6 +16,7 @@ using Allegro_Api.Models.category.Parameters;
 using System.Drawing.Imaging;
 using System.Net;
 using Image = Allegro_Api.Models.Image;
+using Allegro_Api.Models.Offer.offerComponents.publications;
 
 namespace Allegro_Api
 {
@@ -248,6 +249,8 @@ namespace Allegro_Api
         /// <returns></returns>
         public async Task<HttpResponseMessage> ProposeProduct(ProductModel product)
         {
+            string productid = string.Empty;
+
             HttpClient client = new HttpClient();
 
             client.DefaultRequestHeaders.Clear();
@@ -261,12 +264,14 @@ namespace Allegro_Api
             System.Diagnostics.Debug.WriteLine("Test :" +json);
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-proposals", content);
 
-            
+
+            if (odp.Headers.Contains("location"))
+                productid = odp.Headers.Location.AbsoluteUri.Split("/")[5];
 
             return odp;
         }
 
-        public async Task<HttpResponseMessage> CheckForProduct(string productEan)
+        public async Task<AllegroProduct> CheckForProduct(string productEan)
         {
             HttpClient client = new HttpClient();
 
@@ -287,9 +292,30 @@ namespace Allegro_Api
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?ean={productEan}");
 
-            return odp;
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
+            AllegroProduct product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products[0];
+
+            return product;
         }
 
+        public async Task CreateOffer(AllegroProduct _product, BaseValue baseValue)
+        {
+            HttpClient client = new HttpClient();
+
+            OfferModel allegrooffer = new OfferModel();
+            allegrooffer.productset = new Models.Offer.offerComponents.ProductItem[]
+            {
+                new Models.Offer.offerComponents.ProductItem()
+                {
+                    Product = _product,
+                    quantity = baseValue
+                }
+            };
+            
+
+
+        }
 
 
         ///// <summary>
@@ -347,6 +373,7 @@ namespace Allegro_Api
             return imageurl.location;
         }
 
+        #region category
         /// <summary>
         /// get suggestion based on item name
         /// </summary>
@@ -384,6 +411,7 @@ namespace Allegro_Api
             var parameters = JsonConvert.DeserializeObject<CategoryParametersModel>(odp.Content.ReadAsStringAsync().Result);
 
             return parameters;
-        }
+        } 
+        #endregion
     }
 }
