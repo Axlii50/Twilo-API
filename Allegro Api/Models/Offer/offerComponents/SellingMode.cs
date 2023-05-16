@@ -8,6 +8,9 @@ namespace Allegro_Api.Models.Offer.offerComponents
 {
     public class SellingMode
     {
+        /// <summary>
+        /// "BUY_NOW" "AUCTION" "ADVERTISEMENT"
+        /// </summary>
         public string format { get; set; }
 
         public PriceModel price { get; set; }
