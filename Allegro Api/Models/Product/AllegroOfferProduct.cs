@@ -1,5 +1,4 @@
 ﻿using Allegro_Api.Models.category.Parameters;
-using Allegro_Api.Models.Product.ProductComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Allegro_Api.Models.Product
 {
-    public class AllegroProduct
+    public class AllegroOfferProduct
     {
         public string id { get; set; }
 
@@ -18,6 +17,6 @@ namespace Allegro_Api.Models.Product
 
         public CategoryParameter[] parameters { get; set; }
 
-        public Image[] images { get; set; }
+        public string[] images { get; set; }
     }
 }

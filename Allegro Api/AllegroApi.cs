@@ -292,7 +292,7 @@ namespace Allegro_Api
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?ean={productEan}");
 
-            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             //troche do przerobienia w celu unikniecnia wartosci null
             AllegroProduct product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
@@ -310,11 +310,23 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
             OfferModel allegrooffer = new OfferModel();
-            allegrooffer.productset = new Models.Offer.offerComponents.ProductItem[]
+
+            AllegroOfferProduct prod = new AllegroOfferProduct()
+            {
+                id = _product.id,
+                name = _product.name,
+                category = _product.category,
+                parameters = _product.parameters,
+                images = new string[_product.images.Length]
+            };
+
+            for(int i = 0; i < _product.images.Length; prod.images[i] = _product.images[i].url)
+
+            allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
             {
                 new Models.Offer.offerComponents.ProductItem()
                 {
-                    Product = _product,
+                    Product = prod,
                     quantity = baseValue
                 }
             };
@@ -343,10 +355,12 @@ namespace Allegro_Api
                 }
             };
 
-            //allegrooffer.category = new Base()
-            //{
-            //    id = _product.category.id
-            //};
+            allegrooffer.category = new Base()
+            {
+                //id = "66791"
+                id = _product.category.id
+                //id = categoryid
+            };
 
             allegrooffer.publication = new Publication()
             {
@@ -355,12 +369,16 @@ namespace Allegro_Api
                 republish = true
             };
 
+            System.Diagnostics.Debug.WriteLine("serializing");
             string json = JsonConvert.SerializeObject(allegrooffer);
-            System.Diagnostics.Debug.WriteLine(json);
+            //System.Diagnostics.Debug.WriteLine(json);
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
 
+            //https://api.{environment}/sale/product-offers
+            System.Diagnostics.Debug.WriteLine("wrzucam");
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
 
+            System.Diagnostics.Debug.WriteLine(odp.StatusCode.ToString()); 
             return odp.Content;
         }
 

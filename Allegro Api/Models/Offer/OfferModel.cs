@@ -21,7 +21,7 @@ namespace Allegro_Api.Models.Offer
 
        // public string description { get; set; }
 
-        public ProductItem[] productset { get; set;  }
+        public ProductItem[] productSet { get; set;  }
 
         public Base category { get; set; }
 

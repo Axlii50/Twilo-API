@@ -9,7 +9,7 @@ namespace Allegro_Api.Models.Offer.offerComponents
 {
     public class ProductItem
     {
-        public AllegroProduct Product { get; set; }
+        public AllegroOfferProduct Product { get; set; }
 
         public BaseValue quantity { get; set; }
 
