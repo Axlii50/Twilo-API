@@ -333,8 +333,8 @@ namespace Allegro_Api
 
             ShippingRates model = JsonConvert.DeserializeObject<ShippingRates>(odp.Content.ReadAsStringAsync().Result);
 
-            System.Diagnostics.Debug.WriteLine(odp.StatusCode.ToString());
-            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            //System.Diagnostics.Debug.WriteLine(odp.StatusCode.ToString());
+            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             return model.shippingRates;
         }
@@ -468,7 +468,7 @@ namespace Allegro_Api
 
             //retreview response string
             var responsecontent = new StreamReader(response.GetResponseStream()).ReadToEnd();
-            System.Diagnostics.Debug.WriteLine(responsecontent);
+            //System.Diagnostics.Debug.WriteLine(responsecontent);
             
             //Deserialize url to object
             ImageUpload imageurl = JsonConvert.DeserializeObject<ImageUpload>(responsecontent);
