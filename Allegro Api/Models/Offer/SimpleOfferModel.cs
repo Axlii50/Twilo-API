@@ -44,7 +44,7 @@ namespace Allegro_Api.Models.Offer
         public Publication publication { get ; set ; }
         public AfterSalesServices afterSalesServices { get ; set ; }
         public AdditionalServices additionalServices { get ; set ; }
-        public Delivery delivery { get ; set ; }
+        public DeliveryOfferModel delivery { get ; set ; }
         public b2b b2b { get ; set ; }
         public FundRaisingCampaign fundraisingCampaign { get ; set ; }
         public Base external { get; set; }

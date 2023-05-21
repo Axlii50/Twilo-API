@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Allegro_Api.Models.Product
+namespace Allegro_Api.Models.Delivery
 {
-    internal class AllegroProductResponse
+    public class ShippingRates
     {
-        public ProductModel[] products { get; set; }
+        public ShippingRate[] shippingRates { get; set; }
     }
 }

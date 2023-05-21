@@ -9,12 +9,12 @@ namespace Allegro_Api.Models.Product
 {
     public class ProductModel
     {
+        public string id { get; set; }
         public string name {  get; set; }
         public Base category { get; set; }
 
         public Image[] images { get; set; }
 
         public ProductParameter[] parameters { get; set; }
-
     }
 }

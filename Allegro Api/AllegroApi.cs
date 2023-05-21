@@ -17,6 +17,8 @@ using System.Drawing.Imaging;
 using System.Net;
 using Image = Allegro_Api.Models.Image;
 using Allegro_Api.Models.Offer.offerComponents.publications;
+using Allegro_Api.Models.Product.ProductComponents;
+using Allegro_Api.Models.Delivery;
 
 namespace Allegro_Api
 {
@@ -29,6 +31,10 @@ namespace Allegro_Api
     //miekka z obwolutą 75_3
     //zintegrowana 75_5
 
+
+    //TODO po doprowadzeniu do funkcjonalnosci kolejnosc rzeczy do zrobienia
+    //1 restrukturyzacja klas 
+
     public class AllegroApi
     {
         //client informations
@@ -36,11 +42,19 @@ namespace Allegro_Api
         private string ClientSecret = string.Empty;
 
         //Allegro URLs
+
+
         private string AllegroAuthURL = "https://allegro.pl/auth/oauth/device";
         private string AllegoTokenURL = "https://allegro.pl/auth/oauth/token";
+        private static string environment = "allegro.pl";
+
+        //private string AllegroAuthURL = " https://allegro.pl.allegrosandbox.pl/auth/oauth/device";
+        //private string AllegoTokenURL = " https://allegro.pl.allegrosandbox.pl/auth/oauth/token";
+        //private static string environment = "allegrosandbox.pl";
+
+
         private string AllegroUploadURL = $"https://upload.{environment}/sale/images";
         private string AllegroBaseURL = $"https://api.{environment}";
-        private static string environment = "allegro.pl";
 
         private string DeviceCode = string.Empty;
 
@@ -242,6 +256,8 @@ namespace Allegro_Api
         }
         #endregion
 
+        #region Product
+
         /// <summary>
         /// zwraca wszystkie dane na temat oferty not implemneted
         /// </summary>
@@ -271,7 +287,7 @@ namespace Allegro_Api
             return odp;
         }
 
-        public async Task<AllegroProduct> CheckForProduct(string productEan)
+        public async Task<ProductModel> CheckForProduct(string productEan)
         {
             HttpClient client = new HttpClient();
 
@@ -292,15 +308,40 @@ namespace Allegro_Api
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?ean={productEan}");
 
-            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             //troche do przerobienia w celu unikniecnia wartosci null
-            AllegroProduct product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
+            ProductModel product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
 
             return product;
         }
+        #endregion
 
-        public async Task<HttpContent> CreateOffer(AllegroProduct _product, BaseValue baseValue, string bookid, string offerName, string price)
+
+        #region Delivery
+
+        public async Task<ShippingRate[]> GetShippingRates()
+        {
+            HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + "/sale/shipping-rates");
+
+            ShippingRates model = JsonConvert.DeserializeObject<ShippingRates>(odp.Content.ReadAsStringAsync().Result);
+
+            System.Diagnostics.Debug.WriteLine(odp.StatusCode.ToString());
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
+            return model.shippingRates;
+        }
+
+        #endregion
+
+        public async Task<HttpContent> CreateOffer(ProductModel _product, BaseValue baseValue, string bookid, string offerName, string price, List<ProductParameter> _params)
         {
             HttpClient client = new HttpClient();
 
@@ -320,13 +361,13 @@ namespace Allegro_Api
                 images = new string[_product.images.Length]
             };
 
-            for(int i = 0; i < _product.images.Length; prod.images[i] = _product.images[i].url)
+            for(int i = 0; i < _product.images.Length; prod.images[i] = _product.images[i].url, i++)
 
             allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
             {
                 new Models.Offer.offerComponents.ProductItem()
                 {
-                    Product = prod,
+                    product = prod,
                     quantity = baseValue
                 }
             };
@@ -371,7 +412,7 @@ namespace Allegro_Api
 
             System.Diagnostics.Debug.WriteLine("serializing");
             string json = JsonConvert.SerializeObject(allegrooffer);
-            //System.Diagnostics.Debug.WriteLine(json);
+            System.Diagnostics.Debug.WriteLine(json);
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
 
             //https://api.{environment}/sale/product-offers

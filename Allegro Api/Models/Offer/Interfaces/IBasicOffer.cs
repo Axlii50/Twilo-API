@@ -96,7 +96,7 @@ namespace Allegro_Api.Models.Offer.Interfaces
         /// <summary>
         /// Delivery information.
         /// </summary>
-        public Delivery delivery { get; set; }
+        public DeliveryOfferModel delivery { get; set; }
 
         /// <summary>
         /// Information about offer's business properties.

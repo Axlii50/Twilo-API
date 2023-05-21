@@ -1,4 +1,5 @@
 ﻿using Allegro_Api.Models.category.Parameters;
+using Allegro_Api.Models.Product.ProductComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Allegro_Api.Models.Product
 
         public Base category { get; set; }
 
-        public CategoryParameter[] parameters { get; set; }
+        public ProductParameter[] parameters { get; set; }
 
         public string[] images { get; set; }
     }

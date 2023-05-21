@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Allegro_Api.Models.Offer.offerComponents.delivery
 {
-    public class Delivery
+    public class DeliveryOfferModel
     {
         public Base shippingRates { get; set; }
     }
