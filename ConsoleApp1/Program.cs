@@ -126,3 +126,8 @@ while (!access)
 
 
 //przestestować po jakim czasie usuwają (allegro) zdjecia z servera
+
+
+
+
+

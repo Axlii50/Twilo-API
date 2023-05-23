@@ -1,4 +1,5 @@
 ﻿using Allegro_Api.Models.Offer.offerComponents;
+using Allegro_Api.Models.Offer.offerComponents.delivery;
 using Allegro_Api.Models.Offer.offerComponents.publications;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace Allegro_Api.Models.Offer
         public Base category { get; set; }
 
         public Publication publication { get; set; }
+
+        public offerComponents.delivery.Delivery delivery { get; set; }
 
         //b2b
 
