@@ -71,7 +71,7 @@ namespace Allegro_Api.Models.Offer.Interfaces
         /// <summary>
         /// nformation on the offer's stock.
         /// </summary>
-        public Dictionary<string, int> stock { get; set; }
+        public Stock stock { get; set; }
 
         /// <summary>
         /// Information on the offer's publication status and dates.

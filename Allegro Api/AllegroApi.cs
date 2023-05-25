@@ -19,6 +19,8 @@ using Image = Allegro_Api.Models.Image;
 using Allegro_Api.Models.Offer.offerComponents.publications;
 using Allegro_Api.Models.Product.ProductComponents;
 using Allegro_Api.Models.Delivery;
+using Allegro_Api.Models.Offer.offerComponents;
+using System.ComponentModel.Design;
 
 namespace Allegro_Api
 {
@@ -88,7 +90,7 @@ namespace Allegro_Api
         /// <returns></returns>
         public async Task<VerificationULRModel> Authenticate()
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
             //create normal string for client id and client secret 
             string formatedstring = $"{ClientID}:{ClientSecret}";
 
@@ -124,7 +126,7 @@ namespace Allegro_Api
             //all permission as strings 
             string[] AllegroStringPermissions = permissions.ConvertToString().ToArray();
 
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
             //create normal string for client id and client secret 
             string formatedstring = $"{ClientID}:{ClientSecret}";
 
@@ -172,7 +174,7 @@ namespace Allegro_Api
         const int offerslimit = 1000;
         public async Task<OffersModel> GetAllOffers()
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
@@ -199,7 +201,7 @@ namespace Allegro_Api
         /// <returns></returns>
         public async Task<HttpResponseMessage> ChangePriceOfOffer(string offerid, string amount, string currency = "PLN")
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
             string commandID = Guid.NewGuid().ToString();
 
             client.DefaultRequestHeaders.Clear();
@@ -207,6 +209,7 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
+            if (amount.Contains(',')) amount = amount.Replace(',', '.');
 
             var jsonobject = new
             {
@@ -221,7 +224,7 @@ namespace Allegro_Api
             };
 
             var jsonstring = JsonConvert.SerializeObject(jsonobject);
-            //System.Diagnostics.Debug.WriteLine(jsonstring);
+            System.Diagnostics.Debug.WriteLine(jsonstring);
             //var buffer = System.Text.Encoding.UTF8.GetBytes(jsonstring);
             //var byteContent = new ByteArrayContent(buffer);
             //byteContent.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json");
@@ -237,6 +240,31 @@ namespace Allegro_Api
             return response;
         }
 
+        public async Task<HttpResponseMessage> ChangeStock(string offerId, Stock _stock)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            var jsonobject = new
+            {
+                stock = _stock
+            };
+
+            var jsonstring = JsonConvert.SerializeObject(jsonobject);
+            var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
+
+            System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
+
+            //do przetestowania ze wzgledu ze na zwykłym koncie wywala forbidden ze brak dostepu do api dla kont nie firmowych
+            //
+            return response;
+        }
 
         /// <summary>
         /// function for creating offer based on existing product from allegro
@@ -250,7 +278,7 @@ namespace Allegro_Api
         /// <returns></returns>
         public async Task<HttpContent> CreateOfferBasedOnExistingProduct(ProductModel _product, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
@@ -364,7 +392,7 @@ namespace Allegro_Api
         {
             string productid = string.Empty;
 
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
@@ -386,7 +414,7 @@ namespace Allegro_Api
 
         public async Task<ProductModel> CheckForProduct(string productEan)
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
 
             System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
@@ -419,7 +447,7 @@ namespace Allegro_Api
 
         public async Task<ShippingRate[]> GetShippingRates()
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
@@ -503,7 +531,7 @@ namespace Allegro_Api
         /// <returns></returns>
         public async Task<CategorySuggestionModel> GetSuggestionOfCategory(string name)
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
@@ -519,7 +547,7 @@ namespace Allegro_Api
 
         public async Task<CategoryParametersModel> GetCategoryParameters(string categoryID)
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);

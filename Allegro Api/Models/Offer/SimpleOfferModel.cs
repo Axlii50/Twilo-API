@@ -30,7 +30,7 @@ namespace Allegro_Api.Models.Offer
     /// <item>additonalMarketplaces</item>
     /// </list>
     /// </summary>
-
+    //TODO chyba trzeba bedzie ogarnac troche tą klase i te dictionary po zamieniac na klasy kltóre są juz stworzone
     public struct SimpleOfferModel : IBasicOffer
     {
         public string id { get ; set ; }
@@ -38,7 +38,6 @@ namespace Allegro_Api.Models.Offer
         public Dictionary<string, string> category { get ; set ; }
         public Dictionary<string, string> primaryImage { get ; set ; }
         public SellingMode sellingMode { get ; set ; }
-        public Dictionary<string, int> stock { get ; set ; }
         public SaleInfo saleInfo { get ; set ; }
         public Stats stats { get ; set ; }
         public Publication publication { get ; set ; }
@@ -48,5 +47,6 @@ namespace Allegro_Api.Models.Offer
         public b2b b2b { get ; set ; }
         public FundRaisingCampaign fundraisingCampaign { get ; set ; }
         public Base external { get; set; }
+        public Stock stock { get; set; }
     }
 }
