@@ -11,6 +11,6 @@ namespace Allegro_Api.Models.Offer.offerComponents.delivery
         /// <summary>
         /// fill with id of shipping rates
         /// </summary>
-        public string shippingRates { get; set; }
+        public Base shippingRates { get; set; }
     }
 }

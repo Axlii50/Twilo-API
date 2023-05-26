@@ -224,7 +224,7 @@ namespace Allegro_Api
             };
 
             var jsonstring = JsonConvert.SerializeObject(jsonobject);
-            System.Diagnostics.Debug.WriteLine(jsonstring);
+            //System.Diagnostics.Debug.WriteLine(jsonstring);
             //var buffer = System.Text.Encoding.UTF8.GetBytes(jsonstring);
             //var byteContent = new ByteArrayContent(buffer);
             //byteContent.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json");
@@ -235,8 +235,6 @@ namespace Allegro_Api
 
             var response = await client.PutAsync(URL, content);
 
-            //do przetestowania ze wzgledu ze na zwykłym koncie wywala forbidden ze brak dostepu do api dla kont nie firmowych
-            //
             return response;
         }
 
@@ -259,10 +257,68 @@ namespace Allegro_Api
 
             var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
 
-            System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
+            //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
+            return response;
+        }
 
-            //do przetestowania ze wzgledu ze na zwykłym koncie wywala forbidden ze brak dostepu do api dla kont nie firmowych
-            //
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="offerids"></param>
+        /// <param name="activate">true => publish false => end</param>
+        /// <returns></returns>
+        public async Task<(HttpResponseMessage, string)> BatchChangePublication(Base[] offerids, bool activate)
+        {
+            using HttpClient client = new HttpClient();
+            string commandID = Guid.NewGuid().ToString();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            var publication = new PublicationModel()
+            {
+                publication = new ModifiPublication()
+                {
+                    action = activate ? "ACTIVATE" : "END"
+                    //scheduleFor = DateTime.Now.AddMinutes(10).ToString("yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'")
+                },
+
+                offerCriteria = new Criteria[]
+                {
+                    new Criteria()
+                    {
+                        offers = offerids,
+                        type = "CONTAINS_OFFERS"
+                    }
+                }
+            };
+
+            var jsonstring = JsonConvert.SerializeObject(publication);
+            var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+            System.Diagnostics.Debug.WriteLine(jsonstring);
+
+            var response = await client.PutAsync(AllegroBaseURL + $"/sale/offer-publication-commands/{commandID}", content);
+
+            //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
+            return (response, commandID);
+        }
+
+        public async Task<HttpResponseMessage> GetPublicationResult(Base[] offerids, string commandID)
+        {
+            using HttpClient client = new HttpClient();
+            //string commandID = Guid.NewGuid().ToString();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            var response = await client.GetAsync(AllegroBaseURL + $"/sale/offer-publication-commands/{commandID}/tasks");
+            //var response = await client.GetAsync(AllegroBaseURL + $"/sale/offer-publication-commands/{commandID}");
+
+            //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
             return response;
         }
 
@@ -298,14 +354,17 @@ namespace Allegro_Api
 
             for (int i = 0; i < _product.images.Length; prod.images[i] = _product.images[i].url, i++)
 
-                allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
+            allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
                 {
                 new Models.Offer.offerComponents.ProductItem()
                 {
                     product = prod,
-                    quantity = baseValue
+                    quantity = new BaseValue()
+                    {
+                        value= 1
+                    }
                 }
-                };
+            };
 
             allegrooffer.external = new Base()
             {
@@ -328,6 +387,14 @@ namespace Allegro_Api
                 {
                     amount = price,
                     currency = "PLN"
+                }
+            };
+
+            allegrooffer.delivery = new Models.Offer.offerComponents.delivery.Delivery()
+            {
+                shippingRates = new Base()
+                {
+                    id = deliveryid
                 }
             };
 
@@ -354,7 +421,7 @@ namespace Allegro_Api
             System.Diagnostics.Debug.WriteLine("wrzucam");
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
 
-            System.Diagnostics.Debug.WriteLine(odp.StatusCode.ToString());
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result.ToString());
             return odp.Content;
         }
 
