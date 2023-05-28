@@ -172,7 +172,7 @@ namespace Allegro_Api
         /// </summary>
         /// <returns></returns>
         const int offerslimit = 1000;
-        public async Task<OffersModel> GetAllOffers()
+        public async Task<OffersModel> GetAllOffers(bool getAll = false)
         {
             using HttpClient client = new HttpClient();
 
@@ -181,15 +181,42 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
-            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}");
+            OffersModel retrvied = new OffersModel()
+            {
+                offers = new List<SimpleOfferModel>(),
+                totalCount = 0,
+                count = 0
+            };
 
-            OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
+            bool keepgoin = true;
+            int offset = 0;
+            do
+            {
+                keepgoin = false;
+                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}");
+
+                OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
+
+                retrvied.offers.AddRange(model.offers);
+                retrvied.count += model.count;
+                retrvied.totalCount += model.totalCount;
+
+                if(model.count >= 1000 && getAll)
+                {
+                    offset += offerslimit;
+                    keepgoin = true;
+                }
+
+                System.Diagnostics.Debug.WriteLine("tet:    " + model.count);
+                System.Diagnostics.Debug.WriteLine("tet:    " + model.totalCount);
+            }
+            while (keepgoin);
 
             //System.Diagnostics.Debug.WriteLine("tet:    " + odp.Content.ReadAsStringAsync().Result);
-            //System.Diagnostics.Debug.WriteLine("tet:    " + model.count);
-            //System.Diagnostics.Debug.WriteLine("tet:    " + model.totalCount);
+            System.Diagnostics.Debug.WriteLine("tet:    " + retrvied.count);
+            System.Diagnostics.Debug.WriteLine("tet:    " + retrvied.totalCount);
 
-            return model;
+            return retrvied;
         }
 
         /// <summary>
@@ -332,7 +359,7 @@ namespace Allegro_Api
         /// <param name="offerName"></param>
         /// <param name="price"></param>
         /// <returns></returns>
-        public async Task<HttpContent> CreateOfferBasedOnExistingProduct(ProductModel _product, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
+        public async Task<(HttpContent, HttpStatusCode)> CreateOfferBasedOnExistingProduct(ProductModel _product, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
 
@@ -380,6 +407,7 @@ namespace Allegro_Api
 
             allegrooffer.name = offerName;
 
+            if (price.Contains(',')) price = price.Replace(',', '.');
             allegrooffer.sellingMode = new Models.Offer.offerComponents.SellingMode()
             {
                 format = "BUY_NOW",
@@ -422,7 +450,7 @@ namespace Allegro_Api
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
 
             System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result.ToString());
-            return odp.Content;
+            return (odp.Content,odp.StatusCode);
         }
 
         #endregion
