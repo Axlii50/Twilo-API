@@ -440,16 +440,12 @@ namespace Allegro_Api
                 republish = true
             };
 
-            System.Diagnostics.Debug.WriteLine("serializing");
             string json = JsonConvert.SerializeObject(allegrooffer);
-            System.Diagnostics.Debug.WriteLine(json);
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
 
             //https://api.{environment}/sale/product-offers
-            System.Diagnostics.Debug.WriteLine("wrzucam");
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
 
-            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result.ToString());
             return (odp.Content,odp.StatusCode);
         }
 
