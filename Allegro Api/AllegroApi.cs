@@ -437,7 +437,8 @@ namespace Allegro_Api
             {
                 status = "INACTIVE",
                 duration = "P7D",
-                republish = true
+                republish = true,
+                endedBy = "EMPTY_STOCK"
             };
 
             string json = JsonConvert.SerializeObject(allegrooffer);

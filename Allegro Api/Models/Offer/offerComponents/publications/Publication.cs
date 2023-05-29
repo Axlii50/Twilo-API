@@ -26,6 +26,11 @@ namespace Allegro_Api.Models.Offer.offerComponents.publications
         public string startingAt { get; set; }
         public string startedAt { get; set; }
         public string endingAt { get; set; }
+
+        /// <summary>
+        /// Enum: "USER" "ADMIN" "EXPIRATION" "EMPTY_STOCK" "ERROR"
+        /// </summary>
+        public string endedBy { get; set; }
         
         public bool republish { get; set; }
 
