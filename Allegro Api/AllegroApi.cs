@@ -193,7 +193,7 @@ namespace Allegro_Api
             do
             {
                 keepgoin = false;
-                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}");
+                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}&offset={offset}");
 
                 OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
 
@@ -201,20 +201,17 @@ namespace Allegro_Api
                 retrvied.count += model.count;
                 retrvied.totalCount += model.totalCount;
 
-                if(model.count >= 1000 && getAll)
+                if(retrvied.count != retrvied.totalCount)
                 {
+                    System.Diagnostics.Debug.WriteLine(model.count);
                     offset += offerslimit;
-                    keepgoin = true;
+                    if (getAll)
+                        keepgoin = true;
                 }
 
                 System.Diagnostics.Debug.WriteLine("tet:    " + model.count);
-                System.Diagnostics.Debug.WriteLine("tet:    " + model.totalCount);
             }
             while (keepgoin);
-
-            //System.Diagnostics.Debug.WriteLine("tet:    " + odp.Content.ReadAsStringAsync().Result);
-            System.Diagnostics.Debug.WriteLine("tet:    " + retrvied.count);
-            System.Diagnostics.Debug.WriteLine("tet:    " + retrvied.totalCount);
 
             return retrvied;
         }
@@ -528,8 +525,13 @@ namespace Allegro_Api
             //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             //troche do przerobienia w celu unikniecnia wartosci null
-            ProductModel product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
+            ProductModel product = null;
+            try
+            {
+                 product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
 
+            }
+            catch (IndexOutOfRangeException e) { System.Diagnostics.Debug.Write("     no product "); }
             return product;
         }
         #endregion

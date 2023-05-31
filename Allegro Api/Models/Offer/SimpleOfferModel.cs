@@ -31,7 +31,7 @@ namespace Allegro_Api.Models.Offer
     /// </list>
     /// </summary>
     //TODO chyba trzeba bedzie ogarnac troche tą klase i te dictionary po zamieniac na klasy kltóre są juz stworzone
-    public struct SimpleOfferModel : IBasicOffer
+    public class SimpleOfferModel : IBasicOffer
     {
         public string id { get ; set ; }
         public string name { get ; set ; }
