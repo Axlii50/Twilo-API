@@ -196,12 +196,13 @@ namespace Allegro_Api
                 HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}&offset={offset}");
 
                 OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
-
+                if (model.offers == null)
+                    break;
                 retrvied.offers.AddRange(model.offers);
                 retrvied.count += model.count;
                 retrvied.totalCount += model.totalCount;
 
-                if(retrvied.count != retrvied.totalCount)
+                if(retrvied.count >= offerslimit)
                 {
                     System.Diagnostics.Debug.WriteLine(model.count);
                     offset += offerslimit;
@@ -433,8 +434,8 @@ namespace Allegro_Api
             allegrooffer.publication = new Publication()
             {
                 status = "INACTIVE",
-                duration = "P7D",
-                republish = true,
+                //duration = "P7D",
+                //republish = true,
                 endedBy = "EMPTY_STOCK"
             };
 
