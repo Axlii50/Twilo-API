@@ -7,33 +7,33 @@ using System.Net.Http.Headers;
 using System.Text;
 
 
-string ClientSecret = "iHIe9uq4bwuRWYrXGsjFRdMDMuHyvef0fEkiIQh9VYsejZAlmqF2hqRer0lHKg50";
-string ClientID = "852325ff150549428cccd54d22726923";
+//string ClientSecret = "iHIe9uq4bwuRWYrXGsjFRdMDMuHyvef0fEkiIQh9VYsejZAlmqF2hqRer0lHKg50";
+//string ClientID = "852325ff150549428cccd54d22726923";
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
-
-
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
-Console.WriteLine("");
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
+//Console.WriteLine("");
 
 
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-    Thread.Sleep(5000);
-}
+//bool access = false;
+//while (!access)
+//{
+//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+
+//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+
+//    Thread.Sleep(5000);
+//}
 
 #region ttt
 //string[] test = { "LIT. PIĘKNA / FANTASTYKA", "LIT. PIĘKNA / POWIEŚĆ", "LIT. PIĘKNA / FANTASTYKA", "HISTORIA / POWSZECHNA / II WOJNA ŚWIATOWA", "PEDAGOGIKA", "RELIGIE / RELIGIOZNAWSTWO", "LIT. POPULARNONAUKOWA", "RELIGIE / PUBLICYSTYKA", "LIT. FAKTU / PUBLICYSTYKA", "POLITYKA", "SZTUKA", "PARAPSYCHOLOGIA", "LIT. FAKTU / FELIETONY", "EZOTERYKA" };
@@ -109,11 +109,11 @@ while (!access)
 //var test = AllegroApi.GetAllOffers().Result;
 
 
-//LibreApi lib = new LibreApi("38103","38103_2345");
+LibreApi lib = new LibreApi("38103", "38103_2345");
 
 ////lib.StringToBook("9788386757220;83-86757-22-1;16;KOS;Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia;;Murphy Joseph;;KOS;;26.71;25.44;49.00;5%;2008-01-01;2018-02-23;;2;EZOTERYKA;miękka;;205;145;20;0.37", 5);
 
-//var t = await lib.GetAllBooks(5);
+var t = (await lib.DownloadDane2()).ReadAsStringAsync().Result;
 ////var d = lib.GetPhoto("2286").Result.ReadAsStream();
 
 ////var test = AllegroApi.UploadImage().Result;
@@ -121,8 +121,8 @@ while (!access)
 ////Console.WriteLine(test.Content.ReadAsStringAsync().Result);
 
 
-//Console.WriteLine();
-//Console.ReadLine();
+Console.WriteLine(t);
+Console.ReadLine();
 
 
 //przestestować po jakim czasie usuwają (allegro) zdjecia z servera
