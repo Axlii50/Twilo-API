@@ -62,7 +62,7 @@ namespace Allegro_Api
 
         //dodać automatyczne przedłuzanie 
         //acces token jest ważny przez 12 h
-        private string AccessToken = string.Empty;
+        public string AccessToken = string.Empty;
         private int TokenExpiresIn = -1;
         //RefreshToken jest ważny natomiast przez 3miesiace
         private string RefreshToken = string.Empty;
@@ -172,7 +172,7 @@ namespace Allegro_Api
         /// </summary>
         /// <returns></returns>
         const int offerslimit = 1000;
-        public async Task<OffersModel> GetAllOffers(bool getAll = false)
+        public async Task<OffersModel> GetAllOffers(OfferState StateFilter = 0)
         {
             using HttpClient client = new HttpClient();
 
@@ -188,34 +188,38 @@ namespace Allegro_Api
                 count = 0
             };
 
-            bool keepgoin = true;
+            string StateFilterstring = string.Empty;
+            if (StateFilter.HasFlag(OfferState.INACTIVE)) StateFilterstring += "&publication.status=INACTIVE";
+            if (StateFilter.HasFlag(OfferState.ACTIVE)) StateFilterstring += "&publication.status=ACTIVE";
+            if (StateFilter.HasFlag(OfferState.ENDED)) StateFilterstring += "&publication.status=ENDED";
+            if (StateFilter.HasFlag(OfferState.ACTIVATING)) StateFilterstring += "&publication.status=ACTIVATING";
+
             int offset = 0;
             do
             {
-                keepgoin = false;
-                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}&offset={offset}");
+                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}&offset={offset}{StateFilterstring}");
 
                 OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
                 if (model.offers == null)
                     break;
                 retrvied.offers.AddRange(model.offers);
                 retrvied.count += model.count;
-                retrvied.totalCount += model.totalCount;
+                retrvied.totalCount = model.totalCount;
+                System.Diagnostics.Debug.WriteLine(model.count);
 
-                if(retrvied.count >= offerslimit)
+                if (model.count >= offerslimit)
                 {
-                    System.Diagnostics.Debug.WriteLine(model.count);
                     offset += offerslimit;
-                    if (getAll)
-                        keepgoin = true;
                 }
 
-                System.Diagnostics.Debug.WriteLine("tet:    " + model.count);
+                System.Diagnostics.Debug.WriteLine("tet:    " + retrvied.count);
             }
-            while (keepgoin);
+            while (retrvied.count != retrvied.totalCount);
 
             return retrvied;
         }
+
+
 
         /// <summary>
         /// funkcja do zmiany ceny konkretnej ofert (offerid)
@@ -275,6 +279,30 @@ namespace Allegro_Api
             var jsonobject = new
             {
                 stock = _stock
+            };
+
+            var jsonstring = JsonConvert.SerializeObject(jsonobject);
+            var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
+
+            //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
+            return response;
+        }
+
+
+        public async Task<HttpResponseMessage> ChangeExternal(string offerId, string externalID)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            var jsonobject = new
+            {
+                external = new { id = externalID }
             };
 
             var jsonstring = JsonConvert.SerializeObject(jsonobject);
@@ -379,8 +407,8 @@ namespace Allegro_Api
 
             for (int i = 0; i < _product.images.Length; prod.images[i] = _product.images[i].url, i++)
 
-            allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
-                {
+                allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
+                    {
                 new Models.Offer.offerComponents.ProductItem()
                 {
                     product = prod,
@@ -389,7 +417,7 @@ namespace Allegro_Api
                         value= 1
                     }
                 }
-            };
+                };
 
             allegrooffer.external = new Base()
             {
@@ -445,7 +473,7 @@ namespace Allegro_Api
             //https://api.{environment}/sale/product-offers
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
 
-            return (odp.Content,odp.StatusCode);
+            return (odp.Content, odp.StatusCode);
         }
 
         #endregion
@@ -529,14 +557,13 @@ namespace Allegro_Api
             ProductModel product = null;
             try
             {
-                 product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
+                product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
 
             }
             catch (IndexOutOfRangeException e) { System.Diagnostics.Debug.Write("     no product "); }
             return product;
         }
         #endregion
-
 
         #region Delivery
 
@@ -560,26 +587,6 @@ namespace Allegro_Api
         }
 
         #endregion
-
-
-        ///// <summary>
-        ///// only for developmnet purpose 
-        ///// </summary>
-        ///// <returns></returns>
-        //public async Task<HttpResponseMessage> GetAllCategories()
-        //{
-        //    HttpClient client = new HttpClient();
-
-        //    client.DefaultRequestHeaders.Clear();
-        //    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-        //    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-        //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
-
-        //    HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + "/sale/categories");
-
-        //    return odp;
-        //}
-
 
         /// <summary>
         /// return url to uploaded image
@@ -657,6 +664,24 @@ namespace Allegro_Api
 
             return parameters;
         }
+        #endregion
+
+        #region Drafts
+
+        public async Task<HttpResponseMessage> DeleteDraft(string offerId)
+        {
+            HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.DeleteAsync(AllegroBaseURL + $"/sale/offers/{offerId}");
+
+            return odp;
+        }
+
         #endregion
     }
 }
