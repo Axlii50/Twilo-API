@@ -405,6 +405,8 @@ namespace Allegro_Api
                 images = new string[_product.images.Length]
             };
 
+            offerName = offerName.Replace("•", "").Replace("—", "").Replace("®", "");
+
             for (int i = 0; i < _product.images.Length; prod.images[i] = _product.images[i].url, i++)
 
                 allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
@@ -454,16 +456,12 @@ namespace Allegro_Api
 
             allegrooffer.category = new Base()
             {
-                //id = "66791"
                 id = _product.category.id
-                //id = categoryid
             };
 
             allegrooffer.publication = new Publication()
             {
                 status = "INACTIVE",
-                //duration = "P7D",
-                //republish = true,
                 endedBy = "EMPTY_STOCK"
             };
 
