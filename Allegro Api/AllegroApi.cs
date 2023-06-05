@@ -320,7 +320,7 @@ namespace Allegro_Api
         /// <param name="offerids"></param>
         /// <param name="activate">true => publish false => end</param>
         /// <returns></returns>
-        public async Task<(HttpResponseMessage, string)> BatchChangePublication(Base[] offerids, bool activate)
+        public async Task<(HttpResponseMessage, string, PublicationModel)> BatchChangePublication(Base[] offerids, bool activate)
         {
             using HttpClient client = new HttpClient();
             string commandID = Guid.NewGuid().ToString();
@@ -348,6 +348,8 @@ namespace Allegro_Api
                 }
             };
 
+            System.Diagnostics.Debug.WriteLine(publication.offerCriteria[0].offers.Length);
+
             var jsonstring = JsonConvert.SerializeObject(publication);
             var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
             System.Diagnostics.Debug.WriteLine(jsonstring);
@@ -355,7 +357,7 @@ namespace Allegro_Api
             var response = await client.PutAsync(AllegroBaseURL + $"/sale/offer-publication-commands/{commandID}", content);
 
             //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
-            return (response, commandID);
+            return (response, commandID, publication);
         }
 
         public async Task<HttpResponseMessage> GetPublicationResult(Base[] offerids, string commandID)
@@ -385,7 +387,7 @@ namespace Allegro_Api
         /// <param name="offerName"></param>
         /// <param name="price"></param>
         /// <returns></returns>
-        public async Task<(HttpContent, HttpStatusCode)> CreateOfferBasedOnExistingProduct(ProductModel _product, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
+        public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(ProductModel _product, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
 
@@ -402,15 +404,15 @@ namespace Allegro_Api
                 name = _product.name,
                 category = _product.category,
                 parameters = _product.parameters,
-                images = new string[_product.images.Length]
+                images = new string[_product.images.Length >= 16 ? 16 : _product.images.Length]
             };
 
             offerName = offerName.Replace("•", "").Replace("—", "").Replace("®", "");
 
-            for (int i = 0; i < _product.images.Length; prod.images[i] = _product.images[i].url, i++)
+            for (int i = 0; i < _product.images.Length && i < 16; prod.images[i] = _product.images[i].url, i++) ;
 
-                allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
-                    {
+            allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
+            {
                 new Models.Offer.offerComponents.ProductItem()
                 {
                     product = prod,
@@ -419,7 +421,7 @@ namespace Allegro_Api
                         value= 1
                     }
                 }
-                };
+            };
 
             allegrooffer.external = new Base()
             {
@@ -471,7 +473,7 @@ namespace Allegro_Api
             //https://api.{environment}/sale/product-offers
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
 
-            return (odp.Content, odp.StatusCode);
+            return (odp.Content, odp.StatusCode, allegrooffer);
         }
 
         #endregion
