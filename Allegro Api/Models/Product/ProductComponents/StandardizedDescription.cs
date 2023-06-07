@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Allegro_Api.Models.Product.ProductComponents
 {
-    internal class StandardizedDescription
+    public class StandardizedDescription
     {
+        public DescriptionSection[] sections { get; set; }
     }
 }
