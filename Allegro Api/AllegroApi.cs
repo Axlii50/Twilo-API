@@ -657,9 +657,7 @@ namespace Allegro_Api
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?ean={productEan}");
 
-            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
-
-            //troche do przerobienia w celu unikniecnia wartosci null
+           //trzeba przerobic by nie opierać sie na try and catch
             ProductModel product = null;
             try
             {
