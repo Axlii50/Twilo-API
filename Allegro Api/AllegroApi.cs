@@ -205,14 +205,14 @@ namespace Allegro_Api
                 retrvied.offers.AddRange(model.offers);
                 retrvied.count += model.count;
                 retrvied.totalCount = model.totalCount;
-                System.Diagnostics.Debug.WriteLine(model.count);
+                //System.Diagnostics.Debug.WriteLine(model.count);
 
                 if (model.count >= offerslimit)
                 {
                     offset += offerslimit;
                 }
 
-                System.Diagnostics.Debug.WriteLine("tet:    " + retrvied.count);
+                //System.Diagnostics.Debug.WriteLine("tet:    " + retrvied.count);
             }
             while (retrvied.count != retrvied.totalCount);
 
@@ -387,7 +387,8 @@ namespace Allegro_Api
         /// <param name="offerName"></param>
         /// <param name="price"></param>
         /// <returns></returns>
-        public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(ProductModel _product, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
+        public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(
+            ProductModel _product, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
 
@@ -475,6 +476,111 @@ namespace Allegro_Api
 
             return (odp.Content, odp.StatusCode, allegrooffer);
         }
+
+        /// <summary>
+        /// function for creating offer based on existing product from allegro
+        /// </summary>
+        /// <param name="_product"></param>
+        /// <param name="baseValue"></param>
+        /// <param name="bookid"></param>
+        /// <param name="deliveryid"></param>
+        /// <param name="offerName"></param>
+        /// <param name="price"></param>
+        /// <returns></returns>
+        //public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferWithSetOfProducts(
+        //    ProductModel[] _products, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
+        //{
+        //    using HttpClient client = new HttpClient();
+
+        //    client.DefaultRequestHeaders.Clear();
+        //    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+        //    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+        //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+        //    OfferModel allegrooffer = new OfferModel();
+
+        //    AllegroOfferProduct prod = new AllegroOfferProduct()
+        //    {
+        //        id = _product.id,
+        //        name = _product.name,
+        //        category = _product.category,
+        //        parameters = _product.parameters,
+        //        images = new string[1]
+        //    };
+
+        //    offerName = offerName.Replace("•", "").Replace("—", "").Replace("®", "");
+
+        //    List<string> Images = new List<string>();
+        //    foreach (ProductModel x in _products)
+        //    {
+        //        if (x.images.Length > 0)
+        //            Images.Add(x.images[0].url);
+        //    }
+
+        //    allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[]
+        //    {
+        //        new Models.Offer.offerComponents.ProductItem()
+        //        {
+        //            product = prod,
+        //            quantity = new BaseValue()
+        //            {
+        //                value= 1
+        //            }
+        //        }
+        //    };
+
+        //    allegrooffer.external = new Base()
+        //    {
+        //        id = bookid
+        //    };
+
+        //    allegrooffer.stock = new Models.Offer.offerComponents.Stock();
+        //    allegrooffer.stock.unit = "SET";
+        //    allegrooffer.stock.available = baseValue.value;
+
+        //    allegrooffer.payments = new Models.Offer.offerComponents.Payments();
+        //    allegrooffer.payments.invoice = "VAT";
+
+        //    allegrooffer.name = offerName;
+
+        //    if (price.Contains(',')) price = price.Replace(',', '.');
+        //    allegrooffer.sellingMode = new Models.Offer.offerComponents.SellingMode()
+        //    {
+        //        format = "BUY_NOW",
+        //        price = new Models.Offer.offerComponents.PriceModel()
+        //        {
+        //            amount = price,
+        //            currency = "PLN"
+        //        }
+        //    };
+
+        //    allegrooffer.delivery = new Models.Offer.offerComponents.delivery.Delivery()
+        //    {
+        //        shippingRates = new Base()
+        //        {
+        //            id = deliveryid
+        //        }
+        //    };
+
+        //    allegrooffer.category = new Base()
+        //    {
+        //        id = _product.category.id
+        //    };
+
+        //    allegrooffer.publication = new Publication()
+        //    {
+        //        status = "INACTIVE",
+        //        endedBy = "EMPTY_STOCK"
+        //    };
+
+        //    string json = JsonConvert.SerializeObject(allegrooffer);
+        //    var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+        //    //https://api.{environment}/sale/product-offers
+        //    HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
+
+        //    return (odp.Content, odp.StatusCode, allegrooffer);
+        //}
 
         #endregion
 
