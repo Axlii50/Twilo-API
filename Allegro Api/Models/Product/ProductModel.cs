@@ -15,6 +15,8 @@ namespace Allegro_Api.Models.Product
 
         public Image[] images { get; set; }
 
+        public StandardizedDescription description { get; set; }    
+
         public ProductParameter[] parameters { get; set; }
     }
 }

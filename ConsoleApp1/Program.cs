@@ -98,45 +98,53 @@ while (!access)
 #endregion
 
 
-using HttpClient client = new HttpClient();
+var product = await AllegroApi.CheckForProduct("9788365796660");
 
-client.DefaultRequestHeaders.Clear();
-client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AllegroApi.AccessToken);
-client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+var productvalidated = await AllegroApi.ValidateProduct(product);
 
-OffersModel retrvied = new OffersModel()
-{
-    offers = new List<SimpleOfferModel>(),
-    totalCount = 0,
-    count = 0
-};
+//var response = await AllegroApi.CreateOfferBasedOnExistingProduct(product, new Allegro_Api.Models.BaseValue() { value = 1 }, "1111", "90c012a8-549c-495c-95f2-379e865372a8", "testowa nazwa oferty", "999");
+// Console.WriteLine(response.Item1.ReadAsStringAsync().Result);
+// Console.WriteLine(response.Item2.ToString());
 
-bool keepgoin = true;
-int offset = 0;
-do
-{
-    keepgoin = true;
-    HttpResponseMessage odp = await client.GetAsync("https://api.allegro.pl" + $"/sale/offers?limit={1000}&offset={offset}");
+//using HttpClient client = new HttpClient();
 
-    OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
-    if (model.offers == null)
-        break;
-    retrvied.offers.AddRange(model.offers);
-    retrvied.count += model.count;
-    retrvied.totalCount = model.totalCount;
-    Console.WriteLine(model.count);
+//client.DefaultRequestHeaders.Clear();
+//client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AllegroApi.AccessToken);
+//client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+//client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
-    if (model.count >= 1000)
-    {
+//OffersModel retrvied = new OffersModel()
+//{
+//    offers = new List<SimpleOfferModel>(),
+//    totalCount = 0,
+//    count = 0
+//};
 
-        offset += 1000;
+//bool keepgoin = true;
+//int offset = 0;
+//do
+//{
+//    keepgoin = true;
+//    HttpResponseMessage odp = await client.GetAsync("https://api.allegro.pl" + $"/sale/offers?limit={1000}&offset={offset}");
 
-    }
+//    OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
+//    if (model.offers == null)
+//        break;
+//    retrvied.offers.AddRange(model.offers);
+//    retrvied.count += model.count;
+//    retrvied.totalCount = model.totalCount;
+//    Console.WriteLine(model.count);
 
-    Console.WriteLine("tet:    " + retrvied.count);
-}
-while (retrvied.count != retrvied.totalCount);
+//    if (model.count >= 1000)
+//    {
+
+//        offset += 1000;
+
+//    }
+
+//    Console.WriteLine("tet:    " + retrvied.count);
+//}
+//while (retrvied.count != retrvied.totalCount);
 //var d = AllegroApi.GetCategoryParameters("66791").Result;
 
 

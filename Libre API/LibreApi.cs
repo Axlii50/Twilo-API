@@ -50,7 +50,7 @@ namespace Libre_API
 #endif
 
             var books = (Books)serializer.Deserialize(rd);
-            System.Diagnostics.Debug.WriteLine(books.book.Length);
+            //System.Diagnostics.Debug.WriteLine(books.book.Length);
             return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
         }
 

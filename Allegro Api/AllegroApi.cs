@@ -21,6 +21,8 @@ using Allegro_Api.Models.Product.ProductComponents;
 using Allegro_Api.Models.Delivery;
 using Allegro_Api.Models.Offer.offerComponents;
 using System.ComponentModel.Design;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace Allegro_Api
 {
@@ -388,7 +390,7 @@ namespace Allegro_Api
         /// <param name="price"></param>
         /// <returns></returns>
         public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(
-            ProductModel _product, BaseValue baseValue, string bookid, string deliveryid, string offerName, string price)
+            ProductModel _product, BaseValue stock, string bookid, string deliveryid, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
 
@@ -431,7 +433,7 @@ namespace Allegro_Api
 
             allegrooffer.stock = new Models.Offer.offerComponents.Stock();
             allegrooffer.stock.unit = "UNIT";
-            allegrooffer.stock.available = baseValue.value;
+            allegrooffer.stock.available = stock.value;
 
             allegrooffer.payments = new Models.Offer.offerComponents.Payments();
             allegrooffer.payments.invoice = "VAT";
@@ -657,6 +659,8 @@ namespace Allegro_Api
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?ean={productEan}");
 
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
            //trzeba przerobic by nie opierać sie na try and catch
             ProductModel product = null;
             try
@@ -667,6 +671,22 @@ namespace Allegro_Api
             catch (IndexOutOfRangeException e) { System.Diagnostics.Debug.Write("     no product "); }
             return product;
         }
+        
+        public async Task<bool> ValidateProduct(ProductModel product)
+        {
+            //search for url in description
+            Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            foreach (var x in product.description.sections)
+            {
+                foreach(var y in x.items)
+                {
+                    if (rx.IsMatch(y.content)) return false;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Delivery
