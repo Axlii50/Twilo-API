@@ -23,6 +23,8 @@ using Allegro_Api.Models.Offer.offerComponents;
 using System.ComponentModel.Design;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Timers;
 
 namespace Allegro_Api
 {
@@ -71,6 +73,8 @@ namespace Allegro_Api
 
         //przedłużanie accesstokena https://developer.allegro.pl/tutorials/uwierzytelnianie-i-autoryzacja-zlq9e75GdIR#przedluzenie-waznosci-tokena
 
+        private System.Timers.Timer timer = new System.Timers.Timer();
+
         public AllegroApi(string ClientID, string ClientSecret)
         {
             if (!Directory.Exists("Images"))
@@ -78,11 +82,11 @@ namespace Allegro_Api
 
             this.ClientID = ClientID;
             this.ClientSecret = ClientSecret;
+
         }
 
-        //TODO Create offer based on product
         //TODO EDIT AN OFFER
-        //TODO BATCH OFFER PUBLISH/UNPUBLISH
+        //TODO BATCH OFFER PUBLISH/
 
         //Get verification link for user based on their client id and client secret
         #region AUTH
@@ -161,10 +165,44 @@ namespace Allegro_Api
                 AccessToken = model.access_token;
                 RefreshToken = model.refresh_token;
                 TokenExpiresIn = model.expires_in;
+
+                this.timer.Interval = TokenExpiresIn * 1000;
+                this.timer.Start();
+
                 return true;
             }
 
             return false;
+        }
+
+        public async Task RefreshAccesToken()
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            var values = new Dictionary<string, string>
+            {
+                 { "grant_type", "refresh_token" },
+                 { "refresh_token", RefreshToken }
+            };
+            var content = new FormUrlEncodedContent(values);
+
+            HttpResponseMessage odp = await client.PostAsync(AllegoTokenURL, content);
+
+            AccessTokenModel model = JsonConvert.DeserializeObject<AccessTokenModel>(odp.Content.ReadAsStringAsync().Result);
+
+            if (!odp.IsSuccessStatusCode) return;
+
+            //if user authorized access then remove device code and set other variables for later
+            AccessToken = model.access_token;
+            RefreshToken = model.refresh_token;
+
+            this.timer.Interval = TokenExpiresIn * 1000;
+            this.timer.Start();
         }
         #endregion
 
@@ -659,9 +697,9 @@ namespace Allegro_Api
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?ean={productEan}");
 
-            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
-           //trzeba przerobic by nie opierać sie na try and catch
+            //trzeba przerobic by nie opierać sie na try and catch
             ProductModel product = null;
             try
             {
@@ -671,26 +709,32 @@ namespace Allegro_Api
             catch (IndexOutOfRangeException e) { System.Diagnostics.Debug.Write("     no product "); }
             return product;
         }
-        
+
         public async Task<bool> ValidateProduct(ProductModel product, string ISBN)
         {
+            if (product == null) return false;
+
             //search for url in description
             Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            foreach (var x in product.description.sections)
-            {
-                foreach(var y in x.items)
+            if (product.description != null && product.description.sections.Length > 0)
+                foreach (var x in product.description.sections)
                 {
-                    if (rx.IsMatch(y.content)) return false;
+                    foreach (var y in x.items)
+                    {
+                        if (y.content == null) continue;
+                        if (rx.IsMatch(y.content)) return false;
+                    }
                 }
-            }
 
             //verif ISBN 
             //245669 id of ISBN parameter
             var paramobject = product.parameters.Where(pr => pr.id == "245669").FirstOrDefault();
             //check if product even contains ISBN insides
-            if (paramobject.values.Length == 0) return false;
-            if (paramobject.values[0] != ISBN) return false;
-
+            if (paramobject != null)
+            {
+                if (paramobject.values.Length == 0) return false;
+                if (paramobject.values[0] != ISBN) return false;
+            }
             return true;
         }
 

@@ -9,35 +9,35 @@ using System.Net.Http.Headers;
 using System.Text;
 
 
-string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
-string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
+//string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
+//string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
-
-
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
-Console.WriteLine("");
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
+//Console.WriteLine("");
 
 
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-    Thread.Sleep(5000);
-}
+//bool access = false;
+//while (!access)
+//{
+//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-#region ttt
+//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+
+//    Thread.Sleep(5000);
+//}
+
+//#region ttt
 //string[] test = { "LIT. PIĘKNA / FANTASTYKA", "LIT. PIĘKNA / POWIEŚĆ", "LIT. PIĘKNA / FANTASTYKA", "HISTORIA / POWSZECHNA / II WOJNA ŚWIATOWA", "PEDAGOGIKA", "RELIGIE / RELIGIOZNAWSTWO", "LIT. POPULARNONAUKOWA", "RELIGIE / PUBLICYSTYKA", "LIT. FAKTU / PUBLICYSTYKA", "POLITYKA", "SZTUKA", "PARAPSYCHOLOGIA", "LIT. FAKTU / FELIETONY", "EZOTERYKA" };
 //string[] test2 = { "Wicehrabia przepołowiony", "Baron drzewołaz", "Rycerz nieistniejący ", "W stronę ciemności. Rozmowy z komendantem Treblinki", "Drama. Teatr przebudzenia", "Życie codzienne w Palestynie w czasach Chrystusa", "Święta i obyczaje żydowskie", "Żydzi, świat, pieniądze", "Wściekłość i duma (dodruk 2018)", "Siła rozumu (dodruk 2018)", "Mała historia fotografii", "Kabała", "Droga Człowieka Według Nauczania Chasydów", "Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia" };
 
@@ -90,17 +90,27 @@ while (!access)
 
 
 
-//    Console.WriteLine();
+//Console.WriteLine();
 
-//    Console.WriteLine();
+//Console.WriteLine();
 //}
 
-#endregion
+//#endregion
 
 
-var product = await AllegroApi.CheckForProduct("9788365796660");
+//var offers = new List<SimpleOfferModel>();
 
-var productvalidated = await AllegroApi.ValidateProduct(product);
+//offers = AllegroApi.GetAllOffers(OfferState.ENDED).Result.offers;
+
+
+//for (int i = 0; i < 89; i++)
+//{
+//    AllegroApi.ChangeExternal(offers[i].id, "null");
+//}
+
+//var product = await AllegroApi.CheckForProduct("9788365796660");
+
+//var productvalidated = await AllegroApi.ValidateProduct(product);
 
 //var response = await AllegroApi.CreateOfferBasedOnExistingProduct(product, new Allegro_Api.Models.BaseValue() { value = 1 }, "1111", "90c012a8-549c-495c-95f2-379e865372a8", "testowa nazwa oferty", "999");
 // Console.WriteLine(response.Item1.ReadAsStringAsync().Result);
@@ -159,11 +169,11 @@ var productvalidated = await AllegroApi.ValidateProduct(product);
 //var test = AllegroApi.GetAllOffers(true).Result;
 
 
-//LibreApi lib = new LibreApi("38103", "38103_2345");
+LibreApi lib = new LibreApi("38103", "38103_2345");
 
 //////lib.StringToBook("9788386757220;83-86757-22-1;16;KOS;Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia;;Murphy Joseph;;KOS;;26.71;25.44;49.00;5%;2008-01-01;2018-02-23;;2;EZOTERYKA;miękka;;205;145;20;0.37", 5);
 
-//var t = (await lib.DownloadDane2()).ReadAsStringAsync().Result;
+var t = (await lib.DownloadDane2()).ReadAsStringAsync().Result;
 //////var d = lib.GetPhoto("2286").Result.ReadAsStream();
 
 //////var test = AllegroApi.UploadImage().Result;
