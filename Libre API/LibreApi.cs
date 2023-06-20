@@ -29,7 +29,7 @@ namespace Libre_API
 
             HttpResponseMessage odp = await client.GetAsync(UrlDane2 + $"?login={login}&password={password}");
 
-            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             return odp.Content;
         }
