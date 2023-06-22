@@ -686,10 +686,10 @@ namespace Allegro_Api
 
             //verif ISBN 
             //245669 id of ISBN parameter
-            var paramobject = product.parameters.Where(pr => pr.id == "245669").FirstOrDefault();
-            //check if product even contains ISBN insides
-            if (paramobject.values.Length == 0) return false;
-            if (paramobject.values[0] != ISBN) return false;
+            //var paramobject = product.parameters.Where(pr => pr.id == "245669").FirstOrDefault();
+            ////check if product even contains ISBN insides
+            //if (paramobject.values.Length == 0) return false;
+            //if (paramobject.values[0] != ISBN) return false;
 
             return true;
         }

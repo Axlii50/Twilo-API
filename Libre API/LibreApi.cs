@@ -29,21 +29,23 @@ namespace Libre_API
 
             HttpResponseMessage odp = await client.GetAsync(UrlDane2 + $"?login={login}&password={password}");
 
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
             return odp.Content;
         }
 
         public async Task<List<Book>> GetAllBooks(int minimalMagazineCount)
         {
 
-#if !DEBUG
+#if DEBUG
             var Data = DownloadDane2().Result;
 #endif
 
-            //System.Diagnostics.Debug.WriteLine(Data.ReadAsStringAsync().Result);
+           // System.Diagnostics.Debug.WriteLine(Data.ReadAsStringAsync().Result);
 
             XmlSerializer serializer = new XmlSerializer(typeof(Books));
 
-#if !DEBUG
+#if DEBUG
             StreamReader rd = new StreamReader(Data.ReadAsStream(),Encoding.UTF8);
 #else
             StreamReader rd = new StreamReader("Dane2 (2).xml", Encoding.UTF8);
