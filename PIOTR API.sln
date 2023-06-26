@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Allegro Api", "Allegro Api\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{07C5C941-22D0-4011-93AB-345DE49FE37D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libre API", "Libre API\Libre API.csproj", "{660637C1-41E1-4D6D-BB3A-6AE4D52FF28E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Libre API", "Libre API\Libre API.csproj", "{660637C1-41E1-4D6D-BB3A-6AE4D52FF28E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AteneumAPI", "AteneumAPI\AteneumAPI.csproj", "{6577C581-8913-4369-BE0C-645CAE2F3BD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{660637C1-41E1-4D6D-BB3A-6AE4D52FF28E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{660637C1-41E1-4D6D-BB3A-6AE4D52FF28E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{660637C1-41E1-4D6D-BB3A-6AE4D52FF28E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6577C581-8913-4369-BE0C-645CAE2F3BD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6577C581-8913-4369-BE0C-645CAE2F3BD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6577C581-8913-4369-BE0C-645CAE2F3BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6577C581-8913-4369-BE0C-645CAE2F3BD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,84 +9,60 @@ using System.Net.Http.Headers;
 using System.Text;
 
 
-//string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
-//string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
+string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
+string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
-//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
-
-
-//Console.WriteLine(t.device_code);
-//Console.WriteLine(t.verification_uri_complete);
-//Console.WriteLine("");
+Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
 
-//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-//sInfo.UseShellExecute = true;
-//Process Verification = Process.Start(sInfo);
+Console.WriteLine(t.device_code);
+Console.WriteLine(t.verification_uri_complete);
+Console.WriteLine("");
 
 
-//bool access = false;
-//while (!access)
-//{
-//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
-
-//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
-
-//    Thread.Sleep(5000);
-//}
-
-//#region ttt
-//string[] test = { "LIT. PIĘKNA / FANTASTYKA", "LIT. PIĘKNA / POWIEŚĆ", "LIT. PIĘKNA / FANTASTYKA", "HISTORIA / POWSZECHNA / II WOJNA ŚWIATOWA", "PEDAGOGIKA", "RELIGIE / RELIGIOZNAWSTWO", "LIT. POPULARNONAUKOWA", "RELIGIE / PUBLICYSTYKA", "LIT. FAKTU / PUBLICYSTYKA", "POLITYKA", "SZTUKA", "PARAPSYCHOLOGIA", "LIT. FAKTU / FELIETONY", "EZOTERYKA" };
-//string[] test2 = { "Wicehrabia przepołowiony", "Baron drzewołaz", "Rycerz nieistniejący ", "W stronę ciemności. Rozmowy z komendantem Treblinki", "Drama. Teatr przebudzenia", "Życie codzienne w Palestynie w czasach Chrystusa", "Święta i obyczaje żydowskie", "Żydzi, świat, pieniądze", "Wściekłość i duma (dodruk 2018)", "Siła rozumu (dodruk 2018)", "Mała historia fotografii", "Kabała", "Droga Człowieka Według Nauczania Chasydów", "Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia" };
-
-//int index = 0;
-//foreach (string x in test)
-//{
-//    var tttt = await AllegroApi.GetSuggestionOfCategory(x);
-//    Console.WriteLine("kategoria: " + x);
-//    if (tttt.matchingCategories.Length > 0)
-//    {
-//        Console.WriteLine("sugerowany kategoria: " + tttt.matchingCategories[0].name);
-//        Console.WriteLine(tttt.matchingCategories[0].id);
-//    }
-//    else
-//    {
-//        tttt = await AllegroApi.GetSuggestionOfCategory(test2[index]);
-//        Console.WriteLine("tytuł: " + test2[index]);
-
-//        //moze trzeba bedzie sprawdzać czy jest leaf
-//        if (tttt.matchingCategories.Length > 0)
-//        {
-//            Console.WriteLine("sugerowany kategoria: " + tttt.matchingCategories[0].name);
-//            Console.WriteLine(tttt.matchingCategories[0].id);
-//        }
-//    }
-//    index += 1;
+ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
 
 
+bool access = false;
+while (!access)
+{
+    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-//    Console.WriteLine();
-//    if (tttt.matchingCategories.Length <= 0) continue;
+    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-//    var parameters = await AllegroApi.GetCategoryParameters(tttt.matchingCategories[0].id);
+    Thread.Sleep(5000);
+}
 
-//    //    if (parameters.parameters.Length < 16) continue;
-
-//    foreach (var parameter in parameters.parameters)
-//    {
-//        Console.WriteLine($"nazwa parametru: {parameter.name} ");
-//    }
-
-//    //    List<ProductParameter> param = new List<ProductParameter>();
+var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
 
 
-//}
+int count = 0;
+foreach(var offer in offers)
+{
+    System.Diagnostics.Debug.WriteLine(offer.name);
+
+    if (offer.id == "13807407424")
+        System.Diagnostics.Debug.WriteLine("test");
+
+    if(offer.external == null) continue;
+    
+    if(offer.external.id.Contains("-")) continue;
+
+    var result = await AllegroApi.ChangeExternal(offer.id, offer.external.id + "-1");
+
+    if (!result.IsSuccessStatusCode) count++;
+
+    System.Diagnostics.Debug.WriteLine(result.Content.ReadAsStringAsync().Result);  
+}
+
+//var product = AllegroApi.CheckForProduct("9788381597913", "CHIMERYKI. TEKSTY SATYRYCZNE - DAGNY").Result;
 
 
-
-
+//var bo = AllegroApi.ValidateProduct(product, "9788381597913");
 
 
 
@@ -169,11 +145,10 @@ var productvalidated = await AllegroApi.ValidateProduct(product);
 //var test = AllegroApi.GetAllOffers(true).Result;
 
 
-LibreApi lib = new LibreApi("38103", "38103_2345");
+//LibreApi lib = new LibreApi("38103", "38103_2345");
 
 //////lib.StringToBook("9788386757220;83-86757-22-1;16;KOS;Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia;;Murphy Joseph;;KOS;;26.71;25.44;49.00;5%;2008-01-01;2018-02-23;;2;EZOTERYKA;miękka;;205;145;20;0.37", 5);
 
-//var t = (await lib.DownloadDane2()).ReadAsStringAsync().Result;
 //////var d = lib.GetPhoto("2286").Result.ReadAsStream();
 
 //////var test = AllegroApi.UploadImage().Result;
