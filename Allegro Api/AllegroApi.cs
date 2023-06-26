@@ -82,7 +82,6 @@ namespace Allegro_Api
 
             this.ClientID = ClientID;
             this.ClientSecret = ClientSecret;
-
         }
 
         //TODO EDIT AN OFFER
