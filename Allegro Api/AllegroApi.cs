@@ -252,9 +252,12 @@ namespace Allegro_Api
                     offset += offerslimit;
                 }
 
+                odp.Dispose();
                 //System.Diagnostics.Debug.WriteLine("tet:    " + retrvied.count);
             }
             while (retrvied.count != retrvied.totalCount);
+
+            client.Dispose();
 
             return retrvied;
         }
@@ -326,6 +329,7 @@ namespace Allegro_Api
 
             var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
 
+            client.Dispose();
             //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
             return response;
         }
@@ -676,7 +680,7 @@ namespace Allegro_Api
             return odp;
         }
 
-        public async Task<ProductModel> CheckForProduct(string productEan)
+        public async Task<ProductModel> CheckForProduct(string productISBN)
         {
             using HttpClient client = new HttpClient();
 
@@ -687,33 +691,26 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
-            var productmodel = new CheckForProductModel()
-            {
-                ean = productEan
-            };
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?phrase={productISBN}&mode=GTIN");
 
-            string json = JsonConvert.SerializeObject(productmodel);
+            client.Dispose();
 
-            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
-            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?ean={productEan}");
-
-            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
-
-            //trzeba przerobic by nie opierać sie na try and catch
             ProductModel product = null;
-            try
-            {
-                product = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result).products?[0];
 
-            }
-            catch (IndexOutOfRangeException e) { System.Diagnostics.Debug.Write("     no product "); }
+            var result = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result);
+
+            odp.Dispose();
+
+            if(result.products != null && result.products.Length > 0)
+                product = result.products[0];
+
             return product;
         }
 
         public async Task<bool> ValidateProduct(ProductModel product, string ISBN)
         {
             if (product == null) return false;
-
+            
             //search for url in description
             Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             if (product.description != null && product.description.sections.Length > 0)
@@ -725,16 +722,16 @@ namespace Allegro_Api
                         if (rx.IsMatch(y.content)) return false;
                     }
                 }
-
+            rx = null;
             //verif ISBN 
             //245669 id of ISBN parameter
             var paramobject = product.parameters.Where(pr => pr.id == "245669").FirstOrDefault();
             //check if product even contains ISBN insides
-            if (paramobject != null)
-            {
-                if (paramobject.values.Length == 0) return false;
-                if (paramobject.values[0] != ISBN) return false;
-            }
+            if (paramobject == null) return false;
+            //{
+            //    if (paramobject.values.Length == 0) return false;
+            //    if (paramobject.values[0] != ISBN) return false;
+            //}
             return true;
         }
 

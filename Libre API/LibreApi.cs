@@ -30,20 +30,39 @@ namespace Libre_API
             HttpResponseMessage odp = await client.GetAsync(UrlDane2 + $"?login={login}&password={password}");
 
             //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
-
+            client.Dispose();
             return odp.Content;
         }
 
         public async Task<List<Book>> GetAllBooks(int minimalMagazineCount)
         {
-            var Data = DownloadDane2().Result;
+            HttpContent Data;
+            try
+            {
+                Data = await DownloadDane2();
+            }
+            catch (AggregateException ex)
+            {
+                Data = await DownloadDane2();
+            }
 
             XmlSerializer serializer = new XmlSerializer(typeof(Books));
 
-            StreamReader rd = new StreamReader(Data.ReadAsStream(),Encoding.UTF8);
+            StreamReader rd = new StreamReader(Data.ReadAsStream(), Encoding.UTF8);
 
-            var books = (Books)serializer.Deserialize(rd);
+            Books books = null;
+            try
+            {
+                 books = (Books)serializer.Deserialize(rd);
+            }
+            catch (InvalidOperationException e)
+            {
+                return null;
+            }
             //System.Diagnostics.Debug.WriteLine(books.book.Length);
+            Data.Dispose();
+            rd.Dispose();
+
             return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
         }
 
