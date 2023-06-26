@@ -86,7 +86,7 @@ foreach(var offer in offers)
 
 //var product = await AllegroApi.CheckForProduct("9788365796660");
 
-//var productvalidated = await AllegroApi.ValidateProduct(product);
+var productvalidated = await AllegroApi.ValidateProduct(product);
 
 //var response = await AllegroApi.CreateOfferBasedOnExistingProduct(product, new Allegro_Api.Models.BaseValue() { value = 1 }, "1111", "90c012a8-549c-495c-95f2-379e865372a8", "testowa nazwa oferty", "999");
 // Console.WriteLine(response.Item1.ReadAsStringAsync().Result);

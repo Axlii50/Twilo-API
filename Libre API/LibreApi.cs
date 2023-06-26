@@ -30,7 +30,7 @@ namespace Libre_API
             HttpResponseMessage odp = await client.GetAsync(UrlDane2 + $"?login={login}&password={password}");
 
             //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
-            client.Dispose();
+
             return odp.Content;
         }
 
@@ -50,19 +50,8 @@ namespace Libre_API
 
             StreamReader rd = new StreamReader(Data.ReadAsStream(), Encoding.UTF8);
 
-            Books books = null;
-            try
-            {
-                 books = (Books)serializer.Deserialize(rd);
-            }
-            catch (InvalidOperationException e)
-            {
-                return null;
-            }
+            var books = (Books)serializer.Deserialize(rd);
             //System.Diagnostics.Debug.WriteLine(books.book.Length);
-            Data.Dispose();
-            rd.Dispose();
-
             return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
         }
 
