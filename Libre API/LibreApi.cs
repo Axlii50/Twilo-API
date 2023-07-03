@@ -54,6 +54,8 @@ namespace Libre_API
             StreamReader rd = new StreamReader(Data.ReadAsStream(), Encoding.UTF8);
 
             var books = (Books)serializer.Deserialize(rd);
+            rd.Close();
+
             //System.Diagnostics.Debug.WriteLine(books.book.Length);
             return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
         }
