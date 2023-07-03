@@ -15,5 +15,6 @@ namespace Allegro_Api.Models.Product.ProductComponents
         public string type { get; set; }
 
         public string content;
+        public string url;
     }
 }

@@ -27,7 +27,15 @@ namespace Libre_API
             //pewnie tego tutaj nie musi byc ale jebac, działa
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
-            HttpResponseMessage odp = await client.GetAsync(UrlDane2 + $"?login={login}&password={password}");
+            HttpResponseMessage odp = null;
+            try
+            {
+                odp = await client.GetAsync(UrlDane2 + $"?login={login}&password={password}");
+            }
+            catch (TaskCanceledException e)
+            {
+                return null;
+            }
 
             //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
@@ -36,15 +44,10 @@ namespace Libre_API
 
         public async Task<List<Book>> GetAllBooks(int minimalMagazineCount)
         {
-            HttpContent Data;
-            try
-            {
+            HttpContent Data = null;
+
+            while (Data == null)
                 Data = await DownloadDane2();
-            }
-            catch (AggregateException ex)
-            {
-                Data = await DownloadDane2();
-            }
 
             XmlSerializer serializer = new XmlSerializer(typeof(Books));
 

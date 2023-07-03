@@ -1,6 +1,7 @@
 ﻿using Allegro_Api.Models.Offer.offerComponents;
 using Allegro_Api.Models.Offer.offerComponents.delivery;
 using Allegro_Api.Models.Offer.offerComponents.publications;
+using Allegro_Api.Models.Product.ProductComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Allegro_Api.Models.Offer
         /// </summary>
         public Base external { get;set; }
 
-       // public string description { get; set; }
+        public StandardizedDescription description { get; set; }
 
         public ProductItem[] productSet { get; set;  }
 

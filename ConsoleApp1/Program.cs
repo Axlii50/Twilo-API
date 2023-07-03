@@ -37,27 +37,31 @@ while (!access)
     Thread.Sleep(5000);
 }
 
-var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
+//var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
 
 
-int count = 0;
-foreach(var offer in offers)
-{
-    System.Diagnostics.Debug.WriteLine(offer.name);
+var test = AllegroApi.GetDetailedOffer("13903417760");
 
-    if (offer.id == "13807407424")
-        System.Diagnostics.Debug.WriteLine("test");
+System.Diagnostics.Debug.WriteLine(test.Result.Content.ReadAsStringAsync().Result); 
 
-    if(offer.external == null) continue;
+//int count = 0;
+//foreach(var offer in offers)
+//{
+//    System.Diagnostics.Debug.WriteLine(offer.name);
+
+//    if (offer.id == "13807407424")
+//        System.Diagnostics.Debug.WriteLine("test");
+
+//    if(offer.external == null) continue;
     
-    if(offer.external.id.Contains("-")) continue;
+//    if(offer.external.id.Contains("-")) continue;
 
-    var result = await AllegroApi.ChangeExternal(offer.id, offer.external.id + "-1");
+//    var result = await AllegroApi.ChangeExternal(offer.id, offer.external.id + "-1");
 
-    if (!result.IsSuccessStatusCode) count++;
+//    if (!result.IsSuccessStatusCode) count++;
 
-    System.Diagnostics.Debug.WriteLine(result.Content.ReadAsStringAsync().Result);  
-}
+//    System.Diagnostics.Debug.WriteLine(result.Content.ReadAsStringAsync().Result);  
+//}
 
 //var product = AllegroApi.CheckForProduct("9788381597913", "CHIMERYKI. TEKSTY SATYRYCZNE - DAGNY").Result;
 
@@ -86,7 +90,7 @@ foreach(var offer in offers)
 
 //var product = await AllegroApi.CheckForProduct("9788365796660");
 
-var productvalidated = await AllegroApi.ValidateProduct(product);
+//var productvalidated = await AllegroApi.ValidateProduct(product);
 
 //var response = await AllegroApi.CreateOfferBasedOnExistingProduct(product, new Allegro_Api.Models.BaseValue() { value = 1 }, "1111", "90c012a8-549c-495c-95f2-379e865372a8", "testowa nazwa oferty", "999");
 // Console.WriteLine(response.Item1.ReadAsStringAsync().Result);

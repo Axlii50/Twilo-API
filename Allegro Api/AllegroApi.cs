@@ -83,6 +83,13 @@ namespace Allegro_Api
             this.ClientID = ClientID;
             this.ClientSecret = ClientSecret;
 
+            this.timer.Elapsed += Timer_Elapsed;
+
+        }
+
+        private async void Timer_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            await RefreshAccesToken();
         }
 
         //TODO EDIT AN OFFER
@@ -468,6 +475,10 @@ namespace Allegro_Api
                 }
             };
 
+            allegrooffer.description = _product.description;
+
+            allegrooffer.images = prod.images;
+
             allegrooffer.external = new Base()
             {
                 id = bookid
@@ -513,6 +524,7 @@ namespace Allegro_Api
             };
 
             string json = JsonConvert.SerializeObject(allegrooffer);
+            System.Diagnostics.Debug.WriteLine(json);
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
 
             //https://api.{environment}/sale/product-offers
@@ -727,7 +739,7 @@ namespace Allegro_Api
             //245669 id of ISBN parameter
             var paramobject = product.parameters.Where(pr => pr.id == "245669").FirstOrDefault();
             //check if product even contains ISBN insides
-            if (paramobject == null) return false;
+            //if (paramobject == null) return false;
             //{
             //    if (paramobject.values.Length == 0) return false;
             //    if (paramobject.values[0] != ISBN) return false;
