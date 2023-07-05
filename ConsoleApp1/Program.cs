@@ -38,11 +38,13 @@ while (!access)
 }
 
 //var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
+Console.WriteLine(AllegroApi.AccessToken);
 
+await AllegroApi.RefreshAccesToken();
+Console.WriteLine(AllegroApi.AccessToken);
+//var test = AllegroApi.GetDetailedOffer("13903417760");
 
-var test = AllegroApi.GetDetailedOffer("13903417760");
-
-System.Diagnostics.Debug.WriteLine(test.Result.Content.ReadAsStringAsync().Result); 
+//System.Diagnostics.Debug.WriteLine(test.Result.Content.ReadAsStringAsync().Result); 
 
 //int count = 0;
 //foreach(var offer in offers)

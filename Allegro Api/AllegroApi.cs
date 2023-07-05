@@ -185,9 +185,16 @@ namespace Allegro_Api
         public async Task RefreshAccesToken()
         {
             using HttpClient client = new HttpClient();
+            string formatedstring = $"{ClientID}:{ClientSecret}";
 
+            byte[] bytes = Encoding.UTF8.GetBytes(formatedstring);
+            //create auth string containg normal in base 64
+            string AuthString = "Basic " + Convert.ToBase64String(bytes);
+
+            //add neccessary headers 
             client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.Add("Authorization", AuthString);
+
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
@@ -201,7 +208,7 @@ namespace Allegro_Api
             HttpResponseMessage odp = await client.PostAsync(AllegoTokenURL, content);
 
             AccessTokenModel model = JsonConvert.DeserializeObject<AccessTokenModel>(odp.Content.ReadAsStringAsync().Result);
-
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
             if (!odp.IsSuccessStatusCode) return;
 
             //if user authorized access then remove device code and set other variables for later
@@ -246,9 +253,13 @@ namespace Allegro_Api
             {
                 HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}&offset={offset}{StateFilterstring}");
 
+                if (odp == null) return null;
+
                 OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
-                if (model.offers == null)
+
+                if (model == null || model.offers == null)
                     break;
+
                 retrvied.offers.AddRange(model.offers);
                 retrvied.count += model.count;
                 retrvied.totalCount = model.totalCount;
