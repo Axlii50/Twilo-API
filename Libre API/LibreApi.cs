@@ -1,4 +1,5 @@
 ﻿using Csv;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -53,7 +54,12 @@ namespace Libre_API
 
             StreamReader rd = new StreamReader(Data.ReadAsStream(), Encoding.UTF8);
 
-            var books = (Books)serializer.Deserialize(rd);
+            Books books = null;
+            try
+            {
+                 books = (Books)serializer.Deserialize(rd);
+            }
+            catch (InvalidOperationException) { return null; }
             rd.Close();
 
             //System.Diagnostics.Debug.WriteLine(books.book.Length);
