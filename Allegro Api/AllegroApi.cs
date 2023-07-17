@@ -791,7 +791,17 @@ namespace Allegro_Api
         public async Task<string> UploadImage(Stream image)
         {
             //save and convert image to jpeg from jpg
-            Bitmap mapa = new Bitmap(image);
+            Bitmap mapa = null;
+            try
+            {
+                mapa = new Bitmap(image);
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine(image.Length.ToString());
+                Console.WriteLine();
+            }
+            
             string photoguid = Guid.NewGuid().ToString().Substring(0, 7);
             mapa.Save($"Images/{photoguid}.jpeg", ImageFormat.Jpeg);
 

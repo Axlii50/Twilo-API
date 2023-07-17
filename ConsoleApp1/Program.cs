@@ -9,39 +9,39 @@ using System.Net.Http.Headers;
 using System.Text;
 
 
-string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
-string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
+//string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
+//string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
-
-
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
-Console.WriteLine("");
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
+//Console.WriteLine("");
 
 
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-    Thread.Sleep(5000);
-}
+//bool access = false;
+//while (!access)
+//{
+//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-//var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
-Console.WriteLine(AllegroApi.AccessToken);
+//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-await AllegroApi.RefreshAccesToken();
-Console.WriteLine(AllegroApi.AccessToken);
+//    Thread.Sleep(5000);
+//}
+
+////var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
+//Console.WriteLine(AllegroApi.AccessToken);
+
+//await AllegroApi.RefreshAccesToken();
+//Console.WriteLine(AllegroApi.AccessToken);
 //var test = AllegroApi.GetDetailedOffer("13903417760");
 
 //System.Diagnostics.Debug.WriteLine(test.Result.Content.ReadAsStringAsync().Result); 
@@ -55,7 +55,7 @@ Console.WriteLine(AllegroApi.AccessToken);
 //        System.Diagnostics.Debug.WriteLine("test");
 
 //    if(offer.external == null) continue;
-    
+
 //    if(offer.external.id.Contains("-")) continue;
 
 //    var result = await AllegroApi.ChangeExternal(offer.id, offer.external.id + "-1");
@@ -151,11 +151,11 @@ Console.WriteLine(AllegroApi.AccessToken);
 //var test = AllegroApi.GetAllOffers(true).Result;
 
 
-//LibreApi lib = new LibreApi("38103", "38103_2345");
+LibreApi lib = new LibreApi("38103", "38103_2345");
 
 //////lib.StringToBook("9788386757220;83-86757-22-1;16;KOS;Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia;;Murphy Joseph;;KOS;;26.71;25.44;49.00;5%;2008-01-01;2018-02-23;;2;EZOTERYKA;miękka;;205;145;20;0.37", 5);
 
-//////var d = lib.GetPhoto("2286").Result.ReadAsStream();
+var d = lib.GetPhoto("229410").Result;
 
 //////var test = AllegroApi.UploadImage().Result;
 //////Console.WriteLine(test.StatusCode);
