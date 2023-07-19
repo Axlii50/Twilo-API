@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace AteneumAPI
 {
-    internal class MagazinAndPrice
+    public class MagazinAndPrice
     {
+        public string ident_ate { get; set; }
+        public string Stan_magazynowy { get; set; }
+        public string Cena_detaliczna_netto { get; set; }
+        public string Cena_detaliczna_brutto { get; set; }
+        public string Stawka_VAT { get; set; }
     }
 }
