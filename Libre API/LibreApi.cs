@@ -37,6 +37,10 @@ namespace Libre_API
             {
                 return null;
             }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
 
             //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
@@ -59,10 +63,51 @@ namespace Libre_API
             {
                  books = (Books)serializer.Deserialize(rd);
             }
-            catch (InvalidOperationException) { return null; }
+            catch (InvalidOperationException) 
+            {
+                Console.WriteLine(Data.ReadAsStringAsync().Result);
+                return null;
+            }
             rd.Close();
 
-            //System.Diagnostics.Debug.WriteLine(books.book.Length);
+            if (books == null) return null;
+            if (books.book == null) return null;
+
+            File.WriteAllText("Liber.xml", Data.ReadAsStringAsync().Result);
+
+            Data = null;
+            return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
+        }
+
+        public async Task<List<Book>> GetAllBooksFromFile(int minimalMagazineCount)
+        {
+            HttpContent Data = null;
+
+            while (Data == null)
+                Data = await DownloadDane2();
+
+            XmlSerializer serializer = new XmlSerializer(typeof(Books));
+
+            StreamReader rd = new StreamReader("Liber.xml", Encoding.UTF8);
+
+            Books books = null;
+            try
+            {
+                books = (Books)serializer.Deserialize(rd);
+            }
+            catch (InvalidOperationException)
+            {
+                Console.WriteLine(Data.ReadAsStringAsync().Result);
+                return null;
+            }
+            rd.Close();
+
+            if (books == null) return null;
+            if (books.book == null) return null;
+
+            //File.WriteAllText("Liber.xml", Data.ReadAsStringAsync().Result);
+
+            Data = null;
             return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
         }
 

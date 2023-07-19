@@ -58,7 +58,6 @@ namespace Allegro_Api
         //private string AllegoTokenURL = " https://allegro.pl.allegrosandbox.pl/auth/oauth/token";
         //private static string environment = "allegrosandbox.pl";
 
-
         private string AllegroUploadURL = $"https://upload.{environment}/sale/images";
         private string AllegroBaseURL = $"https://api.{environment}";
 
@@ -66,14 +65,20 @@ namespace Allegro_Api
 
         //dodać automatyczne przedłuzanie 
         //acces token jest ważny przez 12 h
-        public string AccessToken = string.Empty;
+        private string AccessToken = string.Empty;
         private int TokenExpiresIn = -1;
         //RefreshToken jest ważny natomiast przez 3miesiace
-        private string RefreshToken = string.Empty;
+        public string RefreshToken = string.Empty;
 
         //przedłużanie accesstokena https://developer.allegro.pl/tutorials/uwierzytelnianie-i-autoryzacja-zlq9e75GdIR#przedluzenie-waznosci-tokena
 
         private System.Timers.Timer timer = new System.Timers.Timer();
+
+        public delegate void RefreshTokenEvent();
+        /// <summary>
+        /// event occures when token is refreshed
+        /// </summary>
+        public event RefreshTokenEvent SampleEvent;
 
         public AllegroApi(string ClientID, string ClientSecret)
         {
@@ -87,9 +92,25 @@ namespace Allegro_Api
 
         }
 
+        public AllegroApi(string ClientID, string ClientSecret, string RefreshToken)
+        {
+            if (!Directory.Exists("Images"))
+                Directory.CreateDirectory("Images");
+
+            this.ClientID = ClientID;
+            this.ClientSecret = ClientSecret;
+            this.RefreshToken = RefreshToken;
+
+            this.RefreshAccesToken();
+
+            this.timer.Elapsed += Timer_Elapsed;
+        }
+
         private async void Timer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             await RefreshAccesToken();
+
+            SampleEvent?.Invoke();
         }
 
         //TODO EDIT AN OFFER
@@ -724,7 +745,7 @@ namespace Allegro_Api
 
             odp.Dispose();
 
-            if(result.products != null && result.products.Length > 0)
+            if (result.products != null && result.products.Length > 0)
                 product = result.products[0];
 
             return product;
@@ -733,7 +754,7 @@ namespace Allegro_Api
         public async Task<bool> ValidateProduct(ProductModel product, string ISBN)
         {
             if (product == null) return false;
-            
+
             //search for url in description
             //Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             //if (product.description != null && product.description.sections.Length > 0)
@@ -791,33 +812,40 @@ namespace Allegro_Api
         public async Task<string> UploadImage(Stream image)
         {
             //save and convert image to jpeg from jpg
-            Bitmap mapa = new Bitmap(image);
-            string photoguid = Guid.NewGuid().ToString().Substring(0, 7);
-            mapa.Save($"Images/{photoguid}.jpeg", ImageFormat.Jpeg);
+            try
+            {
+                Bitmap mapa = new Bitmap(image);
+                string photoguid = Guid.NewGuid().ToString().Substring(0, 7);
+                mapa.Save($"Images/{photoguid}.jpeg", ImageFormat.Jpeg);
 
-            //upload image
-            WebRequest request = WebRequest.Create(AllegroUploadURL);
-            request.Method = "POST";
-            byte[] byteArray = File.ReadAllBytes($"Images/{photoguid}.jpeg");
-            request.ContentType = "image/jpeg";
-            request.ContentLength = byteArray.Length;
-            request.Headers.Add("Authorization", "Bearer " + AccessToken);
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-            WebResponse response = request.GetResponse();
+                //upload image
+                WebRequest request = WebRequest.Create(AllegroUploadURL);
+                request.Method = "POST";
+                byte[] byteArray = File.ReadAllBytes($"Images/{photoguid}.jpeg");
+                request.ContentType = "image/jpeg";
+                request.ContentLength = byteArray.Length;
+                request.Headers.Add("Authorization", "Bearer " + AccessToken);
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+                WebResponse response = request.GetResponse();
 
-            //retreview response string
-            var responsecontent = new StreamReader(response.GetResponseStream()).ReadToEnd();
-            //System.Diagnostics.Debug.WriteLine(responsecontent);
+                //retreview response string
+                var responsecontent = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                //System.Diagnostics.Debug.WriteLine(responsecontent);
 
-            //Deserialize url to object
-            ImageUpload imageurl = JsonConvert.DeserializeObject<ImageUpload>(responsecontent);
+                //Deserialize url to object
+                ImageUpload imageurl = JsonConvert.DeserializeObject<ImageUpload>(responsecontent);
 
-            //delete saved image
-            File.Delete($"Images/{photoguid}.jpeg");
-
-            return imageurl.location;
+                //delete saved image
+                File.Delete($"Images/{photoguid}.jpeg");
+                return imageurl.location;
+            }
+            catch (WebException) 
+            {
+                return null;
+            }
+           
         }
 
         #region category
