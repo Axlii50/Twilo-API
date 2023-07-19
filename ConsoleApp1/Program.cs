@@ -152,11 +152,11 @@ using System.Text;
 //var test = AllegroApi.GetAllOffers(true).Result;
 
 
-//LibreApi lib = new LibreApi("38103", "38103_2345");
+LibreApi lib = new LibreApi("38103", "38103_2345");
 
 //////lib.StringToBook("9788386757220;83-86757-22-1;16;KOS;Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia;;Murphy Joseph;;KOS;;26.71;25.44;49.00;5%;2008-01-01;2018-02-23;;2;EZOTERYKA;miękka;;205;145;20;0.37", 5);
 
-//////var d = lib.GetPhoto("2286").Result.ReadAsStream();
+var d = lib.GetPhoto("229410").Result;
 
 //////var test = AllegroApi.UploadImage().Result;
 //////Console.WriteLine(test.StatusCode);

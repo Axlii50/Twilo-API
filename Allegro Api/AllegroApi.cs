@@ -814,7 +814,17 @@ namespace Allegro_Api
             //save and convert image to jpeg from jpg
             try
             {
-                Bitmap mapa = new Bitmap(image);
+                Bitmap mapa = null;
+                try
+                {
+                    mapa = new Bitmap(image);
+                }
+                catch (ArgumentException)
+                {
+                    Console.WriteLine(image.Length.ToString());
+                    Console.WriteLine();
+                    return null;
+                }
                 string photoguid = Guid.NewGuid().ToString().Substring(0, 7);
                 mapa.Save($"Images/{photoguid}.jpeg", ImageFormat.Jpeg);
 
