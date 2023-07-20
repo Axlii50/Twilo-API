@@ -48,8 +48,6 @@ namespace Allegro_Api
         private string ClientSecret = string.Empty;
 
         //Allegro URLs
-
-
         private string AllegroAuthURL = "https://allegro.pl/auth/oauth/device";
         private string AllegoTokenURL = "https://allegro.pl/auth/oauth/token";
         private static string environment = "allegro.pl";

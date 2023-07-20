@@ -178,5 +178,17 @@ namespace AteneumAPI
             }
             return Books;
         }
+
+        public async Task<HttpContent> GetPhoto(string bookid)
+        {
+            HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+
+            HttpResponseMessage odp = await client.GetAsync($"https://www.ateneum.net.pl/dbupdate/imagelarge.php?id={bookid}");
+
+            return odp.Content;
+        }
+
     }
 }

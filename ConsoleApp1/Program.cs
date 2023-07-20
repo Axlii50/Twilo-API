@@ -196,5 +196,8 @@ AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
 var test = await ate.GetAllBooksWithMagazin(5);
 
+var ppp = test.Where(b => b.ident_ate == "450422").ToList();
+
+bool temp = "Nowa Ba¶ñ" == ppp.First().BookData.wydawnictwo;
 
 Console.ReadLine();
