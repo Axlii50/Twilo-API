@@ -11,11 +11,14 @@ namespace AteneumAPI
     {
         public static HttpClient _client { get; private set; }
 
-        string userName = "kempo_warszawa";
-        string userPassword = "6KsSGWT6dhD9r8Xvvr";
+        string userName;
+        string userPassword;
 
-        public AteneumApi()
+        public AteneumApi(string login, string password)
         {
+            userName = login;
+            userPassword = password;
+
             _client = new HttpClient();
         }
 
@@ -35,7 +38,7 @@ namespace AteneumAPI
 
             return response.Content;
         }
-        
+
         public async Task<HttpContent> DownloadMagazinAndDetalicPrices()
         {
             var _client = new HttpClient();
@@ -52,12 +55,10 @@ namespace AteneumAPI
             return response.Content;
         }
 
-
-        
-        public async Task<List<Book>> GetAllBooks()
+        private async Task<Dictionary<string, BookRecord>> GetAllBooks()
         {
             var content = await DownloadBase();
-            List<Book> books = null;
+            Dictionary<string,BookRecord> books = null;
 
             using (var sr = new StreamReader(await content.ReadAsStreamAsync(), Encoding.GetEncoding("iso-8859-1")))
             {
@@ -77,7 +78,7 @@ namespace AteneumAPI
                 using (var textreader = new StringReader(csv))
                 using (var CsvReader = new CsvReader(textreader, config))
                 {
-                    books = (CsvReader.GetRecords<Book>()).ToList();
+                    books = (CsvReader.GetRecords<BookRecord>()).ToDictionary(b => b.ident_ate);
                 }
             }
 
@@ -85,11 +86,11 @@ namespace AteneumAPI
 
             return books;
         }
-        
-        public async Task<List<MagazinAndPrice>> GetMagazinAndDetalicPrices()
+
+        public async Task<List<MagazinAndPrice>> GetMagazinAndDetalicPrices(int minimalMagazineCount)
         {
             var content = await DownloadMagazinAndDetalicPrices();
-            List<MagazinAndPrice> States = null;
+            List<MagazinAndPriceRecord> States = null;
 
             using (var sr = new StreamReader(await content.ReadAsStreamAsync(), Encoding.GetEncoding("iso-8859-1")))
             {
@@ -109,13 +110,73 @@ namespace AteneumAPI
                 using (var textreader = new StringReader(csv))
                 using (var CsvReader = new CsvReader(textreader, config))
                 {
-                    States = (CsvReader.GetRecords<MagazinAndPrice>()).ToList();
+                    States = (CsvReader.GetRecords<MagazinAndPriceRecord>()).ToList();
                 }
             }
 
-            Console.WriteLine(States.Count);
+            List<MagazinAndPrice> Results = new List<MagazinAndPrice>();
 
-            return States;
+            foreach (var item in States)
+            {
+                int magazin = int.Parse(item.Stan_magazynowy);
+
+                if (magazin >= minimalMagazineCount)
+                {
+                    MagazinAndPrice magazinAndPrice = null;
+                    try
+                    {
+                        magazinAndPrice = new MagazinAndPrice()
+                        {
+                            ident_ate = item.ident_ate,
+                            MagazinCount = magazin,
+                            Cena_detaliczna_brutto = float.Parse(item.Cena_detaliczna_brutto, CultureInfo.InvariantCulture.NumberFormat),
+                            Cena_detaliczna_netto = float.Parse(item.Cena_detaliczna_netto, CultureInfo.InvariantCulture.NumberFormat),
+
+                        };
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine(item.Cena_detaliczna_brutto);
+                        Console.WriteLine(item.Cena_detaliczna_netto);
+                    }
+                    
+                    Results.Add(magazinAndPrice);
+                    magazinAndPrice = null;
+                }
+            }
+            States = null;
+            content = null;
+
+            return Results;
+        }
+
+        public async Task<List<Book>> GetAllBooksWithMagazin(int minimalMagazineCount)
+        {
+            var bookrecords = await GetAllBooks();
+            var magazine = await GetMagazinAndDetalicPrices(minimalMagazineCount);
+
+            Console.WriteLine(magazine.Count);
+
+            List<Book> Books = new List<Book>();
+
+            foreach(var state in magazine)
+            {
+                if (!bookrecords.ContainsKey(state.ident_ate)) continue;
+
+                var book = bookrecords[state.ident_ate];
+
+                Book book1 = new Book()
+                {
+                    ident_ate = book.ident_ate,
+                    MagazinCount = state.MagazinCount,
+                    Cena_detaliczna_brutto = state.Cena_detaliczna_brutto,
+                    Cena_detaliczna_netto = state.Cena_detaliczna_netto,
+                    BookData = book,
+                };
+                Books.Add(book1);
+                book1 = null;
+            }
+            return Books;
         }
     }
 }

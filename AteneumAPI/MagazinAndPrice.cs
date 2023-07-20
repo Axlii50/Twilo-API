@@ -9,9 +9,8 @@ namespace AteneumAPI
     public class MagazinAndPrice
     {
         public string ident_ate { get; set; }
-        public string Stan_magazynowy { get; set; }
-        public string Cena_detaliczna_netto { get; set; }
-        public string Cena_detaliczna_brutto { get; set; }
-        public string Stawka_VAT { get; set; }
+        public int MagazinCount { get; set; }
+        public float Cena_detaliczna_netto { get; set; }
+        public float Cena_detaliczna_brutto { get; set; }
     }
 }

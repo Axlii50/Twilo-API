@@ -192,9 +192,9 @@ var d = lib.GetPhoto("229410").Result;
 //    s = sr.ReadToEnd();
 //}
 
-AteneumApi ate = new AteneumApi();
-var test = await ate.GetAllBooks();
+AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
+var test = await ate.GetAllBooksWithMagazin(5);
 
 
 Console.ReadLine();
