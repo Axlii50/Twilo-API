@@ -749,12 +749,17 @@ namespace Allegro_Api
             return product;
         }
 
-        public async Task<bool> ValidateProduct(ProductModel product, string ISBN)
+        public async Task<bool> ValidateProduct(string productdesciption, string ISBN)
         {
-            if (product == null) return false;
+            //if (product == null) return false;
 
             //search for url in description
-            //Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            if (rx.IsMatch(productdesciption))
+            {
+                return false;
+            }
+            
             //if (product.description != null && product.description.sections.Length > 0)
             //    foreach (var x in product.description.sections)
             //    {
@@ -764,7 +769,7 @@ namespace Allegro_Api
             //            if (rx.IsMatch(y.content)) return false;
             //        }
             //    }
-            //rx = null;
+            rx = null;
             //verif ISBN 
             //245669 id of ISBN parameter
             //var paramobject = product.parameters.Where(pr => pr.id == "245669").FirstOrDefault();

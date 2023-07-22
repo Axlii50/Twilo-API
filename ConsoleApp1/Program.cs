@@ -10,33 +10,35 @@ using System.Net.Http.Headers;
 using System.Text;
 
 
-//string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
-//string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
+string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
+string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
-//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
-
-
-//Console.WriteLine(t.device_code);
-//Console.WriteLine(t.verification_uri_complete);
-//Console.WriteLine("");
+Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
 
-//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-//sInfo.UseShellExecute = true;
-//Process Verification = Process.Start(sInfo);
+Console.WriteLine(t.device_code);
+Console.WriteLine(t.verification_uri_complete);
+Console.WriteLine("");
 
 
-//bool access = false;
-//while (!access)
-//{
-//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
 
-//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-//    Thread.Sleep(5000);
-//}
+bool access = false;
+while (!access)
+{
+    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+
+    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+
+    Thread.Sleep(5000);
+}
+
+
 
 ////var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
 ////Console.WriteLine(AllegroApi.AccessToken);
