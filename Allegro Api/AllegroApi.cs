@@ -751,34 +751,13 @@ namespace Allegro_Api
 
         public async Task<bool> ValidateProduct(string productdesciption, string ISBN)
         {
-            //if (product == null) return false;
-
             //search for url in description
             Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             if (rx.IsMatch(productdesciption))
             {
                 return false;
             }
-            
-            //if (product.description != null && product.description.sections.Length > 0)
-            //    foreach (var x in product.description.sections)
-            //    {
-            //        foreach (var y in x.items)
-            //        {
-            //            if (y.content == null) continue;
-            //            if (rx.IsMatch(y.content)) return false;
-            //        }
-            //    }
             rx = null;
-            //verif ISBN 
-            //245669 id of ISBN parameter
-            //var paramobject = product.parameters.Where(pr => pr.id == "245669").FirstOrDefault();
-            //check if product even contains ISBN insides
-            //if (paramobject == null) return false;
-            //{
-            //    if (paramobject.values.Length == 0) return false;
-            //    if (paramobject.values[0] != ISBN) return false;
-            //}
             return true;
         }
 
