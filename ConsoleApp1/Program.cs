@@ -199,14 +199,10 @@ using System.Text;
 
 AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
-//var test = await ate.GetAllBooksWithMagazin(5);
+var test = await ate.GetAllBooksWithMagazin(5);
 
-var url = await ate.GetPhoto("45099");
 
-System.Diagnostics.Debug.WriteLine(url.ReadAsStringAsync().Result);
+var t = test.Where(b => b.ident_ate == "21151").FirstOrDefault();
 
-System.Drawing.Image img = System.Drawing.Image.FromStream(url.ReadAsStreamAsync().Result);
-
-img.Save("myImage.Jpeg", ImageFormat.Jpeg);
 
 Console.ReadLine();

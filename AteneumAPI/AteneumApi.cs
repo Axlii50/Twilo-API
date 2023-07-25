@@ -117,7 +117,15 @@ namespace AteneumAPI
 
             foreach (var item in States)
             {
-                int magazin = int.Parse(item.Stan_magazynowy);
+                int magazin = 0;
+                try
+                {
+                     magazin = int.Parse(item.Stan_magazynowy);
+                }catch(FormatException)
+                {
+                    Console.WriteLine(item.Stan_magazynowy);
+                    continue;
+                }
 
                 if (magazin >= minimalMagazineCount)
                 {
@@ -130,7 +138,6 @@ namespace AteneumAPI
                             MagazinCount = magazin,
                             Cena_detaliczna_brutto = float.Parse(item.Cena_detaliczna_brutto, CultureInfo.InvariantCulture.NumberFormat),
                             Cena_detaliczna_netto = float.Parse(item.Cena_detaliczna_netto, CultureInfo.InvariantCulture.NumberFormat),
-
                         };
                     }
                     catch (FormatException)
