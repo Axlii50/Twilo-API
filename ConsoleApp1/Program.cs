@@ -6,44 +6,49 @@ using Allegro_Api.Models.Product.ProductComponents;
 using AteneumAPI;
 using Libre_API;
 using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Text;
 
-
+//kempo
 //string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
 //string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+//Twilo
+string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
-//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
-
-//Console.WriteLine(t.device_code);
-//Console.WriteLine(t.verification_uri_complete);
-//Console.WriteLine("");
-
-
-//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-//sInfo.UseShellExecute = true;
-//Process Verification = Process.Start(sInfo);
+Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
 
-//bool access = false;
-//while (!access)
-//{
-//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
-
-//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
-
-//    Thread.Sleep(5000);
-//}
+Console.WriteLine(t.device_code);
+Console.WriteLine(t.verification_uri_complete);
+Console.WriteLine("");
 
 
+ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
 
-////var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
+
+bool access = false;
+while (!access)
+{
+    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+
+    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+
+    Thread.Sleep(5000);
+}
+
+
+
+var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
 ////Console.WriteLine(AllegroApi.AccessToken);
 
 //await AllegroApi.RefreshAccesToken();
@@ -51,25 +56,24 @@ using System.Text;
 //var test = AllegroApi.GetDetailedOffer("13903417760");
 
 //System.Diagnostics.Debug.WriteLine(test.Result.Content.ReadAsStringAsync().Result); 
+//var oferta = offers.Where(of => of.id == "14043093012").FirstOrDefault();
+//var test = await AllegroApi.ChangeDeliveryTime(oferta.id, oferta.delivery, "P2D");
 
-//int count = 0;
-//foreach(var offer in offers)
-//{
-//    System.Diagnostics.Debug.WriteLine(offer.name);
+int count = 0;
+foreach (var offer in offers)
+{
+    //if (offer.delivery.handlingTime == "P2D") return;
+    if (count % 100 == 0) System.Diagnostics.Debug.WriteLine(count);
 
-//    if (offer.id == "13807407424")
-//        System.Diagnostics.Debug.WriteLine("test");
+    Console.WriteLine(offer.name);
 
-//    if(offer.external == null) continue;
+    var result = await AllegroApi.ChangeDeliveryTime(offer.id, offer.delivery, "P2D");
 
-//    if(offer.external.id.Contains("-")) continue;
+    System.Diagnostics.Debug.WriteLine(result.Content.ReadAsStringAsync().Result);
 
-//    var result = await AllegroApi.ChangeExternal(offer.id, offer.external.id + "-1");
 
-//    if (!result.IsSuccessStatusCode) count++;
-
-//    System.Diagnostics.Debug.WriteLine(result.Content.ReadAsStringAsync().Result);  
-//}
+    count++;
+}
 
 //var product = AllegroApi.CheckForProduct("9788381597913", "CHIMERYKI. TEKSTY SATYRYCZNE - DAGNY").Result;
 
@@ -197,12 +201,12 @@ using System.Text;
 //    s = sr.ReadToEnd();
 //}
 
-AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+//AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
-var test = await ate.GetAllBooksWithMagazin(5);
+//var test = await ate.GetAllBooksWithMagazin(5);
 
 
-var t = test.Where(b => b.ident_ate == "21151").FirstOrDefault();
+//var t = test.Where(b => b.ident_ate == "21151").FirstOrDefault();
 
 
 Console.ReadLine();

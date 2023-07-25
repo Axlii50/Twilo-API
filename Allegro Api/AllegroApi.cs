@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Timers;
+using Allegro_Api.Models.Offer.offerComponents.delivery;
 
 namespace Allegro_Api
 {
@@ -371,6 +372,32 @@ namespace Allegro_Api
             return response;
         }
 
+        public async Task<HttpResponseMessage> ChangeDeliveryTime(string offerId, DeliveryOfferModel deliveryOffer, string handlingtime)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            deliveryOffer.handlingTime = handlingtime;
+
+            var jsonobject = new
+            {
+                delivery = deliveryOffer
+            };
+
+            var jsonstring = JsonConvert.SerializeObject(jsonobject);
+            var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
+
+            client.Dispose();
+            //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
+            return response;
+        }
+
 
         public async Task<HttpResponseMessage> ChangeExternal(string offerId, string externalID)
         {
@@ -469,7 +496,7 @@ namespace Allegro_Api
         /// <param name="price"></param>
         /// <returns></returns>
         public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(
-            ProductModel _product, BaseValue stock, string bookid, string deliveryid, string offerName, string price)
+            ProductModel _product, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
 
@@ -539,7 +566,8 @@ namespace Allegro_Api
                 shippingRates = new Base()
                 {
                     id = deliveryid
-                }
+                },
+                handlingTime = handlingTime
             };
 
             allegrooffer.category = new Base()
