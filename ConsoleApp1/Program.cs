@@ -47,32 +47,32 @@ using System.Text;
 
 
 
-var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
+//var offers = AllegroApi.GetAllOffers(OfferState.ACTIVE).Result.offers;
+//////Console.WriteLine(AllegroApi.AccessToken);
+
+////await AllegroApi.RefreshAccesToken();
 ////Console.WriteLine(AllegroApi.AccessToken);
+////var test = AllegroApi.GetDetailedOffer("13903417760");
 
-//await AllegroApi.RefreshAccesToken();
-//Console.WriteLine(AllegroApi.AccessToken);
-//var test = AllegroApi.GetDetailedOffer("13903417760");
+////System.Diagnostics.Debug.WriteLine(test.Result.Content.ReadAsStringAsync().Result); 
+////var oferta = offers.Where(of => of.id == "14043093012").FirstOrDefault();
+////var test = await AllegroApi.ChangeDeliveryTime(oferta.id, oferta.delivery, "P2D");
 
-//System.Diagnostics.Debug.WriteLine(test.Result.Content.ReadAsStringAsync().Result); 
-//var oferta = offers.Where(of => of.id == "14043093012").FirstOrDefault();
-//var test = await AllegroApi.ChangeDeliveryTime(oferta.id, oferta.delivery, "P2D");
+//int count = 0;
+//foreach (var offer in offers)
+//{
+//    //if (offer.delivery.handlingTime == "P2D") return;
+//    if (count % 100 == 0) System.Diagnostics.Debug.WriteLine(count);
 
-int count = 0;
-foreach (var offer in offers)
-{
-    //if (offer.delivery.handlingTime == "P2D") return;
-    if (count % 100 == 0) System.Diagnostics.Debug.WriteLine(count);
+//    Console.WriteLine(offer.name);
 
-    Console.WriteLine(offer.name);
+//    var result = await AllegroApi.ChangeDeliveryTime(offer.id, offer.delivery, "P2D");
 
-    var result = await AllegroApi.ChangeDeliveryTime(offer.id, offer.delivery, "P2D");
-
-    System.Diagnostics.Debug.WriteLine(result.Content.ReadAsStringAsync().Result);
+//    System.Diagnostics.Debug.WriteLine(result.Content.ReadAsStringAsync().Result);
 
 
-    count++;
-}
+//    count++;
+//}
 
 //var product = AllegroApi.CheckForProduct("9788381597913", "CHIMERYKI. TEKSTY SATYRYCZNE - DAGNY").Result;
 
@@ -200,9 +200,9 @@ foreach (var offer in offers)
 //    s = sr.ReadToEnd();
 //}
 
-//AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
-//var test = await ate.GetAllBooksWithMagazin(5);
+var test = await ate.GetAllBooksWithMagazin(5);
 
 
 

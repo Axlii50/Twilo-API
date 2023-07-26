@@ -111,7 +111,7 @@ namespace AteneumAPI
             {
                 string csv = sr.ReadToEnd();
 
-                csv = "AteneumID,cena_detaliczna_brutto,cena_hurtowa_netto,vat_procentowy" +
+                csv = "AteneumID,cena_detaliczna_brutto,cena_hurtowa_netto,vat_procentowy," +
                     csv;
 
                 var config = new CsvConfiguration(CultureInfo.InvariantCulture)

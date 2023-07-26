@@ -9,7 +9,7 @@ namespace AteneumAPI
     internal class PriceWholeSale
     {
         public string AteneumID { get; set; }
-        public float Pricena_detaliczna_bruttoceHurt { get; set; }
+        public float cena_detaliczna_brutto { get; set; }
         public float cena_hurtowa_netto { get; set; }
         public string vat_procentowy { get; set; }
     }
