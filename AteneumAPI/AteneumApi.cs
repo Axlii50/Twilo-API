@@ -22,10 +22,9 @@ namespace AteneumAPI
             _client = new HttpClient();
         }
 
-
         public async Task<HttpContent> DownloadBase()
         {
-            var _client = new HttpClient();
+           
 
             _client.DefaultRequestHeaders.Clear();
 
@@ -57,7 +56,7 @@ namespace AteneumAPI
 
         public async Task<HttpContent> DownloadMagazinAndDetalicPrices()
         {
-            var _client = new HttpClient();
+           
 
             _client.DefaultRequestHeaders.Clear();
 
@@ -166,7 +165,15 @@ namespace AteneumAPI
 
             foreach (var item in States)
             {
-                int magazin = int.Parse(item.Stan_magazynowy);
+                int magazin = 0;
+                try
+                {
+                     magazin = int.Parse(item.Stan_magazynowy);
+                }catch(FormatException)
+                {
+                    Console.WriteLine(item.Stan_magazynowy);
+                    continue;
+                }
 
                 if (magazin >= minimalMagazineCount)
                 {
@@ -179,7 +186,6 @@ namespace AteneumAPI
                             MagazinCount = magazin,
                             Cena_detaliczna_brutto = float.Parse(item.Cena_detaliczna_brutto, CultureInfo.InvariantCulture.NumberFormat),
                             Cena_detaliczna_netto = float.Parse(item.Cena_detaliczna_netto, CultureInfo.InvariantCulture.NumberFormat),
-
                         };
                     }
                     catch (FormatException)
@@ -231,11 +237,15 @@ namespace AteneumAPI
 
         public async Task<HttpContent> GetPhoto(string bookid)
         {
-            HttpClient client = new HttpClient();
+            _client.DefaultRequestHeaders.Clear();
 
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+            var authenticationString = $"{userName}:{userPassword}";
+            var base64String = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(authenticationString));
 
-            HttpResponseMessage odp = await client.GetAsync($"https://www.ateneum.net.pl/dbupdate/imagelarge.php?id={bookid}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64String);
+
+
+            HttpResponseMessage odp = await _client.GetAsync($"https://www.ateneum.net.pl/dbupdate/imagelarge.php?id={bookid}");
 
             return odp.Content;
         }

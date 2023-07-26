@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Timers;
+using Allegro_Api.Models.Offer.offerComponents.delivery;
 
 namespace Allegro_Api
 {
@@ -371,6 +372,32 @@ namespace Allegro_Api
             return response;
         }
 
+        public async Task<HttpResponseMessage> ChangeDeliveryTime(string offerId, DeliveryOfferModel deliveryOffer, string handlingtime)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            deliveryOffer.handlingTime = handlingtime;
+
+            var jsonobject = new
+            {
+                delivery = deliveryOffer
+            };
+
+            var jsonstring = JsonConvert.SerializeObject(jsonobject);
+            var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
+
+            client.Dispose();
+            //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
+            return response;
+        }
+
 
         public async Task<HttpResponseMessage> ChangeExternal(string offerId, string externalID)
         {
@@ -469,7 +496,7 @@ namespace Allegro_Api
         /// <param name="price"></param>
         /// <returns></returns>
         public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(
-            ProductModel _product, BaseValue stock, string bookid, string deliveryid, string offerName, string price)
+            ProductModel _product, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
 
@@ -539,7 +566,8 @@ namespace Allegro_Api
                 shippingRates = new Base()
                 {
                     id = deliveryid
-                }
+                },
+                handlingTime = handlingTime
             };
 
             allegrooffer.category = new Base()
@@ -751,34 +779,13 @@ namespace Allegro_Api
 
         public async Task<bool> ValidateProduct(string productdesciption, string ISBN)
         {
-            //if (product == null) return false;
-
             //search for url in description
             Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             if (rx.IsMatch(productdesciption))
             {
                 return false;
             }
-            
-            //if (product.description != null && product.description.sections.Length > 0)
-            //    foreach (var x in product.description.sections)
-            //    {
-            //        foreach (var y in x.items)
-            //        {
-            //            if (y.content == null) continue;
-            //            if (rx.IsMatch(y.content)) return false;
-            //        }
-            //    }
             rx = null;
-            //verif ISBN 
-            //245669 id of ISBN parameter
-            //var paramobject = product.parameters.Where(pr => pr.id == "245669").FirstOrDefault();
-            //check if product even contains ISBN insides
-            //if (paramobject == null) return false;
-            //{
-            //    if (paramobject.values.Length == 0) return false;
-            //    if (paramobject.values[0] != ISBN) return false;
-            //}
             return true;
         }
 
