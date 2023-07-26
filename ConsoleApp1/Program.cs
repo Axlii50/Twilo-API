@@ -10,33 +10,33 @@ using System.Net.Http.Headers;
 using System.Text;
 
 
-string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
-string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
+//string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
+//string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
-
-
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
-Console.WriteLine("");
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
+//Console.WriteLine("");
 
 
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-    Thread.Sleep(5000);
-}
+//bool access = false;
+//while (!access)
+//{
+//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+
+//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+
+//    Thread.Sleep(5000);
+//}
 
 
 
@@ -154,11 +154,11 @@ while (!access)
 //var test = AllegroApi.GetAllOffers(true).Result;
 
 
-LibreApi lib = new LibreApi("38103", "38103_2345");
+//LibreApi lib = new LibreApi("38103", "38103_2345");
 
-//////lib.StringToBook("9788386757220;83-86757-22-1;16;KOS;Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia;;Murphy Joseph;;KOS;;26.71;25.44;49.00;5%;2008-01-01;2018-02-23;;2;EZOTERYKA;miękka;;205;145;20;0.37", 5);
+////////lib.StringToBook("9788386757220;83-86757-22-1;16;KOS;Nieskończone źródło twojej mocy. Klucz do pozytywnego myślenia;;Murphy Joseph;;KOS;;26.71;25.44;49.00;5%;2008-01-01;2018-02-23;;2;EZOTERYKA;miękka;;205;145;20;0.37", 5);
 
-var d = lib.GetPhoto("229410").Result;
+//var d = lib.GetPhoto("229410").Result;
 
 //////var test = AllegroApi.UploadImage().Result;
 //////Console.WriteLine(test.StatusCode);
@@ -198,8 +198,6 @@ AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
 var test = await ate.GetAllBooksWithMagazin(5);
 
-var ppp = test.Where(b => b.ident_ate == "450422").ToList();
 
-bool temp = "Nowa Ba¶ñ" == ppp.First().BookData.wydawnictwo;
 
 Console.ReadLine();

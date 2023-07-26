@@ -13,7 +13,7 @@ namespace AteneumAPI
         public BookRecord BookData { get; set; }
 
         public int MagazinCount { get; set; }
-        public float Cena_detaliczna_netto { get; set; }
-        public float Cena_detaliczna_brutto { get; set; }
+
+        public float PriceWholeSale { get; set; }
     }
 }

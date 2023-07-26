@@ -38,6 +38,22 @@ namespace AteneumAPI
 
             return response.Content;
         }
+        
+        public async Task<HttpContent> DownloadPriceWholeSeller()
+        {
+            var _client = new HttpClient();
+
+            _client.DefaultRequestHeaders.Clear();
+
+            var authenticationString = $"{userName}:{userPassword}";
+            var base64String = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(authenticationString));
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64String);
+
+            var response = await _client.GetAsync("https://ateneum.pl/kempo_warszawa/ceny.csv");
+
+            return response.Content;
+        }
 
         public async Task<HttpContent> DownloadMagazinAndDetalicPrices()
         {
@@ -79,6 +95,38 @@ namespace AteneumAPI
                 using (var CsvReader = new CsvReader(textreader, config))
                 {
                     books = (CsvReader.GetRecords<BookRecord>()).ToDictionary(b => b.ident_ate);
+                }
+            }
+
+            Console.WriteLine(books.Count);
+
+            return books;
+        }
+        
+        private async Task<Dictionary<string, PriceWholeSale>> GetAllWholeSellerPrices()
+        {
+            var content = await DownloadPriceWholeSeller();
+            Dictionary<string,PriceWholeSale> books = null;
+
+            using (var sr = new StreamReader(await content.ReadAsStreamAsync(), Encoding.GetEncoding("iso-8859-1")))
+            {
+                string csv = sr.ReadToEnd();
+
+                csv = "AteneumID,cena_detaliczna_brutto,cena_hurtowa_netto,vat_procentowy" +
+                    csv;
+
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    Delimiter = ",",
+                    HasHeaderRecord = true,
+                    TrimOptions = TrimOptions.Trim,
+                    MissingFieldFound = null
+                };
+
+                using (var textreader = new StringReader(csv))
+                using (var CsvReader = new CsvReader(textreader, config))
+                {
+                    books = (CsvReader.GetRecords<PriceWholeSale>()).ToDictionary(b => b.AteneumID);
                 }
             }
 
@@ -154,6 +202,7 @@ namespace AteneumAPI
         {
             var bookrecords = await GetAllBooks();
             var magazine = await GetMagazinAndDetalicPrices(minimalMagazineCount);
+            var wholesalerprices = await GetAllWholeSellerPrices();
 
             Console.WriteLine(magazine.Count);
 
@@ -162,16 +211,17 @@ namespace AteneumAPI
             foreach(var state in magazine)
             {
                 if (!bookrecords.ContainsKey(state.ident_ate)) continue;
+                if (!wholesalerprices.ContainsKey(state.ident_ate)) continue;
 
                 var book = bookrecords[state.ident_ate];
+                var pricewhole = wholesalerprices[state.ident_ate];
 
                 Book book1 = new Book()
                 {
                     ident_ate = book.ident_ate,
                     MagazinCount = state.MagazinCount,
-                    Cena_detaliczna_brutto = state.Cena_detaliczna_brutto,
-                    Cena_detaliczna_netto = state.Cena_detaliczna_netto,
                     BookData = book,
+                    PriceWholeSale = pricewhole.cena_hurtowa_netto
                 };
                 Books.Add(book1);
                 book1 = null;
