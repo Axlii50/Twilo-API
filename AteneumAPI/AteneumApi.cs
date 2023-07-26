@@ -222,13 +222,14 @@ namespace AteneumAPI
                 var book = bookrecords[state.ident_ate];
                 var pricewhole = wholesalerprices[state.ident_ate];
 
+                //Console.WriteLine(pricewhole.cena_hurtowa_netto + "    " + (pricewhole.cena_hurtowa_netto * ((pricewhole.vat_procentowy / 100f) + 1)));
                 Book book1 = new Book()
                 {
                     ident_ate = book.ident_ate,
                     MagazinCount = state.MagazinCount,
                     BookData = book,
-                    PriceWholeSale = pricewhole.cena_hurtowa_netto
-                };
+                    PriceWholeSaleBrutto = pricewhole.cena_hurtowa_netto * ((pricewhole.vat_procentowy / 100f) + 1)
+                    };
                 Books.Add(book1);
                 book1 = null;
             }

@@ -11,6 +11,6 @@ namespace AteneumAPI
         public string AteneumID { get; set; }
         public float cena_detaliczna_brutto { get; set; }
         public float cena_hurtowa_netto { get; set; }
-        public string vat_procentowy { get; set; }
+        public int vat_procentowy { get; set; }
     }
 }
