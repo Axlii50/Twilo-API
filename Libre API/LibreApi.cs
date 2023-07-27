@@ -73,7 +73,7 @@ namespace Libre_API
             if (books == null) return null;
             if (books.book == null) return null;
 
-            File.WriteAllText("Liber.xml", Data.ReadAsStringAsync().Result);
+            //File.WriteAllText("Liber.xml", Data.ReadAsStringAsync().Result);
 
             Data = null;
             return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
