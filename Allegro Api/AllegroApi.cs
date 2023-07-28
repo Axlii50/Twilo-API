@@ -97,7 +97,7 @@ namespace Allegro_Api
         public AllegroApi(string ClientID, string ClientSecret, string RefreshToken)
         {
             if (!Directory.Exists("Images"))
-                Directory.CreateDirectory("Images");
+                Directory.CreateDirectory("Images");S
 
             this.ClientID = ClientID;
             this.ClientSecret = ClientSecret;
@@ -111,8 +111,6 @@ namespace Allegro_Api
         private async void Timer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             await RefreshAccesToken();
-
-            RefreshTokenEvent?.Invoke();
         }
 
         //TODO EDIT AN OFFER
@@ -237,8 +235,8 @@ namespace Allegro_Api
             //if user authorized access then remove device code and set other variables for later
             AccessToken = model.access_token;
             RefreshToken = model.refresh_token;
-           
 
+            RefreshTokenEvent?.Invoke();
             this.timer.Interval = TokenExpiresIn * 1000;
             this.timer.Start();
         }
