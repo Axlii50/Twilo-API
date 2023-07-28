@@ -40,7 +40,7 @@ namespace Allegro_Api
 
 
     //TODO po doprowadzeniu do funkcjonalnosci kolejnosc rzeczy do zrobienia
-    //1 restrukturyzacja klas 
+    //1 restrukturyzacja klas
 
     public class AllegroApi
     {
@@ -62,7 +62,7 @@ namespace Allegro_Api
 
         private string DeviceCode = string.Empty;
 
-        //dodać automatyczne przedłuzanie 
+        //dodać automatyczne przedłuzanie
         //acces token jest ważny przez 12 h
         private string AccessToken = string.Empty;
         private int TokenExpiresIn = -1;
@@ -124,7 +124,7 @@ namespace Allegro_Api
         public async Task<VerificationULRModel> Authenticate()
         {
             using HttpClient client = new HttpClient();
-            //create normal string for client id and client secret 
+            //create normal string for client id and client secret
             string formatedstring = $"{ClientID}:{ClientSecret}";
 
             byte[] bytes = Encoding.UTF8.GetBytes(formatedstring);
@@ -147,7 +147,7 @@ namespace Allegro_Api
         }
 
         /// <summary>
-        /// check if user granted access 
+        /// check if user granted access
         /// </summary>
         /// <param name="permissions"></param>
         /// <returns></returns>
@@ -156,18 +156,18 @@ namespace Allegro_Api
         {
             if (DeviceCode == string.Empty) throw new Exception("Device code is empty please use  Authenticate() before this");
 
-            //all permission as strings 
+            //all permission as strings
             string[] AllegroStringPermissions = permissions.ConvertToString().ToArray();
 
             using HttpClient client = new HttpClient();
-            //create normal string for client id and client secret 
+            //create normal string for client id and client secret
             string formatedstring = $"{ClientID}:{ClientSecret}";
 
             byte[] bytes = Encoding.UTF8.GetBytes(formatedstring);
             //create auth string containg normal in base 64
             string AuthString = "Basic " + Convert.ToBase64String(bytes);
 
-            //add neccessary headers 
+            //add neccessary headers
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", AuthString);
 
@@ -211,7 +211,7 @@ namespace Allegro_Api
             //create auth string containg normal in base 64
             string AuthString = "Basic " + Convert.ToBase64String(bytes);
 
-            //add neccessary headers 
+            //add neccessary headers
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", AuthString);
 
@@ -423,7 +423,7 @@ namespace Allegro_Api
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="offerids"></param>
         /// <param name="activate">true => publish false => end</param>
@@ -590,7 +590,7 @@ namespace Allegro_Api
 
             return (odp.Content, odp.StatusCode, allegrooffer);
         }
-        
+
         public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferSetBasedOnExistingProducts(
             ProductModel[] _product, BaseValue[] stock, string[] bookid, StandardizedDescription SetDescription, string deliveryid, string handlingTime, string offerName, string price)
         {
@@ -623,7 +623,7 @@ namespace Allegro_Api
 
             int smallestMagazinCount = stock[0].value;
             for (int i = 1; i < stock.Length; i++)
-                if (smallestMagazinCount > stock[i].value) 
+                if (smallestMagazinCount > stock[i].value)
                     smallestMagazinCount = stock[i].value;
 
             allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[_product.Length];
@@ -642,7 +642,7 @@ namespace Allegro_Api
 
             allegrooffer.description = SetDescription;
 
-            
+
             allegrooffer.images = imagesList;
 
             StringBuilder externalid = new StringBuilder();
@@ -975,11 +975,11 @@ namespace Allegro_Api
                 File.Delete($"Images/{photoguid}.jpeg");
                 return imageurl.location;
             }
-            catch (WebException) 
+            catch (WebException)
             {
                 return null;
             }
-           
+
         }
 
         #region category
@@ -1039,6 +1039,27 @@ namespace Allegro_Api
             return odp;
         }
 
-        #endregion
-    }
+		#endregion
+
+		#region Orders
+		public async List<> GetOrders()
+		{
+			using HttpClient client = new HttpClient();
+
+			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+			int offset = 0;
+
+            do
+            {
+				// $"/sale/offers?limit={offerslimit}&offset={offset}{StateFilterstring}"
+				HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms");
+
+			} while
+		}
+		#endregion
+	}
 }
