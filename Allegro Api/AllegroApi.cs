@@ -112,7 +112,7 @@ namespace Allegro_Api
         {
             await RefreshAccesToken();
 
-            SampleEvent?.Invoke();
+            RefreshTokenEvent?.Invoke();
         }
 
         //TODO EDIT AN OFFER
@@ -237,8 +237,7 @@ namespace Allegro_Api
             //if user authorized access then remove device code and set other variables for later
             AccessToken = model.access_token;
             RefreshToken = model.refresh_token;
-
-            RefreshTokenEvent?.Invoke();
+           
 
             this.timer.Interval = TokenExpiresIn * 1000;
             this.timer.Start();
