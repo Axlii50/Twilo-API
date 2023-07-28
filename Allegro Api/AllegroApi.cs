@@ -590,6 +590,120 @@ namespace Allegro_Api
 
             return (odp.Content, odp.StatusCode, allegrooffer);
         }
+        
+        public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferSetBasedOnExistingProducts(
+            ProductModel[] _product, BaseValue[] stock, string[] bookid, StandardizedDescription SetDescription, string deliveryid, string handlingTime, string offerName, string price)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            OfferModel allegrooffer = new OfferModel();
+
+            AllegroOfferProduct[] products = new AllegroOfferProduct[_product.Length];
+            string[] imagesList = new string[products.Length];
+
+            for (int i = 0; i < _product.Length; i++)
+            {
+                products[i] = new AllegroOfferProduct()
+                {
+                    id = _product[i].id,
+                    name = _product[i].name,
+                    category = _product[i].category,
+                    parameters = _product[i].parameters,
+                    images = new string[] { _product[i].images[0].url }
+                };
+                imagesList[i] = _product[i].images[0].url;
+            }
+
+            offerName = offerName.Replace("•", "").Replace("—", "").Replace("®", "");
+
+            int smallestMagazinCount = stock[0].value;
+            for (int i = 1; i < stock.Length; i++)
+                if (smallestMagazinCount > stock[i].value) 
+                    smallestMagazinCount = stock[i].value;
+
+            allegrooffer.productSet = new Models.Offer.offerComponents.ProductItem[_product.Length];
+
+            for (int i = 0; i < allegrooffer.productSet.Length; i++)
+            {
+                allegrooffer.productSet[i] = new Models.Offer.offerComponents.ProductItem()
+                {
+                    product = products[i],
+                    quantity = new BaseValue()
+                    {
+                        value = 1
+                    }
+                };
+            }
+
+            allegrooffer.description = SetDescription;
+
+            
+            allegrooffer.images = imagesList;
+
+            StringBuilder externalid = new StringBuilder();
+            foreach(var item in bookid)
+                externalid.Append( item + "/");
+            externalid.Remove(externalid.Length - 1, 1);
+
+            allegrooffer.external = new Base()
+            {
+                id = externalid.ToString()
+            };
+
+            allegrooffer.stock = new Models.Offer.offerComponents.Stock();
+            allegrooffer.stock.unit = "SET";
+            allegrooffer.stock.available = smallestMagazinCount;
+
+            allegrooffer.payments = new Models.Offer.offerComponents.Payments();
+            allegrooffer.payments.invoice = "VAT";
+
+            allegrooffer.name = offerName;
+
+            if (price.Contains(',')) price = price.Replace(',', '.');
+            allegrooffer.sellingMode = new Models.Offer.offerComponents.SellingMode()
+            {
+                format = "BUY_NOW",
+                price = new Models.Offer.offerComponents.PriceModel()
+                {
+                    amount = price,
+                    currency = "PLN"
+                }
+            };
+
+            allegrooffer.delivery = new Models.Offer.offerComponents.delivery.Delivery()
+            {
+                shippingRates = new Base()
+                {
+                    id = deliveryid
+                },
+                handlingTime = handlingTime
+            };
+
+            allegrooffer.category = new Base()
+            {
+                id = _product[0].category.id
+            };
+
+            allegrooffer.publication = new Publication()
+            {
+                status = "INACTIVE",
+                endedBy = "EMPTY_STOCK"
+            };
+
+            string json = JsonConvert.SerializeObject(allegrooffer);
+            System.Diagnostics.Debug.WriteLine(json);
+            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            //https://api.{environment}/sale/product-offers
+            HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
+
+            return (odp.Content, odp.StatusCode, allegrooffer);
+        }
 
         /// <summary>
         /// function for creating offer based on existing product from allegro

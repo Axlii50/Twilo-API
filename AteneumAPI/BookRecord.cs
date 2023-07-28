@@ -25,6 +25,5 @@ namespace AteneumAPI
         public string kategoria_poziom_3 { get; set; }
         public string plik_zdjecia { get; set; }
         public string hash { get; set; }
-
     }
 }
