@@ -26,6 +26,9 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Timers;
 using Allegro_Api.Models.Offer.offerComponents.delivery;
+using Allegro_Api.Models.Order;
+using Allegro_Api.Models.Order.checkoutform.components;
+using Allegro_Api.Models.Order.checkoutform;
 
 namespace Allegro_Api
 {
@@ -1042,7 +1045,7 @@ namespace Allegro_Api
 		#endregion
 
 		#region Orders
-		public async List<> GetOrders()
+		public async Task<List<CheckOutForm>> GetOrders(DateTime LatestDownloadDate)
 		{
 			using HttpClient client = new HttpClient();
 
@@ -1051,14 +1054,35 @@ namespace Allegro_Api
 			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
-			int offset = 0;
+            OrdersModel retrevied = new OrdersModel()
+            {
+                totalCount = 0,
+                count = 0,
+                checkoutForms = new List<CheckOutForm>() 
+            };
 
+            int offset = 0;
+            int limit = 100;
             do
             {
-				// $"/sale/offers?limit={offerslimit}&offset={offset}{StateFilterstring}"
-				HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms");
+                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms?limit={limit}&offset={offset}&lineItems.boughtAt.gte={LatestDownloadDate.ToString("O")}");
 
-			} while
+                if (odp == null) return null;
+
+                OrdersModel model = JsonConvert.DeserializeObject<OrdersModel>(odp.Content.ReadAsStringAsync().Result);
+
+                if (model == null || model.checkoutForms == null)
+                    break;
+
+                retrevied.checkoutForms.AddRange(model.checkoutForms);
+                retrevied.count += model.count;
+                retrevied.totalCount = model.totalCount;
+
+                if (retrevied.totalCount - retrevied.count < limit) limit = retrevied.totalCount - retrevied.count;
+
+            } while (retrevied.count < retrevied.totalCount);
+
+            return retrevied.checkoutForms;
 		}
 		#endregion
 	}

@@ -40,21 +40,26 @@ while (!access)
 
     Thread.Sleep(5000);
 }
+DateTime dateTime = new DateTime(DateTime.Now.AddDays(-1).Ticks, DateTimeKind.Utc);
+var test = await AllegroApi.GetOrders(dateTime);
+
+
+//Console.WriteLine(dateTime.ToString("o"));
+
+//string LibreLogin = "38103_2345";
+//string LibrePassword = "38103";
+
+//var LibreApi = new LibreApi(LibrePassword, LibreLogin);
+
+//var books = LibreApi.GetAllBooks(2);
 
 
 
 
-string LibreLogin = "38103_2345";
-string LibrePassword = "38103";
+//foreach (var t in now.GetDateTimeFormats())
+//    Console.WriteLine(t);
 
-var LibreApi = new LibreApi(LibrePassword, LibreLogin);
-
-var books = LibreApi.GetAllBooks(2);
-
-
-
-
-
+//
 //AllegroApi.CreateOfferSetBasedOnExistingProducts()
 
 
