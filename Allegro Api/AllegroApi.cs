@@ -76,11 +76,11 @@ namespace Allegro_Api
 
         private System.Timers.Timer timer = new System.Timers.Timer();
 
-        public delegate void RefreshTokenEvent();
+        public delegate void RefreshTokenDelgate();
         /// <summary>
         /// event occures when token is refreshed
         /// </summary>
-        public event RefreshTokenEvent SampleEvent;
+        public event RefreshTokenDelgate RefreshTokenEvent;
 
         public AllegroApi(string ClientID, string ClientSecret)
         {
@@ -237,6 +237,8 @@ namespace Allegro_Api
             //if user authorized access then remove device code and set other variables for later
             AccessToken = model.access_token;
             RefreshToken = model.refresh_token;
+
+            RefreshTokenEvent?.Invoke();
 
             this.timer.Interval = TokenExpiresIn * 1000;
             this.timer.Start();
@@ -589,7 +591,14 @@ namespace Allegro_Api
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
 
             //https://api.{environment}/sale/product-offers
-            HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
+            HttpResponseMessage odp = null;
+            try
+            {
+                 odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
+            }catch(HttpRequestException e)
+            {
+                return (null,HttpStatusCode.BadRequest,null);
+            }
 
             return (odp.Content, odp.StatusCode, allegrooffer);
         }
