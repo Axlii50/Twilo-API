@@ -1045,7 +1045,7 @@ namespace Allegro_Api
 		#endregion
 
 		#region Orders
-		public async Task<List<CheckOutForm>> GetOrders(DateTime LatestDownloadDate)
+		public async Task<List<CheckOutForm>> GetOrders(DateTime LatestDownloadDate, OrderStatusType type)
 		{
 			using HttpClient client = new HttpClient();
 
@@ -1061,11 +1061,12 @@ namespace Allegro_Api
                 checkoutForms = new List<CheckOutForm>() 
             };
 
+            string stringtype = type.ToString();
             int offset = 0;
             int limit = 100;
             do
             {
-                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms?limit={limit}&offset={offset}&lineItems.boughtAt.gte={LatestDownloadDate.ToString("O")}");
+                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms?limit={limit}&offset={offset}&lineItems.boughtAt.gte={LatestDownloadDate.ToString("O")}&fulfillment.status={stringtype}");
 
                 if (odp == null) return null;
 
