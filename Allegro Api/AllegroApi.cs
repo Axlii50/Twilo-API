@@ -91,7 +91,6 @@ namespace Allegro_Api
             this.ClientSecret = ClientSecret;
 
             this.timer.Elapsed += Timer_Elapsed;
-
         }
 
         public AllegroApi(string ClientID, string ClientSecret, string RefreshToken, RefreshTokenDelgate refreshtokenevent)

@@ -41,7 +41,7 @@ while (!access)
     Thread.Sleep(5000);
 }
 DateTime dateTime = new DateTime(DateTime.Now.AddDays(-1).Ticks, DateTimeKind.Utc);
-var test = await AllegroApi.GetOrders(dateTime);
+var test = await AllegroApi.GetOrders(dateTime, OrderStatusType.SENT);
 
 
 //Console.WriteLine(dateTime.ToString("o"));
