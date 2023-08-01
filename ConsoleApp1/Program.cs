@@ -14,11 +14,11 @@ using System.Net.Http.Headers;
 using System.Text;
 
 //kempo
-//string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
-//string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
+string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
+string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
@@ -40,9 +40,29 @@ while (!access)
 
     Thread.Sleep(5000);
 }
-DateTime dateTime = new DateTime(DateTime.Now.AddDays(-1).Ticks, DateTimeKind.Utc);
-var test = await AllegroApi.GetOrders(dateTime, OrderStatusType.SENT);
+//DateTime dateTime = new DateTime(DateTime.Now.AddDays(-1).Ticks, DateTimeKind.Utc);
+//var test = await AllegroApi.GetOrders(dateTime, OrderStatusType.SENT);
 
+//var offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+//List<Base> offerids = new List<Base>();
+
+//foreach(var offer in offers.offers)
+//{
+//    Base temp = new Base()
+//    {
+//        id = offer.id
+//    };
+//    offerids.Add(temp);
+//}
+
+//while(offerids.Count > 0)
+//{
+//    var portion = offerids.Take(500);
+
+//    await AllegroApi.BatchChangePublication(portion.ToArray(),false);
+
+//    offerids.RemoveRange(0,500);
+//}
 
 //Console.WriteLine(dateTime.ToString("o"));
 
