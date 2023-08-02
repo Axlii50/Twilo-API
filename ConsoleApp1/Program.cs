@@ -4,6 +4,7 @@ using Allegro_Api.Models.Offer;
 using Allegro_Api.Models.Product;
 using Allegro_Api.Models.Product.ProductComponents;
 using AteneumAPI;
+using ConsoleApp1;
 using Libre_API;
 using Newtonsoft.Json;
 using System;
@@ -14,32 +15,32 @@ using System.Net.Http.Headers;
 using System.Text;
 
 //kempo
-string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
-string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
+//string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
+//string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+////string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+////string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//bool access = false;
+//while (!access)
+//{
+//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-    Thread.Sleep(5000);
-}
+//    Thread.Sleep(5000);
+//}
 //DateTime dateTime = new DateTime(DateTime.Now.AddDays(-1).Ticks, DateTimeKind.Utc);
 //var test = await AllegroApi.GetOrders(dateTime, OrderStatusType.SENT);
 
@@ -82,7 +83,19 @@ while (!access)
 //
 //AllegroApi.CreateOfferSetBasedOnExistingProducts()
 
+Config config = new Config();
+config.rangeMargins = new List<RangeMargin>();
+config.rangeMargins.Add(new RangeMargin()
+{
+    lowerbound = 1f,
+    upperbound = float.MaxValue,
+    margin = 0.5f,
+    Addmargin = false
+});
 
+string jsonstring = JsonConvert.SerializeObject(config, Formatting.Indented);
+
+File.WriteAllText("Config.json", jsonstring);
 
 
 
