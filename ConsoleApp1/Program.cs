@@ -4,6 +4,7 @@ using Allegro_Api.Models.Offer;
 using Allegro_Api.Models.Product;
 using Allegro_Api.Models.Product.ProductComponents;
 using AteneumAPI;
+using ConsoleApp1;
 using Libre_API;
 using Libre_API.OrderStructure;
 using Newtonsoft.Json;
@@ -44,6 +45,8 @@ using System.Text;
 //DateTime dateTime = new DateTime(DateTime.Now.AddDays(-1).Ticks, DateTimeKind.Utc);
 //var test = await AllegroApi.GetOrders(dateTime);
 
+//    offerids.RemoveRange(0,500);
+//}
 
 
 //var test = await AllegroApi.GetCategoryParameters("147677");
@@ -119,7 +122,19 @@ LibreApi.MakeOrder(order);
 //
 //AllegroApi.CreateOfferSetBasedOnExistingProducts()
 
+Config config = new Config();
+config.rangeMargins = new List<RangeMargin>();
+config.rangeMargins.Add(new RangeMargin()
+{
+    lowerbound = 1f,
+    upperbound = float.MaxValue,
+    margin = 0.5f,
+    Addmargin = false
+});
 
+string jsonstring = JsonConvert.SerializeObject(config, Formatting.Indented);
+
+File.WriteAllText("Config.json", jsonstring);
 
 
 

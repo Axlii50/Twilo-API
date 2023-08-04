@@ -92,7 +92,6 @@ namespace Allegro_Api
             this.ClientSecret = ClientSecret;
 
             this.timer.Elapsed += Timer_Elapsed;
-
         }
 
         public AllegroApi(string ClientID, string ClientSecret, string RefreshToken, RefreshTokenDelgate refreshtokenevent)
@@ -901,8 +900,12 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
-
-            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?phrase={productISBN}&mode=GTIN");
+            HttpResponseMessage odp = null;
+            try
+            {
+                 odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?phrase={productISBN}&mode=GTIN");
+            }
+            catch(HttpRequestException) { return null; }
 
             client.Dispose();
 
