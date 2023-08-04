@@ -8,7 +8,13 @@ namespace Allegro_Api
 {
     public enum OrderStatusType
     {
-        SENT = 0,
-        PICKED_UP = 1
+        NEW = 1,
+        PROCESSING = 2,
+        READY_FOR_SHIPMENT = 4,
+        READY_FOR_PICKUP = 8,
+        SENT = 16,
+        PICKED_UP = 32,
+        CANCELLED = 64,
+        SUSPENDED = 128,
     }
 }

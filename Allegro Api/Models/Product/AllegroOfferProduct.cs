@@ -12,6 +12,8 @@ namespace Allegro_Api.Models.Product
     {
         public string id { get; set; }
 
+        public string idType { get; set; }
+
         public string name { get; set; }
 
         public Base category { get; set; }

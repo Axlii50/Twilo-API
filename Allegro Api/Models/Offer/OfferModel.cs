@@ -21,6 +21,8 @@ namespace Allegro_Api.Models.Offer
         /// </summary>
         public Base external { get;set; }
 
+        public CustomParameter[] customParameters;
+
         public StandardizedDescription description { get; set; }
 
         public ProductItem[] productSet { get; set;  }

@@ -1,4 +1,5 @@
 ﻿using Csv;
+using Libre_API.OrderStructure;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Headers;
@@ -110,6 +111,24 @@ namespace Libre_API
 
             Data = null;
             return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
+        }
+
+        private void MakeXMLFile(DocumentOrder order)
+        {
+            using TextWriter writer = new StreamWriter("TempOrderFile.xml");
+
+            XmlSerializer serializer = new XmlSerializer(typeof(DocumentOrder));
+
+            serializer.Serialize(writer, order);
+        }
+
+        public async void MakeOrder(DocumentOrder order)
+        {
+            if (order == null) return;
+
+            MakeXMLFile(order);
+
+            //upload to ftp server
         }
 
         public async Task<HttpContent> GetPhoto(string bookid)

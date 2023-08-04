@@ -29,6 +29,7 @@ using Allegro_Api.Models.Offer.offerComponents.delivery;
 using Allegro_Api.Models.Order;
 using Allegro_Api.Models.Order.checkoutform.components;
 using Allegro_Api.Models.Order.checkoutform;
+using System.Runtime.Intrinsics.Arm;
 
 namespace Allegro_Api
 {
@@ -501,7 +502,7 @@ namespace Allegro_Api
         /// <param name="price"></param>
         /// <returns></returns>
         public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(
-            ProductModel _product, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price)
+            ProductModel _product,string EAN, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
 
@@ -512,9 +513,23 @@ namespace Allegro_Api
 
             OfferModel allegrooffer = new OfferModel();
 
+            //allegrooffer.customParameters = new CustomParameter[] {
+            //    new CustomParameter()
+            //    {
+            //        name = "EAN",
+            //        values = new string[] { EAN }
+            //    }
+            //};
+
+            //_product.parameters.Append(new ProductParameter()
+            //{
+
+            //})
+
             AllegroOfferProduct prod = new AllegroOfferProduct()
             {
                 id = _product.id,
+                idType = "GTIN",
                 name = _product.name,
                 category = _product.category,
                 parameters = _product.parameters,
@@ -1093,6 +1108,63 @@ namespace Allegro_Api
             } while (retrevied.count < retrevied.totalCount);
 
             return retrevied.checkoutForms;
+		}
+        
+        public async Task<List<CheckOutForm>> GetOrders(OrderStatusType type)
+		{
+			using HttpClient client = new HttpClient();
+
+			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            OrdersModel retrevied = new OrdersModel()
+            {
+                totalCount = 0,
+                count = 0,
+                checkoutForms = new List<CheckOutForm>() 
+            };
+
+            string stringtype = type.ToString();
+            int offset = 0;
+            int limit = 100;
+            do
+            {
+                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms?limit={limit}&offset={offset}&fulfillment.status={stringtype}");
+
+                if (odp == null) return null;
+
+                OrdersModel model = JsonConvert.DeserializeObject<OrdersModel>(odp.Content.ReadAsStringAsync().Result);
+
+                if (model == null || model.checkoutForms == null)
+                    break;
+
+                retrevied.checkoutForms.AddRange(model.checkoutForms);
+                retrevied.count += model.count;
+                retrevied.totalCount = model.totalCount;
+
+                if (retrevied.totalCount - retrevied.count < limit) limit = retrevied.totalCount - retrevied.count;
+
+            } while (retrevied.count < retrevied.totalCount);
+
+            return retrevied.checkoutForms;
+		}
+        
+        public async Task<DetailedCheckOutForm> GetOrderDetails(string OrderID)
+		{
+			using HttpClient client = new HttpClient();
+
+			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpContent odp =  (await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{OrderID}")).Content;
+
+            DetailedCheckOutForm model = JsonConvert.DeserializeObject<DetailedCheckOutForm>(odp.ReadAsStringAsync().Result);
+
+            return model;
 		}
 		#endregion
 	}
