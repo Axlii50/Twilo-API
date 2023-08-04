@@ -129,6 +129,9 @@ namespace Libre_API
             MakeXMLFile(order);
 
             //upload to ftp server
+
+            //remove temp file
+            //chyb ze mamy zapisywac 
         }
 
         public async Task<HttpContent> GetPhoto(string bookid)
