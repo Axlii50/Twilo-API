@@ -83,13 +83,20 @@ namespace Allegro_Api
         /// </summary>
         public event RefreshTokenDelgate RefreshTokenEvent;
 
-        public AllegroApi(string ClientID, string ClientSecret)
+        public AllegroApi(string ClientID, string ClientSecret, RefreshTokenDelgate refreshtokenevent)
         {
             if (!Directory.Exists("Images"))
                 Directory.CreateDirectory("Images");
 
             this.ClientID = ClientID;
             this.ClientSecret = ClientSecret;
+
+
+            this.RefreshTokenEvent += refreshtokenevent;
+
+            System.Diagnostics.Debug.WriteLine(RefreshToken);
+            this.RefreshAccesToken();
+
 
             this.timer.Elapsed += Timer_Elapsed;
         }

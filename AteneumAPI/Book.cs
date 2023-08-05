@@ -15,5 +15,9 @@ namespace AteneumAPI
         public int MagazinCount { get; set; }
 
         public float PriceWholeSaleBrutto { get; set; }
+
+        public float PriceWholeSaleNetto { get; set; }
+
+        public int VAT { get; set; }
     }
 }
