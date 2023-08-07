@@ -98,7 +98,7 @@ DocumentOrder order = new DocumentOrder()
                     EAN = books.EAN,
                     BuyerItemCode= books.ID,
                     ItemDescription = books.Title,
-                    OrderQuantity = 1,
+                    OrderedQuantity = 1,
                     OrderUnitNetPrice = books.PriceNettoAferDiscount
                 }
             }

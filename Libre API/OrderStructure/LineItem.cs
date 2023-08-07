@@ -16,8 +16,8 @@ namespace Libre_API.OrderStructure
         [XmlElement("ItemDescription")]
         public string ItemDescription { get; set; }
 
-        [XmlElement("OrderQuantity")]
-        public int OrderQuantity { get; set; }
+        [XmlElement("OrderedQuantity")]
+        public int OrderedQuantity { get; set; }
 
         [XmlElement("OrderUnitNetPrice")]
         public float OrderUnitNetPrice { get; set; }
