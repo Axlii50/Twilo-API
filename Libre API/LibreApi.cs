@@ -113,36 +113,42 @@ namespace Libre_API
             return books.book.Where(book => book.MagazineCount >= minimalMagazineCount).ToList();
         }
 
-        private void MakeXMLFile(DocumentOrder order)
+        private string MakeXMLFile(DocumentOrder order)
         {
-            using TextWriter writer = new StreamWriter("TempOrderFile.xml");
+            string FileName = DateTime.Now.ToString("yyyy-MM-dd-H-m");
+            using TextWriter writer = new StreamWriter($"{FileName}.xml");
 
             XmlSerializer serializer = new XmlSerializer(typeof(DocumentOrder));
 
             serializer.Serialize(writer, order);
+
+            return $"{FileName}.xml";
         }
 
-        public async void MakeOrder(DocumentOrder order)
+        public async void MakeOrder(DocumentOrder order, string ftpUserName, string ftpPassword)
         {
             if (order == null) return;
 
-            MakeXMLFile(order);
+            string FileName = MakeXMLFile(order);
 
-            //upload to ftp server
-
-            //remove temp file
-            //chyb ze mamy zapisywac 
+            using (var client = new WebClient())
+            {
+                client.Credentials = new NetworkCredential(ftpUserName, ftpPassword);
+                _ = client.UploadFile($"ftp://83.142.195.2/{FileName}", WebRequestMethods.Ftp.UploadFile, FileName);
+            }
         }
 
         public async Task<HttpContent> GetPhoto(string bookid)
         {
-            HttpClient client = new HttpClient();
+            using HttpClient client = new HttpClient();
 
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
             HttpResponseMessage odp = await client.GetAsync(UrlPhoto + $"?login={login}&password={password}&foto={bookid}");
 
             return odp.Content;
+
+            
         }
     }
 }

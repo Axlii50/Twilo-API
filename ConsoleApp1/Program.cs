@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -55,66 +56,113 @@ using System.Text;
 
 //Console.WriteLine(dateTime.ToString("o"));
 
-string LibreLogin = "38103_2345";
-string LibrePassword = "38103";
+//string LibreLogin = "38103_2345";
+//string LibrePassword = "38103";
 
-var LibreApi = new LibreApi(LibrePassword, LibreLogin);
+//var LibreApi = new LibreApi(LibrePassword, LibreLogin);
 
-var books = (await LibreApi.GetAllBooks(2)).First();
+//var books = (await LibreApi.GetAllBooks(2)).First();
 
-DocumentOrder order = new DocumentOrder()
+//DocumentOrder order = new DocumentOrder()
+//{
+//    Head = new OrderHead()
+//    {
+//        Remarks = "1",
+//        OrderNumber = "1",
+//        OrderDate = DateTime.Now.ToString("yyyy-MM-dd"),
+//        ExpectedDeliveryDate=DateTime.Now.ToString("yyyy-MM-dd")
+//    },
+//    parties = new OrderParties()
+//    {
+//        Buyer = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = "38103"
+//        },
+//        Seller = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = ""
+//        },
+//        DeliveryPoint = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = "38103"
+//        },
+//    },
+//    products = new OrderLines()
+//    {
+//        Line = new Line[]
+//        {
+//            new Line()
+//            {
+//                item = new LineItem()
+//                {
+//                    LineNumber = 1,
+//                    EAN = books.EAN,
+//                    BuyerItemCode= books.ID,
+//                    ItemDescription = books.Title,
+//                    OrderedQuantity = 1,
+//                    OrderUnitNetPrice = books.PriceNettoAferDiscount
+//                }
+//            }
+//        }
+//    },
+//    summary = new OrderSummary()
+//    {
+//        TotalLines = 1,
+//        TotalOrderedAmount = 1
+//    }
+//};
+
+
+//LibreApi.MakeOrder(order);
+//9788366335875
+//2023-08-09-20-2.xml
+
+string ftpUserName = "kempogroup",ftpPassword = "trz2Q_7", FileName = "2023-08-09-20-2.xml";
+
+using (var client = new WebClient())
 {
-    Head = new OrderHead()
-    {
-        Remarks = "1",
-        OrderNumber = "1",
-        OrderDate = DateTime.Now.ToString("yyyy-MM-dd"),
-        ExpectedDeliveryDate=DateTime.Now.ToString("yyyy-MM-dd")
-    },
-    parties = new OrderParties()
-    {
-        Buyer = new Libre_API.OrderStructure.Base()
-        {
-            ILN = "38103"
-        },
-        Seller = new Libre_API.OrderStructure.Base()
-        {
-            ILN = ""
-        },
-        DeliveryPoint = new Libre_API.OrderStructure.Base()
-        {
-            ILN = "38103"
-        },
-    },
-    products = new OrderLines()
-    {
-        Line = new Line[]
-        {
-            new Line()
-            {
-                item = new LineItem()
-                {
-                    LineNumber = 1,
-                    EAN = books.EAN,
-                    BuyerItemCode= books.ID,
-                    ItemDescription = books.Title,
-                    OrderedQuantity = 1,
-                    OrderUnitNetPrice = books.PriceNettoAferDiscount
-                }
-            }
-        }
-    },
-    summary = new OrderSummary()
-    {
-        TotalLines = 1,
-        TotalOrderedAmount = 1
-    }
-};
+    client.Credentials = new NetworkCredential(ftpUserName, ftpPassword);
+    var response = client.UploadFile($"ftp://83.142.195.2/{FileName}", WebRequestMethods.Ftp.UploadFile, FileName);
+
+    string bitString = BitConverter.ToString(response);
+
+    Console.WriteLine(bitString);
+}
 
 
-LibreApi.MakeOrder(order);
+//var url = "ftp://83.142.195.2";
+//FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+//request.Credentials = new NetworkCredential(ftpUserName, ftpPassword);
+//request.Method = WebRequestMethods.Ftp.UploadFile;
+
+//using (Stream fileStream = File.OpenRead(FileName))
+//using (Stream ftpStream = request.GetRequestStream())
+//{
+//    byte[] buffer = new byte[10240];
+//    int read;
+//    while ((read = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+//    {
+//        ftpStream.Write(buffer, 0, read);
+//        Console.WriteLine("Uploaded {0} bytes", fileStream.Position);
+//    }
+//}
 
 
+//AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+
+
+//var boks = await ate.GetAllBooksWithMagazin(2);
+
+//foreach(var test in boks)
+//{
+//   // if(test.BookData.EAN == "9788366335875")
+//    if(test.BookData.EAN == "9788367406505")
+//    {
+//        Console.WriteLine(test.PriceWholeSaleBrutto);
+//    }
+//}
+//39.1439972
+//37.28
 
 //foreach (var t in now.GetDateTimeFormats())
 //    Console.WriteLine(t);
@@ -122,19 +170,19 @@ LibreApi.MakeOrder(order);
 //
 //AllegroApi.CreateOfferSetBasedOnExistingProducts()
 
-Config config = new Config();
-config.rangeMargins = new List<RangeMargin>();
-config.rangeMargins.Add(new RangeMargin()
-{
-    lowerbound = 1f,
-    upperbound = float.MaxValue,
-    margin = 0.5f,
-    Addmargin = false
-});
+//Config config = new Config();
+//config.rangeMargins = new List<RangeMargin>();
+//config.rangeMargins.Add(new RangeMargin()
+//{
+//    lowerbound = 1f,
+//    upperbound = float.MaxValue,
+//    margin = 0.5f,
+//    Addmargin = false
+//});
 
-string jsonstring = JsonConvert.SerializeObject(config, Formatting.Indented);
+//string jsonstring = JsonConvert.SerializeObject(config, Formatting.Indented);
 
-File.WriteAllText("Config.json", jsonstring);
+//File.WriteAllText("Config.json", jsonstring);
 
 
 
