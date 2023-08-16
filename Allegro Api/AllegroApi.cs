@@ -519,6 +519,8 @@ namespace Allegro_Api
 
             OfferModel allegrooffer = new OfferModel();
 
+            //if (float.Parse(price) < 4) price = "4";
+
             //allegrooffer.customParameters = new CustomParameter[] {
             //    new CustomParameter()
             //    {

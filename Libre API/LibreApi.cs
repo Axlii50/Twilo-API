@@ -131,6 +131,9 @@ namespace Libre_API
 
             string FileName = MakeXMLFile(order);
 
+            if(ftpUserName == null || ftpPassword == null) return;
+            if(ftpUserName == string.Empty || ftpPassword == string.Empty) return;
+
             using (var client = new WebClient())
             {
                 client.Credentials = new NetworkCredential(ftpUserName, ftpPassword);
