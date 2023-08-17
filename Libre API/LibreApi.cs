@@ -115,7 +115,7 @@ namespace Libre_API
 
         private string MakeXMLFile(DocumentOrder order)
         {
-            string FileName = DateTime.Now.ToString("yyyy-MM-dd-H-m");
+            string FileName = DateTime.Now.ToString("yyyy-MM-dd-H-m-ss");
             using TextWriter writer = new StreamWriter($"{FileName}.xml");
 
             XmlSerializer serializer = new XmlSerializer(typeof(DocumentOrder));
