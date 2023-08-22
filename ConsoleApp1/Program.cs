@@ -56,12 +56,18 @@ using System.Text;
 
 //Console.WriteLine(dateTime.ToString("o"));
 
-//string LibreLogin = "38103_2345";
-//string LibrePassword = "38103";
+string LibreLogin = "38103_2345";
+string LibrePassword = "38103";
 
-//var LibreApi = new LibreApi(LibrePassword, LibreLogin);
+var LibreApi = new LibreApi(LibrePassword, LibreLogin);
 
-//var books = (await LibreApi.GetAllBooks(2)).First();
+var books = (await LibreApi.GetAllBooks(2));
+
+foreach (var book in books)
+    if(book.ID== "184649")
+    {
+        Console.WriteLine("test");
+    }
 
 //DocumentOrder order = new DocumentOrder()
 //{
@@ -117,17 +123,17 @@ using System.Text;
 //9788366335875
 //2023-08-09-20-2.xml
 
-string ftpUserName = "kempogroup",ftpPassword = "trz2Q_7", FileName = "2023-08-09-20-2.xml";
+//string ftpUserName = "kempogroup",ftpPassword = "trz2Q_7", FileName = "2023-08-09-20-2.xml";
 
-using (var client = new WebClient())
-{
-    client.Credentials = new NetworkCredential(ftpUserName, ftpPassword);
-    var response = client.UploadFile($"ftp://83.142.195.2/{FileName}", WebRequestMethods.Ftp.UploadFile, FileName);
+//using (var client = new WebClient())
+//{
+//    client.Credentials = new NetworkCredential(ftpUserName, ftpPassword);
+//    var response = client.UploadFile($"ftp://83.142.195.2/{FileName}", WebRequestMethods.Ftp.UploadFile, FileName);
 
-    string bitString = BitConverter.ToString(response);
+//    string bitString = BitConverter.ToString(response);
 
-    Console.WriteLine(bitString);
-}
+//    Console.WriteLine(bitString);
+//}
 
 
 //var url = "ftp://83.142.195.2";

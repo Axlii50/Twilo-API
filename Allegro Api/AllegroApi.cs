@@ -474,10 +474,17 @@ namespace Allegro_Api
             var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
             System.Diagnostics.Debug.WriteLine(jsonstring);
 
-            var response = await client.PutAsync(AllegroBaseURL + $"/sale/offer-publication-commands/{commandID}", content);
-
+            try
+            {
+                var response = await client.PutAsync(AllegroBaseURL + $"/sale/offer-publication-commands/{commandID}", content);
+                return (response, commandID, publication);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, null, null);
+            }
             //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
-            return (response, commandID, publication);
+            
         }
 
         public async Task<HttpResponseMessage> GetPublicationResult(Base[] offerids, string commandID)
