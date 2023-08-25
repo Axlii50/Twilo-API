@@ -147,10 +147,17 @@ namespace Libre_API
 
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
-            HttpResponseMessage odp = await client.GetAsync(UrlPhoto + $"?login={login}&password={password}&foto={bookid}");
+            HttpResponseMessage odp = null;
+            try
+            {
+                 odp = await client.GetAsync(UrlPhoto + $"?login={login}&password={password}&foto={bookid}");
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
 
             return odp.Content;
-
             
         }
     }
