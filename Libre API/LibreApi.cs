@@ -156,6 +156,10 @@ namespace Libre_API
             {
                 return null;
             }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
 
             return odp.Content;
             
