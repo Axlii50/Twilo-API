@@ -23,7 +23,12 @@ using System.Text;
 //string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
 //string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret);
+//twilo3
+//string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
+//string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
+
+
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
 //Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
@@ -43,6 +48,12 @@ using System.Text;
 
 //    Thread.Sleep(5000);
 //}
+
+//var response = await AllegroApi.ChangeOrderStatus(OrderStatusType.PROCESSING, "3994a290-471d-11ee-abad-8d464aa2c811");
+
+//Console.WriteLine(response.ReadAsStringAsync().Result);
+//Console.ReadLine();
+
 //DateTime dateTime = new DateTime(DateTime.Now.AddDays(-1).Ticks, DateTimeKind.Utc);
 //var test = await AllegroApi.GetOrders(dateTime);
 
@@ -56,18 +67,18 @@ using System.Text;
 
 //Console.WriteLine(dateTime.ToString("o"));
 
-string LibreLogin = "38103_2345";
-string LibrePassword = "38103";
+//string LibreLogin = "38103_2345";
+//string LibrePassword = "38103";
 
-var LibreApi = new LibreApi(LibrePassword, LibreLogin);
+//var LibreApi = new LibreApi(LibrePassword, LibreLogin);
 
-var books = (await LibreApi.GetAllBooks(2));
+//var books = (await LibreApi.GetAllBooks(2));
 
-foreach (var book in books)
-    if(book.ID== "184649")
-    {
-        Console.WriteLine("test");
-    }
+//foreach (var book in books)
+//    if(book.ID== "184649")
+//    {
+//        Console.WriteLine("test");
+//    }
 
 //DocumentOrder order = new DocumentOrder()
 //{
@@ -154,7 +165,7 @@ foreach (var book in books)
 //}
 
 
-//AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
 
 //var boks = await ate.GetAllBooksWithMagazin(2);
@@ -191,6 +202,32 @@ foreach (var book in books)
 //File.WriteAllText("Config.json", jsonstring);
 
 
+AteneumAPI.OrderStructure.AtesApiOrder atesApiOrder = new AteneumAPI.OrderStructure.AtesApiOrder()
+{
+    Auth = new AteneumAPI.OrderStructure.Auth()
+    {
+        Login = "sapiTestUser",
+        salt = "111"
+    },
+    header = new AteneumAPI.OrderStructure.Header()
+    {
+        deliveryaddresscode = "ZZ05",
+        buyerorderreference = "111-111-111-111",
+        remarks = "uwagi do zamowienia"
+    },
+    lines = new AteneumAPI.OrderStructure.Line[]
+    {
+        new AteneumAPI.OrderStructure.Line()
+        {
+            ateid = 413541,
+            quantity = 10,
+            buyerproductreference = "413541-2"
+        }
+    }
+};
+
+
+ate.MakeOrder(atesApiOrder, "sapiTestUser", "ALWZywNWMc");
 
 
 Console.ReadLine();

@@ -15,5 +15,8 @@ namespace AteneumAPI.OrderStructure
 
         [XmlElement("header")]
         public Header header { get; set; }
+
+        [XmlElement("lines")]
+        public Line[] lines { get; set; }
     }
 }

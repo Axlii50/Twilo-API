@@ -30,6 +30,7 @@ using Allegro_Api.Models.Order;
 using Allegro_Api.Models.Order.checkoutform.components;
 using Allegro_Api.Models.Order.checkoutform;
 using System.Runtime.Intrinsics.Arm;
+using System.Net.NetworkInformation;
 
 namespace Allegro_Api
 {
@@ -384,6 +385,30 @@ namespace Allegro_Api
             return response;
         }
 
+        public async Task<HttpResponseMessage> ChangeDescription(StandardizedDescription SetDescription, string offerid)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            var jsonobject = new
+            {
+                description = SetDescription
+            };
+
+            var jsonstring = JsonConvert.SerializeObject(jsonobject);
+            var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerid}", content);
+
+            client.Dispose();
+            //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
+            return response;
+        }
+
         public async Task<HttpResponseMessage> ChangeDeliveryTime(string offerId, DeliveryOfferModel deliveryOffer, string handlingtime)
         {
             using HttpClient client = new HttpClient();
@@ -484,7 +509,7 @@ namespace Allegro_Api
                 return (null, null, null);
             }
             //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
-            
+
         }
 
         public async Task<HttpResponseMessage> GetPublicationResult(Base[] offerids, string commandID)
@@ -515,7 +540,7 @@ namespace Allegro_Api
         /// <param name="price"></param>
         /// <returns></returns>
         public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(
-            ProductModel _product,string EAN, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price)
+            ProductModel _product, string EAN, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
 
@@ -624,10 +649,11 @@ namespace Allegro_Api
             HttpResponseMessage odp = null;
             try
             {
-                 odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
-            }catch(HttpRequestException e)
+                odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
+            }
+            catch (HttpRequestException e)
             {
-                return (null,HttpStatusCode.BadRequest,null);
+                return (null, HttpStatusCode.BadRequest, null);
             }
 
             return (odp.Content, odp.StatusCode, allegrooffer);
@@ -688,8 +714,8 @@ namespace Allegro_Api
             allegrooffer.images = imagesList;
 
             StringBuilder externalid = new StringBuilder();
-            foreach(var item in bookid)
-                externalid.Append( item + "/");
+            foreach (var item in bookid)
+                externalid.Append(item + "/");
             externalid.Remove(externalid.Length - 1, 1);
 
             allegrooffer.external = new Base()
@@ -919,9 +945,9 @@ namespace Allegro_Api
             HttpResponseMessage odp = null;
             try
             {
-                 odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?phrase={productISBN}&mode=GTIN");
+                odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?phrase={productISBN}&mode=GTIN");
             }
-            catch(HttpRequestException) { return null; }
+            catch (HttpRequestException) { return null; }
 
             client.Dispose();
 
@@ -1085,23 +1111,23 @@ namespace Allegro_Api
             return odp;
         }
 
-		#endregion
+        #endregion
 
-		#region Orders
-		public async Task<List<CheckOutForm>> GetOrders(DateTime LatestDownloadDate, OrderStatusType type)
-		{
-			using HttpClient client = new HttpClient();
+        #region Orders
+        public async Task<List<CheckOutForm>> GetOrders(DateTime LatestDownloadDate, OrderStatusType type)
+        {
+            using HttpClient client = new HttpClient();
 
-			client.DefaultRequestHeaders.Clear();
-			client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
             OrdersModel retrevied = new OrdersModel()
             {
                 totalCount = 0,
                 count = 0,
-                checkoutForms = new List<CheckOutForm>() 
+                checkoutForms = new List<CheckOutForm>()
             };
 
             string stringtype = type.ToString();
@@ -1127,22 +1153,22 @@ namespace Allegro_Api
             } while (retrevied.count < retrevied.totalCount);
 
             return retrevied.checkoutForms;
-		}
-        
-        public async Task<List<CheckOutForm>> GetOrders(OrderStatusType type)
-		{
-			using HttpClient client = new HttpClient();
+        }
 
-			client.DefaultRequestHeaders.Clear();
-			client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+        public async Task<List<CheckOutForm>> GetOrders(OrderStatusType type)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
             OrdersModel retrevied = new OrdersModel()
             {
                 totalCount = 0,
                 count = 0,
-                checkoutForms = new List<CheckOutForm>() 
+                checkoutForms = new List<CheckOutForm>()
             };
 
             string stringtype = type.ToString();
@@ -1168,23 +1194,51 @@ namespace Allegro_Api
             } while (retrevied.count < retrevied.totalCount);
 
             return retrevied.checkoutForms;
-		}
-        
+        }
+
         public async Task<DetailedCheckOutForm> GetOrderDetails(string OrderID)
-		{
-			using HttpClient client = new HttpClient();
+        {
+            using HttpClient client = new HttpClient();
 
-			client.DefaultRequestHeaders.Clear();
-			client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
-            HttpContent odp =  (await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{OrderID}")).Content;
+            HttpContent odp = (await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{OrderID}")).Content;
 
             DetailedCheckOutForm model = JsonConvert.DeserializeObject<DetailedCheckOutForm>(odp.ReadAsStringAsync().Result);
 
             return model;
-		}
-		#endregion
-	}
+        }
+
+        public async Task<HttpContent> ChangeOrderStatus(OrderStatusType type, string orderID)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            var ordermodel = new
+            {
+                status = type.ToString()
+            };
+
+            var jsonstring = JsonConvert.SerializeObject(ordermodel);
+            var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            try
+            {
+                HttpContent odp = (await client.PutAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/fulfillment", content)).Content;
+                return odp;
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+        }
+        #endregion
+    }
 }

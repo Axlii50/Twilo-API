@@ -1,9 +1,12 @@
-﻿using CsvHelper;
+﻿using AteneumAPI.OrderStructure;
+using CsvHelper;
 using CsvHelper.Configuration;
 using System.Formats.Asn1;
 using System.Globalization;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace AteneumAPI
 {
@@ -24,8 +27,6 @@ namespace AteneumAPI
 
         public async Task<HttpContent> DownloadBase()
         {
-           
-
             _client.DefaultRequestHeaders.Clear();
 
             var authenticationString = $"{userName}:{userPassword}";
@@ -56,8 +57,6 @@ namespace AteneumAPI
 
         public async Task<HttpContent> DownloadMagazinAndDetalicPrices()
         {
-           
-
             _client.DefaultRequestHeaders.Clear();
 
             var authenticationString = $"{userName}:{userPassword}";
@@ -253,5 +252,45 @@ namespace AteneumAPI
             return odp.Content;
         }
 
+        private string MakeXMLFile(AtesApiOrder order, string password)
+        {
+            order.Auth.passfingerprint = sha256(password + order.Auth.salt);
+
+            string FileName = DateTime.Now.ToString("yyyy-MM-dd-H-m-ss");
+            using TextWriter writer = new StreamWriter($"{FileName}.xml");
+
+            XmlSerializer serializer = new XmlSerializer(typeof(AtesApiOrder));
+
+            serializer.Serialize(writer, order);
+
+            return $"{FileName}.xml";
+        }
+
+        public async void MakeOrder(AtesApiOrder order, string login, string password)
+        {
+            if (order == null) return;
+
+            string FileName = MakeXMLFile(order,password);
+
+            if (login == null || password == null) return;
+            if (login == string.Empty || password == string.Empty) return;
+
+            using HttpClient client = new HttpClient(); 
+
+
+        }
+
+
+        private string sha256(string randomString)
+        {
+            var crypt = new System.Security.Cryptography.SHA256Managed();
+            var hash = new System.Text.StringBuilder();
+            byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(randomString));
+            foreach (byte theByte in crypto)
+            {
+                hash.Append(theByte.ToString("x2"));
+            }
+            return hash.ToString();
+        }
     }
 }
