@@ -49,6 +49,9 @@ namespace Allegro_Api
 
     public class AllegroApi
     {
+        //http client informations
+        const int TimeoutSeconds = 180;
+
         //client informations
         private string ClientID = string.Empty;
         private string ClientSecret = string.Empty;
@@ -240,13 +243,13 @@ namespace Allegro_Api
             HttpResponseMessage odp = await client.PostAsync(AllegoTokenURL, content);
 
             AccessTokenModel model = JsonConvert.DeserializeObject<AccessTokenModel>(odp.Content.ReadAsStringAsync().Result);
-            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
             if (!odp.IsSuccessStatusCode) return;
 
             //if user authorized access then remove device code and set other variables for later
             AccessToken = model.access_token;
             RefreshToken = model.refresh_token;
-            System.Diagnostics.Debug.WriteLine(RefreshToken);
+            Console.WriteLine(RefreshToken);
             RefreshTokenEvent?.Invoke();
             this.timer.Interval = TokenExpiresIn * 1000;
             this.timer.Start();
@@ -412,6 +415,8 @@ namespace Allegro_Api
         public async Task<HttpResponseMessage> ChangeDeliveryTime(string offerId, DeliveryOfferModel deliveryOffer, string handlingtime)
         {
             using HttpClient client = new HttpClient();
+
+            client.Timeout = TimeSpan.FromSeconds(TimeoutSeconds);
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
@@ -925,6 +930,7 @@ namespace Allegro_Api
             //System.Diagnostics.Debug.WriteLine("Test :" +json);
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-proposals", content);
 
+            if (odp == null) return null;
 
             if (odp.Headers.Contains("location"))
                 productid = odp.Headers.Location.AbsoluteUri.Split("/")[5];

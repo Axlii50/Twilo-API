@@ -10,8 +10,8 @@ namespace AteneumAPI.OrderStructure
     [XmlRoot("atesapiorder")]
     public class AtesApiOrder
     {
-        [XmlElement("Auth")]
-        public Auth Auth { get; set; }
+        [XmlElement("auth")]
+        public Auth auth { get; set; }
 
         [XmlElement("header")]
         public Header header { get; set; }

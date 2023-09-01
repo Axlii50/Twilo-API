@@ -254,7 +254,7 @@ namespace AteneumAPI
 
         private string MakeXMLFile(AtesApiOrder order, string password)
         {
-            order.Auth.passfingerprint = sha256(password + order.Auth.salt);
+            order.auth.passfingerprint = sha256(password + order.auth.salt);
 
             string FileName = DateTime.Now.ToString("yyyy-MM-dd-H-m-ss");
             using TextWriter writer = new StreamWriter($"{FileName}.xml");
@@ -275,11 +275,27 @@ namespace AteneumAPI
             if (login == null || password == null) return;
             if (login == string.Empty || password == string.Empty) return;
 
-            using HttpClient client = new HttpClient(); 
+            using HttpClient client = new HttpClient();
 
+            client.DefaultRequestHeaders.Clear();
 
+            string xmlcontent = File.ReadAllText(FileName);
+
+            var dict = new Dictionary<string, string>
+            {
+                { "xml", xmlcontent }
+            };
+
+            var httpContent = new FormUrlEncodedContent(dict);
+
+            var response = await client.PostAsync("https://www.ateneum.net.pl/sapi/index.php", httpContent);
+
+            var stream = new StreamReader(response.Content.ReadAsStream(), Encoding.UTF8);
+
+            string stringcontent = stream.ReadToEnd();
+
+            Console.WriteLine(stringcontent);
         }
-
 
         private string sha256(string randomString)
         {

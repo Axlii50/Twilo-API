@@ -24,30 +24,32 @@ using System.Text;
 //string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 //twilo3
-//string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
-//string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
+string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
+string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
 
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-//Console.WriteLine(t.device_code);
-//Console.WriteLine(t.verification_uri_complete);
+Console.WriteLine(t.device_code);
+Console.WriteLine(t.verification_uri_complete);
 
-//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-//sInfo.UseShellExecute = true;
-//Process Verification = Process.Start(sInfo);
+ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
 
-//bool access = false;
-//while (!access)
-//{
-//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+bool access = false;
+while (!access)
+{
+    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-//    Thread.Sleep(5000);
-//}
+    Thread.Sleep(5000);
+}
+
+//AllegroApi.RefreshAccesToken();
 
 //var response = await AllegroApi.ChangeOrderStatus(OrderStatusType.PROCESSING, "3994a290-471d-11ee-abad-8d464aa2c811");
 
@@ -165,7 +167,7 @@ using System.Text;
 //}
 
 
-AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+//AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
 
 //var boks = await ate.GetAllBooksWithMagazin(2);
@@ -202,32 +204,32 @@ AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 //File.WriteAllText("Config.json", jsonstring);
 
 
-AteneumAPI.OrderStructure.AtesApiOrder atesApiOrder = new AteneumAPI.OrderStructure.AtesApiOrder()
-{
-    Auth = new AteneumAPI.OrderStructure.Auth()
-    {
-        Login = "sapiTestUser",
-        salt = "111"
-    },
-    header = new AteneumAPI.OrderStructure.Header()
-    {
-        deliveryaddresscode = "ZZ05",
-        buyerorderreference = "111-111-111-111",
-        remarks = "uwagi do zamowienia"
-    },
-    lines = new AteneumAPI.OrderStructure.Line[]
-    {
-        new AteneumAPI.OrderStructure.Line()
-        {
-            ateid = 413541,
-            quantity = 10,
-            buyerproductreference = "413541-2"
-        }
-    }
-};
+//AteneumAPI.OrderStructure.AtesApiOrder atesApiOrder = new AteneumAPI.OrderStructure.AtesApiOrder()
+//{
+//    Auth = new AteneumAPI.OrderStructure.Auth()
+//    {
+//        Login = "sapiTestUser",
+//        salt = "111"
+//    },
+//    header = new AteneumAPI.OrderStructure.Header()
+//    {
+//        deliveryaddresscode = "ZZ05",
+//        buyerorderreference = "111-111-111-111",
+//        remarks = "uwagi do zamowienia"
+//    },
+//    lines = new AteneumAPI.OrderStructure.Line[]
+//    {
+//        new AteneumAPI.OrderStructure.Line()
+//        {
+//            ateid = 413541,
+//            quantity = 10,
+//            buyerproductreference = "413541-2"
+//        }
+//    }
+//};
 
 
-ate.MakeOrder(atesApiOrder, "sapiTestUser", "ALWZywNWMc");
+//ate.MakeOrder(atesApiOrder, "sapiTestUser", "ALWZywNWMc");
 
 
 Console.ReadLine();
