@@ -72,7 +72,7 @@ namespace Allegro_Api
 
         //dodać automatyczne przedłuzanie
         //acces token jest ważny przez 12 h
-        public string AccessToken = string.Empty;
+        private string AccessToken = string.Empty;
         private int TokenExpiresIn = -1;
         //RefreshToken jest ważny natomiast przez 3miesiace
         public string RefreshToken = string.Empty;
