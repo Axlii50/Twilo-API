@@ -266,14 +266,14 @@ namespace AteneumAPI
             return $"{FileName}.xml";
         }
 
-        public async void MakeOrder(AtesApiOrder order, string login, string password)
+        public async void MakeOrder(AtesApiOrder order, string password)
         {
             if (order == null) return;
 
             string FileName = MakeXMLFile(order,password);
 
-            if (login == null || password == null) return;
-            if (login == string.Empty || password == string.Empty) return;
+            if (password == null) return;
+            if (password == string.Empty) return;
 
             using HttpClient client = new HttpClient();
 

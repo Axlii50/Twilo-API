@@ -72,7 +72,7 @@ namespace Allegro_Api
 
         //dodać automatyczne przedłuzanie
         //acces token jest ważny przez 12 h
-        private string AccessToken = string.Empty;
+        public string AccessToken = string.Empty;
         private int TokenExpiresIn = -1;
         //RefreshToken jest ważny natomiast przez 3miesiace
         public string RefreshToken = string.Empty;
@@ -124,6 +124,7 @@ namespace Allegro_Api
 
         private async void Timer_Elapsed(object? sender, ElapsedEventArgs e)
         {
+            Console.WriteLine("Cykl odświeżenia tokenu");
             await RefreshAccesToken();
         }
 
@@ -208,7 +209,9 @@ namespace Allegro_Api
                 RefreshToken = model.refresh_token;
                 TokenExpiresIn = model.expires_in;
 
-                this.timer.Interval = TokenExpiresIn * 1000;
+                Console.WriteLine((TokenExpiresIn / 2) * 1000);
+
+                this.timer.Interval = (TokenExpiresIn / 2) * 1000;
                 this.timer.Start();
 
                 return true;
@@ -243,15 +246,22 @@ namespace Allegro_Api
             HttpResponseMessage odp = await client.PostAsync(AllegoTokenURL, content);
 
             AccessTokenModel model = JsonConvert.DeserializeObject<AccessTokenModel>(odp.Content.ReadAsStringAsync().Result);
-            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
             if (!odp.IsSuccessStatusCode) return;
 
             //if user authorized access then remove device code and set other variables for later
             AccessToken = model.access_token;
             RefreshToken = model.refresh_token;
-            Console.WriteLine(RefreshToken);
+
             RefreshTokenEvent?.Invoke();
-            this.timer.Interval = TokenExpiresIn * 1000;
+            try
+            {
+                this.timer.Interval = (TokenExpiresIn / 2) * 1000;
+            }
+            catch (ArgumentException)
+            {
+                this.timer.Interval = 21599000;
+            }
+
             this.timer.Start();
         }
         #endregion
@@ -290,6 +300,17 @@ namespace Allegro_Api
                 HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}&offset={offset}{StateFilterstring}");
 
                 if (odp == null) return null;
+
+                string odpcontent = odp.Content.ReadAsStringAsync().Result;
+                if (odpcontent.Contains("error"))
+                {
+                    var refreshtask = this.RefreshAccesToken();
+                    refreshtask.Wait();
+                    //Console.WriteLine("pobieram na nowo");
+                    odp = await client.GetAsync(AllegroBaseURL + $"/sale/offers?limit={offerslimit}&offset={offset}{StateFilterstring}");
+
+                    Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
+                }
 
                 OffersModel model = JsonConvert.DeserializeObject<OffersModel>(odp.Content.ReadAsStringAsync().Result);
 

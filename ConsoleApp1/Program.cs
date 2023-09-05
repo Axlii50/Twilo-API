@@ -49,6 +49,23 @@ while (!access)
     Thread.Sleep(5000);
 }
 
+AllegroApi.AccessToken = AllegroApi.AccessToken.Remove(0,1);
+AllegroApi.AccessToken += "d";
+
+while (true)
+{
+    Console.WriteLine("1");
+    Task.Delay(1000).Wait();
+}
+
+//var test = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+
+//Console.WriteLine($"Test {test.count}");
+
+
+// test = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+
+//Console.WriteLine($"Test {test.count}");
 //AllegroApi.RefreshAccesToken();
 
 //var response = await AllegroApi.ChangeOrderStatus(OrderStatusType.PROCESSING, "3994a290-471d-11ee-abad-8d464aa2c811");
@@ -167,7 +184,7 @@ while (!access)
 //}
 
 
-//AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
 
 //var boks = await ate.GetAllBooksWithMagazin(2);
@@ -206,7 +223,7 @@ while (!access)
 
 //AteneumAPI.OrderStructure.AtesApiOrder atesApiOrder = new AteneumAPI.OrderStructure.AtesApiOrder()
 //{
-//    Auth = new AteneumAPI.OrderStructure.Auth()
+//    auth = new AteneumAPI.OrderStructure.Auth()
 //    {
 //        Login = "sapiTestUser",
 //        salt = "111"
@@ -214,7 +231,7 @@ while (!access)
 //    header = new AteneumAPI.OrderStructure.Header()
 //    {
 //        deliveryaddresscode = "ZZ05",
-//        buyerorderreference = "111-111-111-111",
+//        buyerorderreference = "222-111-111-111",
 //        remarks = "uwagi do zamowienia"
 //    },
 //    lines = new AteneumAPI.OrderStructure.Line[]
@@ -229,7 +246,7 @@ while (!access)
 //};
 
 
-//ate.MakeOrder(atesApiOrder, "sapiTestUser", "ALWZywNWMc");
+//ate.MakeOrder(atesApiOrder, "ALWZywNWMc");
 
 
 Console.ReadLine();
