@@ -12,13 +12,13 @@ namespace Allegro_Api.Models.Offer
 {
     /// <summary>
     /// <list type="bullet">
-    /// <item>id								Implemented</item>
-    /// <item>name							    Implemented</item>
-    /// <item>category						    Implemented</item>
-    /// <item>primaryImage					    Implemented</item>
-    /// <item>sellingMode					    Implemented</item>
+    /// <item>id</item>
+    /// <item>name</item>
+    /// <item>category</item>
+    /// <item>primaryImage</item>
+    /// <item>sellingMode</item>
     /// <item>SaleInfo</item>
-    /// <item>stock							    Implemented</item>
+    /// <item>stock</item>
     /// <item>stats</item>
     /// <item>publication</item>
     /// <item>aferSalesServices</item>
@@ -30,7 +30,6 @@ namespace Allegro_Api.Models.Offer
     /// <item>additonalMarketplaces</item>
     /// </list>
     /// </summary>
-    //TODO chyba trzeba bedzie ogarnac troche tą klase i te dictionary po zamieniac na klasy kltóre są juz stworzone
     public class SimpleOfferModel : IBasicOffer
     {
         public string id { get ; set ; }

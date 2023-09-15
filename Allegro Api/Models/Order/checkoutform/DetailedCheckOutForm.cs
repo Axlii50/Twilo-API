@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Allegro_Api.Models.Order.checkoutform.components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,7 @@ namespace Allegro_Api.Models.Order.checkoutform
         /// Enum: "BOUGHT" "FILLED_IN" "READY_FOR_PROCESSING" "CANCELLED"
         /// </summary>
         public string status { get; set; }
+
+        public CheckoutFormFulfillment fulfillment { get; set; }
     }
 }

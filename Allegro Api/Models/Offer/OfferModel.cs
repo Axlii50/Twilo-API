@@ -25,7 +25,7 @@ namespace Allegro_Api.Models.Offer
 
         public StandardizedDescription description { get; set; }
 
-        public ProductItem[] productSet { get; set;  }
+        public ProductItem[] productSet { get; set; }
 
         public Base category { get; set; }
 

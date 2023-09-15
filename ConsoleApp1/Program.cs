@@ -20,12 +20,15 @@ using System.Text;
 //string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
 //string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+//twilo1
+string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 //twilo3
-string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
-string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
+//string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
+//string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
+
+
 
 
 var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
@@ -49,16 +52,72 @@ while (!access)
     Thread.Sleep(5000);
 }
 
-AllegroApi.AccessToken = AllegroApi.AccessToken.Remove(0,1);
-AllegroApi.AccessToken += "d";
+///AllegroApi.AccessToken = AllegroApi.AccessToken.Remove(0,1);
+//AllegroApi.AccessToken += "d";
 
-while (true)
+//while (true)
+//{
+//    Console.WriteLine("1");
+//    Task.Delay(1000).Wait();
+//}
+DateTime dateTime = new DateTime(DateTime.Now.AddDays(-46).Ticks, DateTimeKind.Utc);
+var test = await AllegroApi.GetOrders(OrderStatusType.SENT);
+//test.AddRange(await AllegroApi.GetOrders(OrderStatusType.));
+
+File.WriteAllLines("test.txt",test.Select(x => x.lineItems.First().boughtAt).ToArray());
+
+var tttt = await AllegroApi.GetOrderDetails("395399f0-4775-11ee-a67b-6fb0388197d0");
+Console.WriteLine(tttt.fulfillment.status); ;
+//Console.WriteLine(test.Where(x => x.id == "395399f0-4775-11ee-a67b-6fb0388197d0").FirstOrDefault()?.status);
+
+//Console.WriteLine(test.Count);
+
+var test2 = test.Where(o => o.lineItems.Any(li => li.offer.external == null)).ToList();
+
+Console.WriteLine(test2.Count);
+
+List<string> listedentities = new List<string>();
+
+int count = 0;
+
+foreach (var order in test2)
 {
-    Console.WriteLine("1");
-    Task.Delay(1000).Wait();
+    foreach (var lineitem in order.lineItems)
+    {
+        DateTime MonthAfter = DateTime.Now.AddMonths(-1);
+
+        DateTime orderDate = DateTime.Parse(lineitem.boughtAt);
+        //DateTime normaltime = new DateTime(orderDate.Ticks, DateTimeKind.Local);
+        count++;
+        if (MonthAfter.Month != orderDate.Month)
+        {
+            Console.WriteLine(MonthAfter.Month + " " + orderDate.Month + "       " + lineitem.boughtAt);
+            continue;
+        }
+
+        Console.WriteLine(MonthAfter.Month + "    " + orderDate.Month);
+
+        if (lineitem.offer.external != null)
+        {
+            Console.WriteLine("skipped = " + lineitem.offer.external.id);
+            continue;
+        }
+
+        Console.WriteLine(order.id);
+
+        var detailed = await AllegroApi.GetDetailedOffer(lineitem.offer.id);
+
+        listedentities.Add($"{lineitem.quantity}    {lineitem.originalPrice.amount}    {detailed.name}       {lineitem.boughtAt}     {order.id}");
+
+
+        //Console.WriteLine("t");
+    }
 }
 
-//var test = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+Console.WriteLine(count);
+
+File.WriteAllLines("Testowyplik.txt", listedentities.ToArray());
+
 
 //Console.WriteLine($"Test {test.count}");
 

@@ -31,6 +31,7 @@ using Allegro_Api.Models.Order.checkoutform.components;
 using Allegro_Api.Models.Order.checkoutform;
 using System.Runtime.Intrinsics.Arm;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 namespace Allegro_Api
 {
@@ -95,12 +96,10 @@ namespace Allegro_Api
             this.ClientID = ClientID;
             this.ClientSecret = ClientSecret;
 
-
             this.RefreshTokenEvent += refreshtokenevent;
 
             System.Diagnostics.Debug.WriteLine(RefreshToken);
             this.RefreshAccesToken();
-
 
             this.timer.Elapsed += Timer_Elapsed;
         }
@@ -454,11 +453,19 @@ namespace Allegro_Api
             var jsonstring = JsonConvert.SerializeObject(jsonobject);
             var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
 
-            var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
-
-            client.Dispose();
-            //System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
-            return response;
+            try
+            {
+                var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
+                client.Dispose();
+                return response;
+            }
+            catch (SocketException)
+            {
+                Task.Delay(TimeSpan.FromSeconds(TimeoutSeconds)).Wait();
+                var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
+                client.Dispose();
+                return response;
+            }
         }
 
 
@@ -912,7 +919,7 @@ namespace Allegro_Api
         /// </summary>
         /// <param name="offerId"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> GetDetailedOffer(string offerId)
+        public async Task<DetailedOffer> GetDetailedOffer(string offerId)
         {
             HttpClient client = new HttpClient();
 
@@ -923,7 +930,9 @@ namespace Allegro_Api
 
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}");
 
-            return odp;
+            DetailedOffer detailedOffer = JsonConvert.DeserializeObject<DetailedOffer>(odp.Content.ReadAsStringAsync().Result);
+
+            return detailedOffer;
         }
         #endregion
 
@@ -1078,7 +1087,6 @@ namespace Allegro_Api
             {
                 return null;
             }
-
         }
 
         #region category
@@ -1174,6 +1182,7 @@ namespace Allegro_Api
                 retrevied.checkoutForms.AddRange(model.checkoutForms);
                 retrevied.count += model.count;
                 retrevied.totalCount = model.totalCount;
+                offset += model.count;
 
                 if (retrevied.totalCount - retrevied.count < limit) limit = retrevied.totalCount - retrevied.count;
 
@@ -1204,6 +1213,51 @@ namespace Allegro_Api
             do
             {
                 HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms?limit={limit}&offset={offset}&fulfillment.status={stringtype}");
+
+                System.Diagnostics.Debug.WriteLine( odp.Content.ReadAsStringAsync().Result);
+
+                if (odp == null) return null;
+
+                OrdersModel model = JsonConvert.DeserializeObject<OrdersModel>(odp.Content.ReadAsStringAsync().Result);
+
+                if (model == null || model.checkoutForms == null)
+                    break;
+
+                retrevied.checkoutForms.AddRange(model.checkoutForms);
+                retrevied.count += model.count;
+                retrevied.totalCount = model.totalCount;
+                offset += model.count;
+
+                if (retrevied.totalCount - retrevied.count < limit) limit = retrevied.totalCount - retrevied.count;
+
+            } while (retrevied.count < retrevied.totalCount);
+
+            return retrevied.checkoutForms;
+        }
+        public async Task<List<CheckOutForm>> GetOrders()
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            OrdersModel retrevied = new OrdersModel()
+            {
+                totalCount = 0,
+                count = 0,
+                checkoutForms = new List<CheckOutForm>()
+            };
+
+            //string stringtype = type.ToString();
+            int offset = 0;
+            int limit = 100;
+            do
+            {
+                HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms?limit={limit}&offset={offset}");
+
+                System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
                 if (odp == null) return null;
 
@@ -1239,7 +1293,7 @@ namespace Allegro_Api
             return model;
         }
 
-        public async Task<HttpContent> ChangeOrderStatus(OrderStatusType type, string orderID)
+        public async Task<(HttpContent,HttpStatusCode)> ChangeOrderStatus(OrderStatusType type, string orderID)
         {
             using HttpClient client = new HttpClient();
 
@@ -1258,12 +1312,12 @@ namespace Allegro_Api
 
             try
             {
-                HttpContent odp = (await client.PutAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/fulfillment", content)).Content;
-                return odp;
+                var response = (await client.PutAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/fulfillment", content));
+                return (response.Content,response.StatusCode);
             }
             catch (HttpRequestException)
             {
-                return null;
+                return (null,0);
             }
         }
         #endregion
