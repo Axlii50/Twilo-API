@@ -1269,6 +1269,7 @@ namespace Allegro_Api
                 retrevied.checkoutForms.AddRange(model.checkoutForms);
                 retrevied.count += model.count;
                 retrevied.totalCount = model.totalCount;
+                offset += model.count;
 
                 if (retrevied.totalCount - retrevied.count < limit) limit = retrevied.totalCount - retrevied.count;
 

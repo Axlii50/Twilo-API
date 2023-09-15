@@ -52,25 +52,10 @@ while (!access)
     Thread.Sleep(5000);
 }
 
-///AllegroApi.AccessToken = AllegroApi.AccessToken.Remove(0,1);
-//AllegroApi.AccessToken += "d";
 
-//while (true)
-//{
-//    Console.WriteLine("1");
-//    Task.Delay(1000).Wait();
-//}
+#region Refaktryzacja bez sygnatury do wyniesienia do innego projektu
 DateTime dateTime = new DateTime(DateTime.Now.AddDays(-46).Ticks, DateTimeKind.Utc);
 var test = await AllegroApi.GetOrders(OrderStatusType.SENT);
-//test.AddRange(await AllegroApi.GetOrders(OrderStatusType.));
-
-File.WriteAllLines("test.txt",test.Select(x => x.lineItems.First().boughtAt).ToArray());
-
-var tttt = await AllegroApi.GetOrderDetails("395399f0-4775-11ee-a67b-6fb0388197d0");
-Console.WriteLine(tttt.fulfillment.status); ;
-//Console.WriteLine(test.Where(x => x.id == "395399f0-4775-11ee-a67b-6fb0388197d0").FirstOrDefault()?.status);
-
-//Console.WriteLine(test.Count);
 
 var test2 = test.Where(o => o.lineItems.Any(li => li.offer.external == null)).ToList();
 
@@ -116,7 +101,8 @@ foreach (var order in test2)
 
 Console.WriteLine(count);
 
-File.WriteAllLines("Testowyplik.txt", listedentities.ToArray());
+File.WriteAllLines("Testowyplik.txt", listedentities.ToArray()); 
+#endregion
 
 
 //Console.WriteLine($"Test {test.count}");
