@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Allegro Api\Allegro Api.csproj" />
     <ProjectReference Include="..\AteneumAPI\AteneumAPI.csproj" />
     <ProjectReference Include="..\Libre API\Libre API.csproj" />
+    <ProjectReference Include="..\Wszystko API\Wszystko API.csproj" />
   </ItemGroup>
 
 </Project>

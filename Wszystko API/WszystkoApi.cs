@@ -1,11 +1,20 @@
-﻿using Allegro_Api.Models;
+﻿using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
+using Wszystko_API.Auth;
 
 namespace Wszystko_API
 {
     public class WszystkoApi
     {
+        //client informations
+        private string ClientID = string.Empty;
+        private string ClientSecret = string.Empty;
+
+        //Wszystko URLs
+        private string WszystkoBaseURL = $"https://wszystko.pl/api";
+
+        private string DeviceCode = string.Empty;
 
         //acces token jest ważny przez 12 h
         private string AccessToken = string.Empty;
@@ -13,13 +22,28 @@ namespace Wszystko_API
         //RefreshToken jest ważny natomiast przez 3miesiace
         public string RefreshToken = string.Empty;
 
+        private System.Timers.Timer timer = new System.Timers.Timer();
+
+        public delegate void RefreshTokenDelgate();
+        /// <summary>
+        /// event occures when token is refreshed
+        /// </summary>
+        public event RefreshTokenDelgate RefreshTokenEvent;
+
+
+        public WszystkoApi(string ClientID, string ClientSecret, RefreshTokenDelgate refreshtokenevent)
+        {
+
+
+        }
+
 
         #region AUTH
         /// <summary>
         /// Class automaticly saves Device code for later use
         /// </summary>
         /// <returns></returns>
-        public async Task<VerificationULRModel> Authenticate()
+        public async Task<BaseAuthModel> GenerateDeviceCode()
         {
             using HttpClient client = new HttpClient();
             //create normal string for client id and client secret
@@ -36,11 +60,13 @@ namespace Wszystko_API
             //tutaj zwieramy params oraz header do typu aplikacji ponieważ content-type header jest typem contentu nie requesta
             var content = new StringContent($"client_id={ClientID}", Encoding.UTF8, "application/x-www-form-urlencoded");
 
-            HttpResponseMessage odp = await client.PostAsync(AllegroAuthURL, content);
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/integration/register");
 
-            VerificationULRModel model = JsonConvert.DeserializeObject<VerificationULRModel>(odp.Content.ReadAsStringAsync().Result);
+            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
-            DeviceCode = model.device_code;
+            BaseAuthModel model = JsonConvert.DeserializeObject<BaseAuthModel>(odp.Content.ReadAsStringAsync().Result);
+
+            DeviceCode = model.deviceCode;
             return model;
         }
 
@@ -50,48 +76,31 @@ namespace Wszystko_API
         /// <param name="permissions"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> CheckForAccessToken(AllegroPermissionState permissions)
+        public async Task<bool> CheckForAccessToken()
         {
             if (DeviceCode == string.Empty) throw new Exception("Device code is empty please use  Authenticate() before this");
 
-            //all permission as strings
-            string[] AllegroStringPermissions = permissions.ConvertToString().ToArray();
-
             using HttpClient client = new HttpClient();
             //create normal string for client id and client secret
-            string formatedstring = $"{ClientID}:{ClientSecret}";
-
-            byte[] bytes = Encoding.UTF8.GetBytes(formatedstring);
-            //create auth string containg normal in base 64
-            string AuthString = "Basic " + Convert.ToBase64String(bytes);
-
-            //add neccessary headers
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", AuthString);
-
-            //prepare all params for content
-            var values = new Dictionary<string, string>
-            {
-                 { "grant_type", "urn:ietf:params:oauth:grant-type:device_code" },
-                 { "device_code", DeviceCode }
-            };
-            var content = new FormUrlEncodedContent(values);
 
             //send post request to AllegroTokenURL
-            HttpResponseMessage odp = await client.PostAsync(AllegoTokenURL, content);
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/integration/token?deviceCode=" + this.DeviceCode);
+
+            if (odp.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                return false;
 
             //deserialize content of response
             AccessTokenModel model = JsonConvert.DeserializeObject<AccessTokenModel>(odp.Content.ReadAsStringAsync().Result);
 
             //if user authorized access then remove device code and set other variables for later
-            if (model.access_token != null)
+            if (model.AccessToken != null)
             {
                 DeviceCode = string.Empty;
-                AccessToken = model.access_token;
-                RefreshToken = model.refresh_token;
-                TokenExpiresIn = model.expires_in;
+                AccessToken = model.AccessToken;
+                RefreshToken = model.refreshToken;
+                TokenExpiresIn = model.expiresIn;
 
-                Console.WriteLine((TokenExpiresIn / 2) * 1000);
+                Console.WriteLine("Dlugosc tokenu: " + (TokenExpiresIn / 2) * 1000);
 
                 this.timer.Interval = (TokenExpiresIn / 2) * 1000;
                 this.timer.Start();
@@ -102,50 +111,50 @@ namespace Wszystko_API
             return false;
         }
 
-        public async Task RefreshAccesToken()
-        {
-            using HttpClient client = new HttpClient();
-            string formatedstring = $"{ClientID}:{ClientSecret}";
+        //public async Task RefreshAccesToken()
+        //{
+        //    using HttpClient client = new HttpClient();
+        //    string formatedstring = $"{ClientID}:{ClientSecret}";
 
-            byte[] bytes = Encoding.UTF8.GetBytes(formatedstring);
-            //create auth string containg normal in base 64
-            string AuthString = "Basic " + Convert.ToBase64String(bytes);
+        //    byte[] bytes = Encoding.UTF8.GetBytes(formatedstring);
+        //    //create auth string containg normal in base 64
+        //    string AuthString = "Basic " + Convert.ToBase64String(bytes);
 
-            //add neccessary headers
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", AuthString);
+        //    //add neccessary headers
+        //    client.DefaultRequestHeaders.Clear();
+        //    client.DefaultRequestHeaders.Add("Authorization", AuthString);
 
-            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+        //    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+        //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
-            var values = new Dictionary<string, string>
-            {
-                 { "grant_type", "refresh_token" },
-                 { "refresh_token", RefreshToken }
-            };
-            var content = new FormUrlEncodedContent(values);
+        //    var values = new Dictionary<string, string>
+        //    {
+        //         { "grant_type", "refresh_token" },
+        //         { "refresh_token", RefreshToken }
+        //    };
+        //    var content = new FormUrlEncodedContent(values);
 
-            HttpResponseMessage odp = await client.PostAsync(AllegoTokenURL, content);
+        //    HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL);
 
-            AccessTokenModel model = JsonConvert.DeserializeObject<AccessTokenModel>(odp.Content.ReadAsStringAsync().Result);
-            if (!odp.IsSuccessStatusCode) return;
+        //    AccessTokenModel model = JsonConvert.DeserializeObject<AccessTokenModel>(odp.Content.ReadAsStringAsync().Result);
+        //    if (!odp.IsSuccessStatusCode) return;
 
-            //if user authorized access then remove device code and set other variables for later
-            AccessToken = model.access_token;
-            RefreshToken = model.refresh_token;
+        //    //if user authorized access then remove device code and set other variables for later
+        //    AccessToken = model.access_token;
+        //    RefreshToken = model.refresh_token;
 
-            RefreshTokenEvent?.Invoke();
-            try
-            {
-                this.timer.Interval = (TokenExpiresIn / 2) * 1000;
-            }
-            catch (ArgumentException)
-            {
-                this.timer.Interval = 21599000;
-            }
+        //    RefreshTokenEvent?.Invoke();
+        //    try
+        //    {
+        //        this.timer.Interval = (TokenExpiresIn / 2) * 1000;
+        //    }
+        //    catch (ArgumentException)
+        //    {
+        //        this.timer.Interval = 21599000;
+        //    }
 
-            this.timer.Start();
-        }
+        //    this.timer.Start();
+        //}
         #endregion
 
     }

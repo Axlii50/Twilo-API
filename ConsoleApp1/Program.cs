@@ -15,94 +15,95 @@ using System.IO;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using Wszystko_API;
 
 //kempo
 //string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
 //string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-//twilo1
-string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+////twilo1
+//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
-//twilo3
-//string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
-//string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
-
-
+////twilo3
+////string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
+////string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
 
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
-
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
-
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
-
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
-
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
-
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
-
-    Thread.Sleep(5000);
-}
 
 
-#region Refaktryzacja bez sygnatury do wyniesienia do innego projektu
-DateTime dateTime = new DateTime(DateTime.Now.AddDays(-46).Ticks, DateTimeKind.Utc);
-var test = await AllegroApi.GetOrders(OrderStatusType.SENT);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-var test2 = test.Where(o => o.lineItems.Any(li => li.offer.external == null)).ToList();
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-Console.WriteLine(test2.Count);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
 
-List<string> listedentities = new List<string>();
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-int count = 0;
+//bool access = false;
+//while (!access)
+//{
+//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-foreach (var order in test2)
-{
-    foreach (var lineitem in order.lineItems)
-    {
-        DateTime MonthAfter = DateTime.Now.AddMonths(-1);
+//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-        DateTime orderDate = DateTime.Parse(lineitem.boughtAt);
-        //DateTime normaltime = new DateTime(orderDate.Ticks, DateTimeKind.Local);
-        count++;
-        if (MonthAfter.Month != orderDate.Month)
-        {
-            Console.WriteLine(MonthAfter.Month + " " + orderDate.Month + "       " + lineitem.boughtAt);
-            continue;
-        }
-
-        Console.WriteLine(MonthAfter.Month + "    " + orderDate.Month);
-
-        if (lineitem.offer.external != null)
-        {
-            Console.WriteLine("skipped = " + lineitem.offer.external.id);
-            continue;
-        }
-
-        Console.WriteLine(order.id);
-
-        var detailed = await AllegroApi.GetDetailedOffer(lineitem.offer.id);
-
-        listedentities.Add($"{lineitem.quantity}    {lineitem.originalPrice.amount}    {detailed.name}       {lineitem.boughtAt}     {order.id}");
+//    Thread.Sleep(5000);
+//}
 
 
-        //Console.WriteLine("t");
-    }
-}
+//#region Refaktryzacja bez sygnatury do wyniesienia do innego projektu
+//DateTime dateTime = new DateTime(DateTime.Now.AddDays(-46).Ticks, DateTimeKind.Utc);
+//var test = await AllegroApi.GetOrders(OrderStatusType.SENT);
 
-Console.WriteLine(count);
+//var test2 = test.Where(o => o.lineItems.Any(li => li.offer.external == null)).ToList();
 
-File.WriteAllLines("Testowyplik.txt", listedentities.ToArray()); 
-#endregion
+//Console.WriteLine(test2.Count);
+
+//List<string> listedentities = new List<string>();
+
+//int count = 0;
+
+//foreach (var order in test2)
+//{
+//    foreach (var lineitem in order.lineItems)
+//    {
+//        DateTime MonthAfter = DateTime.Now.AddMonths(-1);
+
+//        DateTime orderDate = DateTime.Parse(lineitem.boughtAt);
+//        //DateTime normaltime = new DateTime(orderDate.Ticks, DateTimeKind.Local);
+//        count++;
+//        if (MonthAfter.Month != orderDate.Month)
+//        {
+//            Console.WriteLine(MonthAfter.Month + " " + orderDate.Month + "       " + lineitem.boughtAt);
+//            continue;
+//        }
+
+//        Console.WriteLine(MonthAfter.Month + "    " + orderDate.Month);
+
+//        if (lineitem.offer.external != null)
+//        {
+//            Console.WriteLine("skipped = " + lineitem.offer.external.id);
+//            continue;
+//        }
+
+//        Console.WriteLine(order.id);
+
+//        var detailed = await AllegroApi.GetDetailedOffer(lineitem.offer.id);
+
+//        listedentities.Add($"{lineitem.quantity}    {lineitem.originalPrice.amount}    {detailed.name}       {lineitem.boughtAt}     {order.id}");
+
+
+//        //Console.WriteLine("t");
+//    }
+//}
+
+//Console.WriteLine(count);
+
+//File.WriteAllLines("Testowyplik.txt", listedentities.ToArray()); 
+//#endregion
 
 
 //Console.WriteLine($"Test {test.count}");
@@ -229,7 +230,7 @@ File.WriteAllLines("Testowyplik.txt", listedentities.ToArray());
 //}
 
 
-AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+//AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
 
 //var boks = await ate.GetAllBooksWithMagazin(2);
@@ -293,5 +294,18 @@ AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
 //ate.MakeOrder(atesApiOrder, "ALWZywNWMc");
 
+
+
+WszystkoApi wszystkoApi = new WszystkoApi(null,null,null);
+
+var test = await wszystkoApi.GenerateDeviceCode();
+
+bool authenticate = false;
+Console.WriteLine(authenticate);
+while (!authenticate)
+{
+    authenticate = await wszystkoApi.CheckForAccessToken();
+    Console.WriteLine(authenticate);
+}
 
 Console.ReadLine();
