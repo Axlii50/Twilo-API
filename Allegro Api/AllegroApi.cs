@@ -71,7 +71,6 @@ namespace Allegro_Api
 
         private string DeviceCode = string.Empty;
 
-        //dodać automatyczne przedłuzanie
         //acces token jest ważny przez 12 h
         private string AccessToken = string.Empty;
         private int TokenExpiresIn = -1;
