@@ -254,9 +254,11 @@ namespace AteneumAPI
 
         private string MakeXMLFile(AtesApiOrder order, string password)
         {
+            string FileName = DateTime.Now.ToString("yyyy-MM-dd-H-m-ss");
+            
+            order.header.buyerorderreference = FileName;
             order.auth.passfingerprint = sha256(password + order.auth.salt);
 
-            string FileName = DateTime.Now.ToString("yyyy-MM-dd-H-m-ss");
             using TextWriter writer = new StreamWriter($"{FileName}.xml");
 
             XmlSerializer serializer = new XmlSerializer(typeof(AtesApiOrder));
