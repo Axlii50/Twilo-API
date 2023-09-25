@@ -576,6 +576,8 @@ namespace Allegro_Api
         {
             using HttpClient client = new HttpClient();
 
+            client.Timeout = TimeSpan.FromSeconds(TimeoutSeconds);
+
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
@@ -683,7 +685,11 @@ namespace Allegro_Api
             {
                 odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-offers", content);
             }
-            catch (HttpRequestException e)
+            catch (HttpRequestException)
+            {
+                return (null, HttpStatusCode.BadRequest, null);
+            }
+            catch (TaskCanceledException)
             {
                 return (null, HttpStatusCode.BadRequest, null);
             }
@@ -695,6 +701,8 @@ namespace Allegro_Api
             ProductModel[] _product, BaseValue[] stock, string[] bookid, StandardizedDescription SetDescription, string deliveryid, string handlingTime, string offerName, string price)
         {
             using HttpClient client = new HttpClient();
+
+            client.Timeout = TimeSpan.FromSeconds(TimeoutSeconds);
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
@@ -982,7 +990,14 @@ namespace Allegro_Api
             {
                 odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?phrase={productISBN}&mode=GTIN");
             }
-            catch (HttpRequestException) { return null; }
+            catch (HttpRequestException)
+            { 
+                return null;
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
 
             client.Dispose();
 

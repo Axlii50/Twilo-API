@@ -295,7 +295,6 @@ using Wszystko_API;
 //ate.MakeOrder(atesApiOrder, "ALWZywNWMc");
 
 
-
 WszystkoApi wszystkoApi = new WszystkoApi(null,null,null);
 
 var test = await wszystkoApi.GenerateDeviceCode();
