@@ -21,9 +21,9 @@ using Wszystko_API;
 //string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
 //string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
-////twilo1
-//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+//twilo1
+string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 ////twilo3
 ////string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
@@ -32,27 +32,45 @@ using Wszystko_API;
 
 
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-//Console.WriteLine(t.device_code);
-//Console.WriteLine(t.verification_uri_complete);
+Console.WriteLine(t.device_code);
+Console.WriteLine(t.verification_uri_complete);
 
-//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-//sInfo.UseShellExecute = true;
-//Process Verification = Process.Start(sInfo);
+ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
 
-//bool access = false;
-//while (!access)
-//{
-//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+bool access = false;
+while (!access)
+{
+    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-//    Thread.Sleep(5000);
-//}
+    Thread.Sleep(5000);
+}
 
+DateTime now = DateTime.Now;
+now = now.AddHours(-22);
+DateTime Formatted = new DateTime(now.Ticks, DateTimeKind.Utc);
+Formatted = Formatted.AddHours(-3);
+
+//var orders = await Program.AllegroApi.GetOrders(Formatted,OrderStatusType.NEW);
+//var orders = await AllegroApi.GetOrders(OrderStatusType.NEW);
+var orders = (await AllegroApi.GetOrders(OrderStatusType.PROCESSING));
+
+List<string> ordersid = new List<string>();
+
+
+foreach(var order in orders)
+{
+    ordersid.Add(order.id);
+}
+
+File.WriteAllLines("test.txt",ordersid.ToArray());  
 
 //#region Refaktryzacja bez sygnatury do wyniesienia do innego projektu
 //DateTime dateTime = new DateTime(DateTime.Now.AddDays(-46).Ticks, DateTimeKind.Utc);
@@ -295,16 +313,16 @@ using Wszystko_API;
 //ate.MakeOrder(atesApiOrder, "ALWZywNWMc");
 
 
-WszystkoApi wszystkoApi = new WszystkoApi(null,null,null);
+//WszystkoApi wszystkoApi = new WszystkoApi(null,null,null);
 
-var test = await wszystkoApi.GenerateDeviceCode();
+//var test = await wszystkoApi.GenerateDeviceCode();
 
-bool authenticate = false;
-Console.WriteLine(authenticate);
-while (!authenticate)
-{
-    authenticate = await wszystkoApi.CheckForAccessToken();
-    Console.WriteLine(authenticate);
-}
+//bool authenticate = false;
+//Console.WriteLine(authenticate);
+//while (!authenticate)
+//{
+//    authenticate = await wszystkoApi.CheckForAccessToken();
+//    Console.WriteLine(authenticate);
+//}
 
 Console.ReadLine();
