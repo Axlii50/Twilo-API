@@ -507,12 +507,13 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
+            Console.WriteLine(offerids.Length);
+
             var publication = new PublicationModel()
             {
                 publication = new ModifiPublication()
                 {
                     action = activate ? "ACTIVATE" : "END"
-                    //scheduleFor = DateTime.Now.AddMinutes(10).ToString("yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'")
                 },
 
                 offerCriteria = new Criteria[]
@@ -525,11 +526,11 @@ namespace Allegro_Api
                 }
             };
 
-            System.Diagnostics.Debug.WriteLine(publication.offerCriteria[0].offers.Length);
+            Console.WriteLine(publication.offerCriteria[0].offers.Length);
 
             var jsonstring = JsonConvert.SerializeObject(publication);
             var content = new StringContent(jsonstring, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
-            System.Diagnostics.Debug.WriteLine(jsonstring);
+            Console.WriteLine(jsonstring);
 
             try
             {
