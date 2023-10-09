@@ -18,12 +18,12 @@ using System.Text;
 using Wszystko_API;
 
 //kempo
-//string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
-//string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
+string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
+string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
 //twilo1
-string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 ////twilo3
 ////string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
@@ -32,49 +32,69 @@ string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 
 
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-/*
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
+//bool access = false;
+//while (!access)
+//{
+//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//    Thread.Sleep(5000);
+//}
 
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+//var offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
 
-    Thread.Sleep(5000);
-}
+////DateTime now = DateTime.Now;
+////now = now.AddHours(-22);
+////DateTime Formatted = new DateTime(now.Ticks, DateTimeKind.Utc);
+////Formatted = Formatted.AddHours(-3);
 
-DateTime now = DateTime.Now;
-now = now.AddHours(-22);
-DateTime Formatted = new DateTime(now.Ticks, DateTimeKind.Utc);
-Formatted = Formatted.AddHours(-3);
+////var orders = await Program.AllegroApi.GetOrders(Formatted,OrderStatusType.NEW);
+////var orders = await AllegroApi.GetOrders(OrderStatusType.NEW);
+////var orders = (await AllegroApi.GetOrders(OrderStatusType.ac));
 
-//var orders = await Program.AllegroApi.GetOrders(Formatted,OrderStatusType.NEW);
-//var orders = await AllegroApi.GetOrders(OrderStatusType.NEW);
-var orders = (await AllegroApi.GetOrders(OrderStatusType.PROCESSING));
-
-List<string> ordersid = new List<string>();
+//List<Allegro_Api.Models.Base> offersid = new List<Allegro_Api.Models.Base>();
 
 
-foreach(var order in orders)
-{
-    ordersid.Add(order.id);
-}
+//foreach (var order in offers.offers)
+//{
+//    if (order.external == null) continue;
+//    if (order.external.id == "null")
+//    {
+//        offersid.Add(new Allegro_Api.Models.Base() { id = order.id });
+//        Console.WriteLine("Disabled");
+//    }
 
-File.WriteAllLines("test.txt",ordersid.ToArray());
-*/
+//    if (offersid.Count == 100)
+//    {
+//        var temp = offersid.Take(100).ToArray();
+//        Console.WriteLine("Aktywuje: " + temp.Length);
+//        var response = await AllegroApi.BatchChangePublication(offersid.ToArray(), false);
+//        Console.WriteLine(response.Item1.Content.ReadAsStringAsync().Result);
+
+//        offersid.Clear();
+//    }
+//}
+
+//var temp2 = offersid.Take(100).ToArray();
+//Console.WriteLine("Aktywuje: " + temp2.Length);
+//var response1 = await AllegroApi.BatchChangePublication(offersid.ToArray(), false);
+//Console.WriteLine(response1.Item1.Content.ReadAsStringAsync().Result);
+
+//offersid.Clear();
+
+//File.WriteAllLines("test.txt",ordersid.ToArray());
 
 //#region Refaktryzacja bez sygnatury do wyniesienia do innego projektu
 //DateTime dateTime = new DateTime(DateTime.Now.AddDays(-46).Ticks, DateTimeKind.Utc);
@@ -252,6 +272,8 @@ File.WriteAllLines("test.txt",ordersid.ToArray());
 //}
 
 
+//System.Diagnostics.Debug.WriteLine(ClientSecret);
+
 //AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
 
@@ -322,11 +344,19 @@ WszystkoApi wszystkoApi = new WszystkoApi(null, null, null);
 var test = await wszystkoApi.GenerateDeviceCode();
 
 bool authenticate = false;
-Console.WriteLine(authenticate);
+Console.WriteLine(test.verificationUriPrettyComplete);
+
+ProcessStartInfo sInfo = new ProcessStartInfo(test.verificationUriPrettyComplete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
+
 while (!authenticate)
 {
     authenticate = await wszystkoApi.CheckForAccessToken();
     Console.WriteLine(authenticate);
 }
+
+//wszystkoApi.GetSessions();
+
 
 Console.ReadLine();
