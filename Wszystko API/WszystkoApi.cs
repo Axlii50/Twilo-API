@@ -155,6 +155,30 @@ namespace Wszystko_API
 
         //    this.timer.Start();
         //}
+      
+        public async void GetSessions()
+        {
+            using HttpClient client = new HttpClient();
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/me/integrations");
+
+            System.Diagnostics.Debug.WriteLine(odp.StatusCode);
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
+        }
+    }        
+        #endregion
+
+
+        #region Offers
+
+        //public async void GetAllOffers()
+        //{
+        //    using HttpClient client = new HttpClient();
+
+        //    HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/me/offers");
+        //}
+
         #endregion
 
     }

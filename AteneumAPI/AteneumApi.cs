@@ -124,7 +124,7 @@ namespace AteneumAPI
                 using (var textreader = new StringReader(csv))
                 using (var CsvReader = new CsvReader(textreader, config))
                 {
-                    books = (CsvReader.GetRecords<PriceWholeSale>()).ToDictionary(b => b.AteneumID);
+                    books = CsvReader.GetRecords<PriceWholeSale>().ToDictionary(b => b.AteneumID);
                 }
             }
 
