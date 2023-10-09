@@ -32,6 +32,9 @@ string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 
 
+
+/*
+
 var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
 Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
@@ -70,7 +73,8 @@ foreach(var order in orders)
     ordersid.Add(order.id);
 }
 
-File.WriteAllLines("test.txt",ordersid.ToArray());  
+File.WriteAllLines("test.txt",ordersid.ToArray());
+*/
 
 //#region Refaktryzacja bez sygnatury do wyniesienia do innego projektu
 //DateTime dateTime = new DateTime(DateTime.Now.AddDays(-46).Ticks, DateTimeKind.Utc);
@@ -120,7 +124,7 @@ File.WriteAllLines("test.txt",ordersid.ToArray());
 
 //Console.WriteLine(count);
 
-//File.WriteAllLines("Testowyplik.txt", listedentities.ToArray()); 
+//File.WriteAllLines("Testowyplik.txt", listedentities.ToArray());
 //#endregion
 
 
@@ -313,16 +317,16 @@ File.WriteAllLines("test.txt",ordersid.ToArray());
 //ate.MakeOrder(atesApiOrder, "ALWZywNWMc");
 
 
-//WszystkoApi wszystkoApi = new WszystkoApi(null,null,null);
+WszystkoApi wszystkoApi = new WszystkoApi(null, null, null);
 
-//var test = await wszystkoApi.GenerateDeviceCode();
+var test = await wszystkoApi.GenerateDeviceCode();
 
-//bool authenticate = false;
-//Console.WriteLine(authenticate);
-//while (!authenticate)
-//{
-//    authenticate = await wszystkoApi.CheckForAccessToken();
-//    Console.WriteLine(authenticate);
-//}
+bool authenticate = false;
+Console.WriteLine(authenticate);
+while (!authenticate)
+{
+    authenticate = await wszystkoApi.CheckForAccessToken();
+    Console.WriteLine(authenticate);
+}
 
 Console.ReadLine();
