@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using Wszystko_API.Auth;
@@ -36,6 +37,20 @@ namespace Wszystko_API
 
 
         }
+
+        public async Task GetAllOffers()
+        {
+			using HttpClient client = new HttpClient();
+
+			client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers?userId=");
+
+			string odpcontent = odp.Content.ReadAsStringAsync().Result;
+            System.Console.WriteLine( odpcontent );
+
+		}
 
 
         #region AUTH

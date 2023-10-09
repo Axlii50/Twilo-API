@@ -94,7 +94,7 @@ string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
 //offersid.Clear();
 
-//File.WriteAllLines("test.txt",ordersid.ToArray());  
+//File.WriteAllLines("test.txt",ordersid.ToArray());
 
 //#region Refaktryzacja bez sygnatury do wyniesienia do innego projektu
 //DateTime dateTime = new DateTime(DateTime.Now.AddDays(-46).Ticks, DateTimeKind.Utc);
@@ -144,7 +144,7 @@ string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
 //Console.WriteLine(count);
 
-//File.WriteAllLines("Testowyplik.txt", listedentities.ToArray()); 
+//File.WriteAllLines("Testowyplik.txt", listedentities.ToArray());
 //#endregion
 
 
@@ -356,7 +356,7 @@ while (!authenticate)
     Console.WriteLine(authenticate);
 }
 
-wszystkoApi.GetSessions();
+//wszystkoApi.GetSessions();
 
 
 Console.ReadLine();
