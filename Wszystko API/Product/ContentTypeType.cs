@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.Offers
+namespace Wszystko_API.Product
 {
-	internal class UnitPrice
+	public enum ContentTypeType
 	{
-		public double value { get; set; }
-		public string unit { get; set; }
+		text,
+		image
 	}
 }

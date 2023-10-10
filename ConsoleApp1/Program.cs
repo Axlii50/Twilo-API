@@ -357,6 +357,7 @@ while (!authenticate)
 }
 
 //wszystkoApi.GetSessions();
+wszystkoApi.GetAllOffers();
 
 
 Console.ReadLine();

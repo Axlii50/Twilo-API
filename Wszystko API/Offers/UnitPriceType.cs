@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Wszystko_API.Offers
 {
-	public class OfferList
+	public class UnitPriceType
 	{
-		public List<SimpleOfferModel> Offerts { get; set; }
-		public int NumberOfOffers { get; set; }
+		public double value { get; set; }
+		public string unit { get; set; }
 	}
 }

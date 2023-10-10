@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using Wszystko_API.Auth;
+using Wszystko_API.Product;
 
 namespace Wszystko_API
 {
@@ -37,21 +38,6 @@ namespace Wszystko_API
 
 
         }
-
-        public async Task GetAllOffers()
-        {
-			using HttpClient client = new HttpClient();
-
-			client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers?userId=");
-
-			string odpcontent = odp.Content.ReadAsStringAsync().Result;
-            System.Console.WriteLine( odpcontent );
-
-		}
-
 
         #region AUTH
         /// <summary>
@@ -170,7 +156,7 @@ namespace Wszystko_API
 
         //    this.timer.Start();
         //}
-      
+
         public async void GetSessions()
         {
             using HttpClient client = new HttpClient();
@@ -181,20 +167,37 @@ namespace Wszystko_API
             System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
         }
-    }        
-        #endregion
+		#endregion
+
+		#region Offers
+
+		public async Task GetAllOffers()
+		{
+			using HttpClient client = new HttpClient();
+
+			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers?userId=");
+
+			string odpcontent = odp.Content.ReadAsStringAsync().Result;
+			System.Console.WriteLine(odpcontent);
+
+		}
+
+        public async Task CreateOffer()
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+
+            RequestAddProductOffer addProductOffer = new RequestAddProductOffer();
+
+            addProductOffer.
 
 
-        #region Offers
+            HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/offers", content);
+        }
 
-        //public async void GetAllOffers()
-        //{
-        //    using HttpClient client = new HttpClient();
-
-        //    HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/me/offers");
-        //}
-
-        #endregion
-
-    }
+		#endregion
+	}
 }
