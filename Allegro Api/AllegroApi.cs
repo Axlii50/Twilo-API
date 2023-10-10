@@ -678,7 +678,7 @@ namespace Allegro_Api
 
             string json = JsonConvert.SerializeObject(allegrooffer);
             System.Diagnostics.Debug.WriteLine(json);
-            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             //https://api.{environment}/sale/product-offers
             HttpResponseMessage odp = null;
@@ -992,7 +992,7 @@ namespace Allegro_Api
                 odp = await client.GetAsync(AllegroBaseURL + $"/sale/products?phrase={productISBN}&mode=GTIN");
             }
             catch (HttpRequestException)
-            { 
+            {
                 return null;
             }
             catch (TaskCanceledException)

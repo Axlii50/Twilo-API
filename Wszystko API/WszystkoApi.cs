@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -178,7 +179,7 @@ namespace Wszystko_API
 			client.DefaultRequestHeaders.Clear();
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers?userId=");
+			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers?userId={AccessToken}");
 
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			System.Console.WriteLine(odpcontent);
@@ -190,13 +191,48 @@ namespace Wszystko_API
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
 
-            RequestAddProductOffer addProductOffer = new RequestAddProductOffer();
+            RequestAddProductOffer addProductOffer = new RequestAddProductOffer()
+            {
+                Title = "aaaaaaa",
+                //Price = 100,
+                //CategoryId = 1,
+                //Gallery = new string[] { "http://example.com" },
+                //VatRate = VatRateType.zw,
+                //Parameters = new List<ParameterKit>(),
+                //Descriptions = new List<Description>(),
+                //guaranteeId = "",
+                //complaintPolicyId = "",
+                //returnPolicyId = "",
+                //shippingTariffId = "",
+                //LeadTime = LeadTimeType.Natychmiast,
+                //StockQuantityUnit = StockQuantityUnitType.sztuk,
+                OfferStatus = OfferStatusType.blocked,
+                //UserQuantityLimit = 100,
+                IsDraft = true,
+                //StockQuantity = 5,
+                //ShowUnitPrice = false
+            };
 
-            addProductOffer.
+            string json = JsonConvert.SerializeObject(addProductOffer);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			HttpResponseMessage odp = null;
+			try
+			{
+				odp = await client.PostAsync(WszystkoBaseURL + $"/me/offers", content);
+                System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+			}
+			//catch (HttpRequestException)
+			//{
+            //  System.Diagnostics.Debug.WriteLine("HttpRequestException");
+			//}
+			//catch (TaskCanceledException)
+			//{
+			//	System.Diagnostics.Debug.WriteLine("TaskCanceledException");
+			//}
 
 
-            HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/offers", content);
-        }
+		}
 
 		#endregion
 	}

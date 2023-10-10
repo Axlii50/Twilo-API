@@ -16,7 +16,7 @@ namespace Wszystko_API.Product
 		public double Price { get; set; }
 		public int CategoryId { get; set; }
 		[Description("URL")]
-		public string Gallery { get; set; }
+		public string[] Gallery { get; set; }
 		public VatRateType VatRate { get; set; }
 		public List<ParameterKit> Parameters { get; set; }
 		public List<Description> Descriptions { get; set; }
