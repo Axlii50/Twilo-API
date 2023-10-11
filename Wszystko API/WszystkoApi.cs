@@ -217,11 +217,11 @@ namespace Wszystko_API
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
 			HttpResponseMessage odp = null;
-			try
-			{
+			//try
+			//{
 				odp = await client.PostAsync(WszystkoBaseURL + $"/me/offers", content);
                 System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
-			}
+			//}
 			//catch (HttpRequestException)
 			//{
             //  System.Diagnostics.Debug.WriteLine("HttpRequestException");
@@ -232,6 +232,16 @@ namespace Wszystko_API
 			//}
 
 
+		}
+
+        public async Task GetOfferData(int offerId)
+        {
+			using HttpClient client = new HttpClient();
+			client.DefaultRequestHeaders.Clear();
+
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers/{offerId}");
+			System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 		}
 
 		#endregion

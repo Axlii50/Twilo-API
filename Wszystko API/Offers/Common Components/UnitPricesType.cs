@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wszystko_API.Offers
 {
-	public class UnitPriceType
+	public class UnitPricesType
 	{
 		public double value { get; set; }
 		public string unit { get; set; }

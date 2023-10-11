@@ -26,7 +26,7 @@ namespace Wszystko_API.Offers
 		public string SnapshotId { get; set; }
 		//[ReadOnly(true)]
 		public string BlockReason { get; set; }
-		public UnitPriceType UnitPrice { get; set; }
+		public UnitPricesType UnitPrice { get; set; }
 		public int userQuantityLimit { get; set; }
 	}
 }
