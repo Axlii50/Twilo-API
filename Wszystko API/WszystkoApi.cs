@@ -5,8 +5,11 @@ using System.Net.Http.Headers;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using Wszystko_API.Auth;
+using Wszystko_API.Offers;
 using Wszystko_API.Offers.General_Offer_Model;
 using Wszystko_API.Offers.Serial_Offer_Model;
+using Wszystko_API.Offers.Serial_Offer_Model.Components;
+using Wszystko_API.Orders;
 using Wszystko_API.Product;
 
 namespace Wszystko_API
@@ -175,7 +178,7 @@ namespace Wszystko_API
 
 		#region Offers
 
-		public async Task GetAllOffers()
+		public async Task<SimpleOfferList> GetAllOffers()
 		{
 			using HttpClient client = new HttpClient();
 
@@ -187,12 +190,16 @@ namespace Wszystko_API
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			System.Console.WriteLine(odpcontent);
 
+            SimpleOfferList simpleOfferList = JsonConvert.DeserializeObject<SimpleOfferList>(odpcontent);
+
+            return simpleOfferList;
 		}
 
-        public async Task CreateOffer()
+        public async Task<RequestAddProductOffer> CreateOffer()
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             RequestAddProductOffer addProductOffer = new RequestAddProductOffer()
             {
@@ -224,30 +231,38 @@ namespace Wszystko_API
 			//{
 				odp = await client.PostAsync(WszystkoBaseURL + $"/me/offers", content);
                 System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
-			//}
-			//catch (HttpRequestException)
-			//{
+            //}
+            //catch (HttpRequestException)
+            //{
             //  System.Diagnostics.Debug.WriteLine("HttpRequestException");
-			//}
-			//catch (TaskCanceledException)
-			//{
-			//	System.Diagnostics.Debug.WriteLine("TaskCanceledException");
-			//}
+            //}
+            //catch (TaskCanceledException)
+            //{
+            //	System.Diagnostics.Debug.WriteLine("TaskCanceledException");
+            //}
 
 
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            RequestAddProductOffer requestAddProductOffer = JsonConvert.DeserializeObject<RequestAddProductOffer>(responseBody);
+
+            return requestAddProductOffer;
 		}
 
-        public async Task GetOfferData(int offerId)
+        public async Task<DownloadableOfferModel> GetOfferData(string userId)
         {
 			using HttpClient client = new HttpClient();
 			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-
-            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers/{offerId}");
+			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers/{userId}");
 			System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
+            DownloadableOfferModel offerData = JsonConvert.DeserializeObject<DownloadableOfferModel>(odp.Content.ReadAsStringAsync().Result);
+
+            return offerData;
 		}
 
-        public async Task UpdateOfferData(int offerId, UpdateOfferModel offerUpdateContent)
+        public async Task<HttpResponseMessage> UpdateOfferData(int offerId, UpdateOfferModel offerUpdateContent)
 		{
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -256,22 +271,25 @@ namespace Wszystko_API
 			var content = new StringContent(json, Encoding.UTF8, "application/json");
 
 			HttpResponseMessage odp = await client.PutAsync(WszystkoBaseURL + $"/me/offers/{offerId}", content);
+
+            return odp;
         }
 
-        public async Task<HttpResponseMessage> DeleteOffer(int offerId)
+        public async Task<HttpContent> DeleteOffer(int offerId)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            HttpResponseMessage odp = await client.DeleteAsync(WszystkoBaseURL + $"/me/offers/{offerId}");
+			HttpResponseMessage odp = await client.DeleteAsync(WszystkoBaseURL + $"/me/offers/{offerId}");
 			System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
-			return odp;
+			return odp.Content;
         }
 
         // case-study by GPT:
         // W przypadku braku dostarczenia ResourceIntegerId w żądaniu, operacja może być stosowana do wszystkich dostępnych ofert, które nie są zablokowane, zamiast do jednego określonego zasobu. Proszę dokładnie przemyśleć, czy i jakie ResourceIntegerId chcesz dostarczyć w zapytaniu, zgodnie z wymaganiami Twojej aplikacji i zrozumieniem, co dokładnie chcesz osiągnąć za pomocą tej operacji
-        public async Task MassUpdateOffers(int[]? relevantOfferIds, SerialOfferChangesSet serialOfferModel)
+        public async Task<FailedUpdateLogsSet[]> MassUpdateOffers(int[]? relevantOfferIds, SerialOfferChangesSet serialOfferModel)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -292,7 +310,57 @@ namespace Wszystko_API
 					odp = await client.PostAsync(WszystkoBaseURL + $"/me/update-offers", content);
 					break;
 			}
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            FailedUpdateLogsSet[] errors = JsonConvert.DeserializeObject<FailedUpdateLogsSet[]>(responseBody);
+
+            return errors;
 		}
+		#endregion
+
+		#region Orders
+
+        public async Task<SimpleOrderModel[]> GetAllOrders()
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/sales");
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+
+            SimpleOrderModel[] orders = JsonConvert.DeserializeObject<SimpleOrderModel[]>(responseBody);
+
+            return orders;
+		}
+
+        public async Task<HttpContent> UpdateOrderStatus(UpdateOrderStatusModel updateOrderStatusModel)
+        {
+			using HttpClient client = new HttpClient();
+			client.DefaultRequestHeaders.Clear();
+
+            string json = JsonConvert.SerializeObject(updateOrderStatusModel);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage odp = await client.PutAsync(WszystkoBaseURL + $"/me/sales/updateStatus", content);
+
+            return odp.Content;
+		}
+
+        public async Task<Waybill[]> GetWaybillsAddedToOrder(string orderId)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/sales/{orderId}/trackingNumbers");
+			string responseBody = odp.Content.ReadAsStringAsync().Result;
+
+			Waybill[] waybills = JsonConvert.DeserializeObject<Waybill[]>(responseBody);
+
+            return waybills;
+        }
+
 		#endregion
 	}
 }
