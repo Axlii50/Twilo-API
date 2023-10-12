@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wszystko_API.Offers
 {
-	public class OfferList
+	public class SimpleOfferList
 	{
 		public List<SimpleOfferModel> Offerts { get; set; }
 		public int NumberOfOffers { get; set; }

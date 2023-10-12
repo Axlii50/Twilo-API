@@ -2,8 +2,11 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using Wszystko_API.Auth;
+using Wszystko_API.Offers.General_Offer_Model;
+using Wszystko_API.Offers.Serial_Offer_Model;
 using Wszystko_API.Product;
 
 namespace Wszystko_API
@@ -244,6 +247,52 @@ namespace Wszystko_API
 			System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 		}
 
+        public async Task UpdateOfferData(int offerId, UpdateOfferModel offerUpdateContent)
+		{
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+
+			var json = JsonConvert.SerializeObject(offerUpdateContent);
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			HttpResponseMessage odp = await client.PutAsync(WszystkoBaseURL + $"/me/offers/{offerId}", content);
+        }
+
+        public async Task<HttpResponseMessage> DeleteOffer(int offerId)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+
+            HttpResponseMessage odp = await client.DeleteAsync(WszystkoBaseURL + $"/me/offers/{offerId}");
+			System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
+			return odp;
+        }
+
+        // case-study by GPT:
+        // W przypadku braku dostarczenia ResourceIntegerId w żądaniu, operacja może być stosowana do wszystkich dostępnych ofert, które nie są zablokowane, zamiast do jednego określonego zasobu. Proszę dokładnie przemyśleć, czy i jakie ResourceIntegerId chcesz dostarczyć w zapytaniu, zgodnie z wymaganiami Twojej aplikacji i zrozumieniem, co dokładnie chcesz osiągnąć za pomocą tej operacji
+        public async Task MassUpdateOffers(int[]? relevantOfferIds, SerialOfferChangesSet serialOfferModel)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+
+            var json = JsonConvert.SerializeObject(serialOfferModel);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage odp = null;
+			switch (relevantOfferIds)
+            {
+                case not null:
+					// Create a query string by joining the values
+					string queryString = string.Join("&", relevantOfferIds.Select(id => $"resourceIntegerId={id}"));
+
+                    odp = await client.PostAsync(WszystkoBaseURL + $"/me/update-offers?{queryString}", content);
+                    break;
+                case null:
+					odp = await client.PostAsync(WszystkoBaseURL + $"/me/update-offers", content);
+					break;
+			}
+		}
 		#endregion
 	}
 }
