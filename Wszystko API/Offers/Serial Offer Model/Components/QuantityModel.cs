@@ -17,7 +17,7 @@ namespace Wszystko_API.Offers.Serial_Offer_Model.Components
 		public string ComplaintPolicyId { get; set; }
 		public string ReturnPolicyId { get; set; }
 		public string ShippingTariffId { get; set; }
-		public StockQuantityUnitType StockQuantityUnit { get; set; }
+		public string StockQuantityUnit { get; set; }
 		public VatRateType VatRate { get; set; }
 		public LeadTimeType LeadTime { get; set; }
 		//[AllowNull]

@@ -16,6 +16,8 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using Wszystko_API;
+using Wszystko_API.Categories;
+using static System.Net.Mime.MediaTypeNames;
 
 //kempo
 string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
@@ -357,9 +359,54 @@ while (!authenticate)
 }
 
 //wszystkoApi.GetSessions();
-//wszystkoApi.GetAllOffers();
+//var test1 = wszystkoApi.GetAllOffers();
+//System.Diagnostics.Debug.WriteLine(test1);
 
-await wszystkoApi.GetAllOffers();
+//var test3 = wszystkoApi.CreateOffer();
+//System.Diagnostics.Debug.WriteLine(test3);
+
+//var test4 = wszystkoApi.GetOfferData("1006723824");
+//System.Diagnostics.Debug.WriteLine(test3);
+
+//var test5 = wszystkoApi.GetAllOrders();
+//System.Diagnostics.Debug.WriteLine(test5);
+
+//var test6 = await wszystkoApi.GetOrderWithId("1006923711");
+//System.Diagnostics.Debug.WriteLine(test6);
+
+//var test7 = await wszystkoApi.GetWaybillsAddedToOrder("1006923711");
+//System.Diagnostics.Debug.WriteLine(test7);
+
+var test8 = await wszystkoApi.GetCategoryTreeAndAllParameters();
+
+Dictionary<int, string> categories = new Dictionary<int, string>();
+foreach (Wszystko_API.Categories.Category category in test8.Categories)
+{
+	//foreach (Wszystko_API.Categories.Category category in )
+	//{
+		categories.Add(category.Id, category.Name);
+	//}
+}
+
+using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
+{
+	// Iterate through the dictionary and write each key-value pair
+	foreach (var kvp in categories)
+	{
+		writer.WriteLine($"{kvp.Key}: {kvp.Value}");
+	}
+}
+
+//TESTY BEZ ARGUMENTÓW OPCJONALNYCH W REQUESTACH
+
+//OFFERS:
+//DZIAŁA: GetSessions(), GetAllOffers(), GetOfferData("1006723824")
+//NIE DZIAŁA: CreateOffer()
+
+//ORDERS:
+//DZIAŁA:
+//NIE DZIAŁA: GetWaybillsAddedToOrder("1006923711")
+//COŚ NIE TAK: GetAllOrders(), GetOrderWithId("1006923711")
 
 
 Console.ReadLine();

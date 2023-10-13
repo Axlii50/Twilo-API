@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using Wszystko_API.Auth;
+using Wszystko_API.Categories;
 using Wszystko_API.Offers;
 using Wszystko_API.Offers.General_Offer_Model;
 using Wszystko_API.Offers.Serial_Offer_Model;
@@ -167,13 +168,44 @@ namespace Wszystko_API
         public async void GetSessions()
         {
             using HttpClient client = new HttpClient();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			//client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/me/integrations");
+			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/me/integrations");
 
             System.Diagnostics.Debug.WriteLine(odp.StatusCode);
             System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
         }
+		#endregion
+
+		#region Categories
+
+        public async Task<CategoryBatch> GetCategoryTreeAndAllParameters()
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            int page = 1;
+
+            CategoryBatch categoryBatch = null;
+            List<CategoryBatch> categories = null;
+
+			do
+            {
+                HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/categories?includeParameters=true&pageSize=100&page={page}");
+
+                string responseBody = odp.Content.ReadAsStringAsync().Result;
+                categoryBatch = JsonConvert.DeserializeObject<CategoryBatch>(responseBody);
+                //categories.Add(categoryBatch);
+            } while (page < 100);
+
+            return categoryBatch;
+        }
+
 		#endregion
 
 		#region Offers
@@ -183,41 +215,47 @@ namespace Wszystko_API
 			using HttpClient client = new HttpClient();
 
 			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers?userId={AccessToken}");
 
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
-			System.Console.WriteLine(odpcontent);
+			//System.Console.WriteLine(odpcontent);
 
             SimpleOfferList simpleOfferList = JsonConvert.DeserializeObject<SimpleOfferList>(odpcontent);
 
-            return simpleOfferList;
+			return simpleOfferList;
 		}
 
-        public async Task<RequestAddProductOffer> CreateOffer()
+		// dokumentacji API wszystko.pl jest przekłamana
+		// prawdziwe obowiązkowe właściwości dla request body (RequestAddProductOffer):
+        // title, price, leadtime, stockquantityunit, offerstatus, userquantitylimit, isdraft
+		public async Task<RequestAddProductOffer> CreateOffer()
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            RequestAddProductOffer addProductOffer = new RequestAddProductOffer()
+			//czemu Title, OfferStatus i IsDraft(które są oznaczona jako obowiązkowe) muszą mieć odpowiedni[JsonProperty()], a VatRate, LeadTime, itd. (które niby nie są obowiązkowe) wymagają przypisania wartości mimo że i wtedy działają MIMO że nie mają odpowiednich[JsonProperty()]
+			RequestAddProductOffer addProductOffer = new RequestAddProductOffer()
             {
-                Title = "aaaaaaa",
-                //Price = 100,
-                //CategoryId = 1,
+                Title = "testowy tytul",
+                Price = 10000000,
+                CategoryId = 1, //CATEGORY do ogarnięcia
                 //Gallery = new string[] { "http://example.com" },
-                //VatRate = VatRateType.zw,
-                //Parameters = new List<ParameterKit>(),
-                //Descriptions = new List<Description>(),
-                //guaranteeId = "",
-                //complaintPolicyId = "",
-                //returnPolicyId = "",
-                //shippingTariffId = "",
-                //LeadTime = LeadTimeType.Natychmiast,
-                //StockQuantityUnit = StockQuantityUnitType.sztuk,
-                OfferStatus = OfferStatusType.blocked,
-                //UserQuantityLimit = 100,
+                VatRate = VatRateType.zw.VatRateToString(),
+			    //Parameters = new List<ParameterKit>(),
+			    //Descriptions = new List<Description>(),
+			    //guaranteeId = "",
+			    //complaintPolicyId = "",
+			    //returnPolicyId = "",
+			    //shippingTariffId = "",
+			    LeadTime = LeadTimeType.Natychmiast.LeadTimeToString(),
+			    StockQuantityUnit = StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
+			    OfferStatus = OfferStatusType.blocked,
+                UserQuantityLimit = 100,
                 IsDraft = true,
                 //StockQuantity = 5,
                 //ShowUnitPrice = false
@@ -252,6 +290,7 @@ namespace Wszystko_API
         {
 			using HttpClient client = new HttpClient();
 			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers/{userId}");
@@ -267,6 +306,7 @@ namespace Wszystko_API
 		{
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 
 			var json = JsonConvert.SerializeObject(offerUpdateContent);
 			var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -280,6 +320,7 @@ namespace Wszystko_API
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			HttpResponseMessage odp = await client.DeleteAsync(WszystkoBaseURL + $"/me/offers/{offerId}");
@@ -294,8 +335,9 @@ namespace Wszystko_API
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 
-            var json = JsonConvert.SerializeObject(serialOfferModel);
+			var json = JsonConvert.SerializeObject(serialOfferModel);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             HttpResponseMessage odp = null;
