@@ -257,12 +257,13 @@ namespace Wszystko_API
 			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers/{userId}");
 			System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
-            DownloadableOfferModel offerData = JsonConvert.DeserializeObject<DownloadableOfferModel>(odp.Content.ReadAsStringAsync().Result);
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+			DownloadableOfferModel offerData = JsonConvert.DeserializeObject<DownloadableOfferModel>(responseBody);
 
             return offerData;
 		}
 
-        public async Task<HttpResponseMessage> UpdateOfferData(int offerId, UpdateOfferModel offerUpdateContent)
+        public async Task<HttpContent> UpdateOfferData(int offerId, UpdateOfferModel offerUpdateContent)
 		{
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -272,7 +273,7 @@ namespace Wszystko_API
 
 			HttpResponseMessage odp = await client.PutAsync(WszystkoBaseURL + $"/me/offers/{offerId}", content);
 
-            return odp;
+            return odp.Content;
         }
 
         public async Task<HttpContent> DeleteOffer(int offerId)
@@ -334,6 +335,20 @@ namespace Wszystko_API
             return orders;
 		}
 
+        public async Task<SimpleOrderModel> GetOrderWithId(string orderId)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $" /me/sales/{orderId}");
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            SimpleOrderModel order = JsonConvert.DeserializeObject<SimpleOrderModel>(responseBody);
+
+            return order;
+        }
+
         public async Task<HttpContent> UpdateOrderStatus(UpdateOrderStatusModel updateOrderStatusModel)
         {
 			using HttpClient client = new HttpClient();
@@ -359,6 +374,36 @@ namespace Wszystko_API
 			Waybill[] waybills = JsonConvert.DeserializeObject<Waybill[]>(responseBody);
 
             return waybills;
+        }
+
+        public async Task<HttpContent> UpdateOrderWithWaybills(string orderId, Waybill[] waybills)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+
+            string json = JsonConvert.SerializeObject(waybills);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage odp = await client.PutAsync(WszystkoBaseURL + $"/me/sales/{orderId}/trackingNumbers", content);
+
+            return odp.Content;
+        }
+
+        public async Task<OrderStatus[]> GetOrdersStatus(string[] orderId)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            string json = JsonConvert.SerializeObject(orderId);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/sales/retrieve-statuses", content);
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            OrderStatus[] ordersStatus = JsonConvert.DeserializeObject<OrderStatus[]>(responseBody);
+
+            return ordersStatus;
         }
 
 		#endregion
