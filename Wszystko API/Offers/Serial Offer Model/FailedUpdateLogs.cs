@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.Offers
+namespace Wszystko_API.Offers.Serial_Offer_Model
 {
-	internal class UnitPrice
+	public class FailedUpdateLogs
 	{
-		public double value { get; set; }
-		public string unit { get; set; }
+		public FailedUpdateLogs[] errors { get; set; }
 	}
 }
