@@ -182,7 +182,23 @@ namespace Wszystko_API
 
 		#region Categories
 
-        public async Task<CategoryBatch> GetCategoryTreeAndAllParameters()
+        public async Task<Category[]> GetCategoriesByLevel(int categoryLevel)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/categories/{categoryLevel}/subcategories");
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+			Category[] categories = JsonConvert.DeserializeObject<Category[]>(responseBody);
+
+
+            return categories;
+        }
+
+        public async Task<List<CategoryBatchInTree>> GetCategoryTreeAndAllParameters()
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -191,19 +207,20 @@ namespace Wszystko_API
 
             int page = 1;
 
-            CategoryBatch categoryBatch = null;
-            List<CategoryBatch> categories = null;
+            CategoryBatchInTree categoryBatch = null;
+            List<CategoryBatchInTree> categoryList = new List<CategoryBatchInTree>();
 
 			do
             {
-                HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/categories?includeParameters=true&pageSize=100&page={page}");
+                //temporarily includeParameters = false
+                HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/categories?includeParameters=false&pageSize=100&page={page}");
 
                 string responseBody = odp.Content.ReadAsStringAsync().Result;
-                categoryBatch = JsonConvert.DeserializeObject<CategoryBatch>(responseBody);
-                //categories.Add(categoryBatch);
+                categoryBatch = JsonConvert.DeserializeObject<CategoryBatchInTree>(responseBody);
+                categoryList.Add(categoryBatch);
             } while (page < 100);
 
-            return categoryBatch;
+            return categoryList;
         }
 
 		#endregion
@@ -363,7 +380,7 @@ namespace Wszystko_API
 
 		#region Orders
 
-        public async Task<SimpleOrderModel[]> GetAllOrders()
+        public async Task<OrdersListModel> GetAllOrders()
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -372,7 +389,7 @@ namespace Wszystko_API
 			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/sales");
             string responseBody = odp.Content.ReadAsStringAsync().Result;
 
-            SimpleOrderModel[] orders = JsonConvert.DeserializeObject<SimpleOrderModel[]>(responseBody);
+            OrdersListModel orders = JsonConvert.DeserializeObject<OrdersListModel>(responseBody);
 
             return orders;
 		}

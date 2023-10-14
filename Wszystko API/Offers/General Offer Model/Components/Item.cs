@@ -9,6 +9,6 @@ namespace Wszystko_API.Product
 	public class Item
 	{
 		public ContentTypeType ContentType { get; set; }
-		public string value { get; set; }
+		public string Value { get; set; }
 	}
 }

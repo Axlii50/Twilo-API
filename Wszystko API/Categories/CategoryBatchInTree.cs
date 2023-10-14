@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace Wszystko_API.Categories
 {
 	[Description("A fragment of category tree, just one batch, due to restriction of up to 100 elements in one batch")]
-	public class CategoryBatch
+	public class CategoryBatchInTree
 	{
-		public Category[] Categories {  get; set; }
+		public CategoryInTree[] Categories {  get; set; }
 		public int NumberOfPages { get; set; }
 	}
 }

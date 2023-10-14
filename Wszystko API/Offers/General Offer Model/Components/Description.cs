@@ -8,6 +8,6 @@ namespace Wszystko_API.Product
 {
 	public class Description
 	{
-		List<Item> ItemList { get; set; }
+		Item[] Items { get; set; }
 	}
 }

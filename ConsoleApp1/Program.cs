@@ -9,15 +9,18 @@ using Libre_API;
 using Libre_API.OrderStructure;
 using Newtonsoft.Json;
 using System;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using Wszystko_API;
 using Wszystko_API.Categories;
 using static System.Net.Mime.MediaTypeNames;
+using System.Reflection;
 
 //kempo
 string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
@@ -346,6 +349,7 @@ WszystkoApi wszystkoApi = new WszystkoApi(null, null, null);
 var test = await wszystkoApi.GenerateDeviceCode();
 
 bool authenticate = false;
+
 Console.WriteLine(test.verificationUriPrettyComplete);
 
 ProcessStartInfo sInfo = new ProcessStartInfo(test.verificationUriPrettyComplete);
@@ -368,34 +372,66 @@ while (!authenticate)
 //var test4 = wszystkoApi.GetOfferData("1006723824");
 //System.Diagnostics.Debug.WriteLine(test3);
 
-//var test5 = wszystkoApi.GetAllOrders();
-//System.Diagnostics.Debug.WriteLine(test5);
+//var test5 = await wszystkoApi.GetAllOrders();
+//foreach (var order in test5.simpleOrderModels)
+//{
+//	Type type = order.GetType();
+//	PropertyInfo[] properties = type.GetProperties();
+
+//	foreach (PropertyInfo property in properties)
+//	{
+//		object value = property.GetValue(order);
+//		System.Diagnostics.Debug.WriteLine(value);
+//	}
+//}
 
 //var test6 = await wszystkoApi.GetOrderWithId("1006923711");
-//System.Diagnostics.Debug.WriteLine(test6);
+//Type type = test6.GetType();
+//PropertyInfo[] properties = type.GetProperties();
+//foreach (PropertyInfo property in properties)
+//{
+//    object value = property.GetValue(test6);
+//    System.Diagnostics.Debug.WriteLine(value);
+//}
 
 //var test7 = await wszystkoApi.GetWaybillsAddedToOrder("1006923711");
 //System.Diagnostics.Debug.WriteLine(test7);
 
 var test8 = await wszystkoApi.GetCategoryTreeAndAllParameters();
-
-Dictionary<int, string> categories = new Dictionary<int, string>();
-foreach (Wszystko_API.Categories.Category category in test8.Categories)
+StringBuilder sb = new StringBuilder();
+foreach (Wszystko_API.Categories.CategoryBatchInTree categoryBatch in test8)
 {
-	//foreach (Wszystko_API.Categories.Category category in )
-	//{
-		categories.Add(category.Id, category.Name);
-	//}
+	foreach (Wszystko_API.Categories.CategoryInTree category in categoryBatch.Categories)
+	{
+		sb.AppendLine(category.Name + " " + category.Id);
+		System.Diagnostics.Debug.WriteLine(DateTime.Now);
+	}
 }
 
 using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
 {
 	// Iterate through the dictionary and write each key-value pair
-	foreach (var kvp in categories)
-	{
-		writer.WriteLine($"{kvp.Key}: {kvp.Value}");
-	}
+	writer.Write(sb.ToString());
 }
+
+//StringBuilder sb = new StringBuilder();
+//using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
+//{
+//	for (int i = 0; i <= 100; ++i)
+//	{
+//		var test9 = await wszystkoApi.GetCategoriesByLevel(i);
+
+//		foreach (Wszystko_API.Categories.Category category in test9)
+//		{
+//			sb.AppendLine($"{category.Name}\t{category.Id}");
+//		}
+//		System.Diagnostics.Debug.WriteLine($"new iteration... {i}");
+//		sb.AppendLine("\n\n");
+//	}
+//	writer.Write(sb.ToString());
+//}
+
+
 
 //TESTY BEZ ARGUMENTÓW OPCJONALNYCH W REQUESTACH
 
@@ -404,9 +440,9 @@ using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii
 //NIE DZIAŁA: CreateOffer()
 
 //ORDERS:
-//DZIAŁA:
+//DZIAŁA:GetOrderWithId("")
 //NIE DZIAŁA: GetWaybillsAddedToOrder("1006923711")
-//COŚ NIE TAK: GetAllOrders(), GetOrderWithId("1006923711")
+//COŚ NIE TAK: GetAllOrders()
 
 
 Console.ReadLine();
