@@ -181,19 +181,13 @@ namespace Wszystko_API
             System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
         }
-    }        
+           
         #endregion
 
 
         #region Offers
 
-        //public async void GetAllOffers()
-        //{
-        //    using HttpClient client = new HttpClient();
-
-        //    HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/me/offers");
-        //}
-
+    
         #endregion
 
     }
