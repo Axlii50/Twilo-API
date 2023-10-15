@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wszystko_API.Orders
 {
-	public class OrdersListModel
+	public class OrderArrayModel
 	{
 		public SimpleOrderModel[] simpleOrderModels { get; set; }
 		public int TotalElements { get; set; }
