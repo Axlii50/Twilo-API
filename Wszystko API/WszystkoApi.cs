@@ -6,6 +6,7 @@ using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using Wszystko_API.Auth;
 using Wszystko_API.Categories;
+using Wszystko_API.Integration;
 using Wszystko_API.Offers;
 using Wszystko_API.Offers.General_Offer_Model;
 using Wszystko_API.Offers.Serial_Offer_Model;
@@ -165,24 +166,55 @@ namespace Wszystko_API
         //    this.timer.Start();
         //}
 
-        public async void GetSessions()
+        public async Task<Session[]> GetSessions()
         {
             using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 			//client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/me/integrations");
 
-            System.Diagnostics.Debug.WriteLine(odp.StatusCode);
-            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            //System.Diagnostics.Debug.WriteLine(odp.StatusCode);
+            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            Session[] sessions = JsonConvert.DeserializeObject<Session[]>(responseBody);
+
+			return sessions;
         }
-		#endregion
 
-		#region Categories
+        public async Task<HttpContent> DeleteConnection(string sessionId)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 
-        public async Task<Category[]> GetCategoriesByLevel(int categoryLevel)
+            HttpResponseMessage odp = await client.DeleteAsync(WszystkoBaseURL + $" /me/integrations/{sessionId}");
+
+            return odp.Content;
+        }
+
+        //public async Task DeleteAllSessions()
+        //{
+        //    var test0 = await wszystkoApi.GetSessions();
+        //    foreach (var session in test0)
+        //    {
+        //        await wszystkoApi.DeleteConnection(session.Id);
+        //    }
+        //}
+
+        #endregion
+
+        #region Categories
+
+        /// <summary>
+        /// Passing categoryLevel equal to 0 returns main categories. Then you can pass Id of a main category to find its subcategories and so on...
+        /// </summary>
+        /// <param name="categoryLevel"></param>
+        /// <returns></returns>
+		public async Task<Category[]> GetCategoriesByLevel(int categoryLevel)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -207,7 +239,7 @@ namespace Wszystko_API
 
             int page = 1;
 
-            CategoryBatchInTree categoryBatch = null;
+            CategoryBatchInTree categoryBatch = new CategoryBatchInTree();
             List<CategoryBatchInTree> categoryList = new List<CategoryBatchInTree>();
 
 			do
@@ -216,9 +248,11 @@ namespace Wszystko_API
                 HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/categories?includeParameters=false&pageSize=100&page={page}");
 
                 string responseBody = odp.Content.ReadAsStringAsync().Result;
+                System.Diagnostics.Debug.WriteLine(responseBody);
                 categoryBatch = JsonConvert.DeserializeObject<CategoryBatchInTree>(responseBody);
                 categoryList.Add(categoryBatch);
-            } while (page < 100);
+                ++page;
+            } while (page < 200);
 
             return categoryList;
         }
@@ -227,6 +261,10 @@ namespace Wszystko_API
 
 		#region Offers
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
 		public async Task<SimpleOfferList> GetAllOffers()
 		{
 			using HttpClient client = new HttpClient();
@@ -248,7 +286,10 @@ namespace Wszystko_API
 		// dokumentacji API wszystko.pl jest przekłamana
 		// prawdziwe obowiązkowe właściwości dla request body (RequestAddProductOffer):
         // title, price, leadtime, stockquantityunit, offerstatus, userquantitylimit, isdraft
-		public async Task<RequestAddProductOffer> CreateOffer()
+		public async Task<RequestAddProductOffer> CreateOffer(string title, int price, int categoryId, bool isDraft, VatRateType vatRate, LeadTimeType leadTime,
+                                                              StockQuantityUnitType stockQuantityUnitType, OfferStatusType offerStatus, int userQuantityLimit,
+                                                              int stockQuantity, string[]? photos, string? complaintPolicyId, string? returnPolicyId,
+                                                              string? shippingTarrifId, bool showUnitPrice = true)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -258,24 +299,24 @@ namespace Wszystko_API
 			//czemu Title, OfferStatus i IsDraft(które są oznaczona jako obowiązkowe) muszą mieć odpowiedni[JsonProperty()], a VatRate, LeadTime, itd. (które niby nie są obowiązkowe) wymagają przypisania wartości mimo że i wtedy działają MIMO że nie mają odpowiednich[JsonProperty()]
 			RequestAddProductOffer addProductOffer = new RequestAddProductOffer()
             {
-                Title = "testowy tytul",
-                Price = 10000000,
-                CategoryId = 1, //CATEGORY do ogarnięcia
-                //Gallery = new string[] { "http://example.com" },
-                VatRate = VatRateType.zw.VatRateToString(),
+                Title = title,
+                Price = price,
+                CategoryId = categoryId,
+                Gallery = photos,
+                VatRate = vatRate.VatRateToString(),
 			    //Parameters = new List<ParameterKit>(),
 			    //Descriptions = new List<Description>(),
 			    //guaranteeId = "",
-			    //complaintPolicyId = "",
-			    //returnPolicyId = "",
-			    //shippingTariffId = "",
-			    LeadTime = LeadTimeType.Natychmiast.LeadTimeToString(),
-			    StockQuantityUnit = StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
-			    OfferStatus = OfferStatusType.blocked,
-                UserQuantityLimit = 100,
-                IsDraft = true,
-                //StockQuantity = 5,
-                //ShowUnitPrice = false
+			    ComplaintPolicyId = "",
+			    ReturnPolicyId = "",
+			    ShippingTariffId = "",
+			    LeadTime = leadTime.LeadTimeToString(),
+			    StockQuantityUnit = stockQuantityUnitType.StockQuantityUnitTypeToString(),
+			    OfferStatus = offerStatus,
+                UserQuantityLimit = userQuantityLimit,
+                IsDraft = isDraft,
+                StockQuantity = stockQuantity,
+                ShowUnitPrice = showUnitPrice
             };
 
             string json = JsonConvert.SerializeObject(addProductOffer);
@@ -380,7 +421,7 @@ namespace Wszystko_API
 
 		#region Orders
 
-        public async Task<OrdersListModel> GetAllOrders()
+        public async Task<OrderArrayModel> GetAllOrders()
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -389,7 +430,7 @@ namespace Wszystko_API
 			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/sales");
             string responseBody = odp.Content.ReadAsStringAsync().Result;
 
-            OrdersListModel orders = JsonConvert.DeserializeObject<OrdersListModel>(responseBody);
+            OrderArrayModel orders = JsonConvert.DeserializeObject<OrderArrayModel>(responseBody);
 
             return orders;
 		}

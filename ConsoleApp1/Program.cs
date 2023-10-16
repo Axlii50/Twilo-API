@@ -362,14 +362,19 @@ while (!authenticate)
     Console.WriteLine(authenticate);
 }
 
-//wszystkoApi.GetSessions();
-//var test1 = wszystkoApi.GetAllOffers();
+var test0 = await wszystkoApi.GetSessions();
+foreach (var session in test0)
+{
+	await wszystkoApi.DeleteConnection(session.Id);
+}
+
+//var test1 = await wszystkoApi.GetAllOffers();
 //System.Diagnostics.Debug.WriteLine(test1);
 
-//var test3 = wszystkoApi.CreateOffer();
+//var test3 = await wszystkoApi.CreateOffer("tytuł", 10, 96, true, Wszystko_API.Product.VatRateType.zero, Wszystko_API.Product.LeadTimeType.Natychmiast, Wszystko_API.Product.StockQuantityUnitType.sztuk, Wszystko_API.Product.OfferStatusType.blocked, 50, 50, null, null, null, null);
 //System.Diagnostics.Debug.WriteLine(test3);
 
-//var test4 = wszystkoApi.GetOfferData("1006723824");
+//var test4 = await wszystkoApi.GetOfferData("1006723824");
 //System.Diagnostics.Debug.WriteLine(test3);
 
 //var test5 = await wszystkoApi.GetAllOrders();
@@ -385,7 +390,7 @@ while (!authenticate)
 //	}
 //}
 
-//var test6 = await wszystkoApi.GetOrderWithId("1006923711");
+//var test6 = await wszystkoApi.GetOrderWithId("");
 //Type type = test6.GetType();
 //PropertyInfo[] properties = type.GetProperties();
 //foreach (PropertyInfo property in properties)
@@ -394,55 +399,46 @@ while (!authenticate)
 //    System.Diagnostics.Debug.WriteLine(value);
 //}
 
-//var test7 = await wszystkoApi.GetWaybillsAddedToOrder("1006923711");
+//var test7 = await wszystkoApi.GetWaybillsAddedToOrder("");
 //System.Diagnostics.Debug.WriteLine(test7);
 
-var test8 = await wszystkoApi.GetCategoryTreeAndAllParameters();
-StringBuilder sb = new StringBuilder();
-foreach (Wszystko_API.Categories.CategoryBatchInTree categoryBatch in test8)
-{
-	foreach (Wszystko_API.Categories.CategoryInTree category in categoryBatch.Categories)
-	{
-		sb.AppendLine(category.Name + " " + category.Id);
-		System.Diagnostics.Debug.WriteLine(DateTime.Now);
-	}
-}
+//var test8 = await wszystkoApi.GetCategoryTreeAndAllParameters();
+//StringBuilder sb = new StringBuilder();
+//foreach (Wszystko_API.Categories.CategoryBatchInTree categoryBatch in test8)
+//{
+//	foreach (Wszystko_API.Categories.CategoryInTree category in categoryBatch.Categories)
+//	{
+//		sb.AppendLine(category.Name + " " + category.Id);
+//	}
+//}
 
-using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
-{
-	// Iterate through the dictionary and write each key-value pair
-	writer.Write(sb.ToString());
-}
+//File.WriteAllText(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt", string.Empty);
+//using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
+//{
+//	writer.Write(sb.ToString());
+//}
 
 //StringBuilder sb = new StringBuilder();
 //using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
 //{
-//	for (int i = 0; i <= 100; ++i)
+//	var test9 = await wszystkoApi.GetCategoriesByLevel(1);
+
+//	foreach (Wszystko_API.Categories.Category category in test9)
 //	{
-//		var test9 = await wszystkoApi.GetCategoriesByLevel(i);
-
-//		foreach (Wszystko_API.Categories.Category category in test9)
-//		{
-//			sb.AppendLine($"{category.Name}\t{category.Id}");
-//		}
-//		System.Diagnostics.Debug.WriteLine($"new iteration... {i}");
-//		sb.AppendLine("\n\n");
+//		sb.AppendLine($"{category.Name}\t{category.Id}\t{category.ParentId}");
 //	}
-//	writer.Write(sb.ToString());
+//	writer.WriteLine(sb.ToString());
 //}
-
 
 
 //TESTY BEZ ARGUMENTÓW OPCJONALNYCH W REQUESTACH
 
 //OFFERS:
-//DZIAŁA: GetSessions(), GetAllOffers(), GetOfferData("1006723824")
-//NIE DZIAŁA: CreateOffer()
+//DZIAŁA: GetSessions(), GetAllOffers(), GetOfferData("1006723824"), CreateOffer()
 
 //ORDERS:
-//DZIAŁA:GetOrderWithId("")
-//NIE DZIAŁA: GetWaybillsAddedToOrder("1006923711")
-//COŚ NIE TAK: GetAllOrders()
+//RACZEJ DZIAŁA:GetOrderWithId("")
+//DO PRZETESTOWANIA: GetWaybillsAddedToOrder(""), GetAllOrders()
 
 
 Console.ReadLine();
