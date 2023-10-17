@@ -951,7 +951,7 @@ namespace Allegro_Api
         /// </summary>
         /// <param name="offerId"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> ProposeProduct(ProductModel product)
+        public async Task<(string,HttpResponseMessage)> ProposeProduct(ProductModel product)
         {
             string productid = string.Empty;
 
@@ -968,12 +968,12 @@ namespace Allegro_Api
             //System.Diagnostics.Debug.WriteLine("Test :" +json);
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-proposals", content);
 
-            if (odp == null) return null;
+            if (odp == null) return ("", null);
 
             if (odp.Headers.Contains("location"))
                 productid = odp.Headers.Location.AbsoluteUri.Split("/")[5];
 
-            return odp;
+            return (productid, odp);
         }
 
         public async Task<ProductModel> CheckForProduct(string productISBN)
@@ -1007,6 +1007,8 @@ namespace Allegro_Api
             var result = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result);
 
             odp.Dispose();
+
+            if (product == null) return null;
 
             if (result.products != null && result.products.Length > 0)
                 product = result.products[0];
