@@ -12,7 +12,9 @@ using Wszystko_API.Offers.General_Offer_Model;
 using Wszystko_API.Offers.Serial_Offer_Model;
 using Wszystko_API.Offers.Serial_Offer_Model.Components;
 using Wszystko_API.Orders;
+using Wszystko_API.Orders.Components;
 using Wszystko_API.Product;
+using Wszystko_API.Shipping;
 
 namespace Wszystko_API
 {
@@ -196,24 +198,58 @@ namespace Wszystko_API
             return odp.Content;
         }
 
-        //public async Task DeleteAllSessions()
-        //{
-        //    var test0 = await wszystkoApi.GetSessions();
-        //    foreach (var session in test0)
-        //    {
-        //        await wszystkoApi.DeleteConnection(session.Id);
-        //    }
-        //}
+        public async Task DeleteAllSessions()
+        {
+            var test0 = await GetSessions();
+            foreach (var session in test0)
+            {
+                await DeleteConnection(session.Id);
+            }
+        }
 
         #endregion
 
-        #region Categories
+        #region Shipping
 
-        /// <summary>
-        /// Passing categoryLevel equal to 0 returns main categories. Then you can pass Id of a main category to find its subcategories and so on...
-        /// </summary>
-        /// <param name="categoryLevel"></param>
-        /// <returns></returns>
+        public async Task<ShippingModel[]> GetShippingMethods()
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/shipping/methods");
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            ShippingModel[] shippingMethods = JsonConvert.DeserializeObject<ShippingModel[]>(responseBody);
+
+            return shippingMethods;
+        }
+
+        //public async Task GetAllShippingTariffs()
+        //{
+        //    using HttpClient client = new HttpClient();
+        //    client.DefaultRequestHeaders.Clear();
+        //    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+        //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        //    HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/shipping/tariffs");
+
+        //    string responseBody = odp.Content.ReadAsStringAsync().Result;
+
+
+        //    return
+        //}
+
+		#endregion
+
+		#region Categories
+
+		/// <summary>
+		/// Passing categoryLevel equal to 0 returns main categories. Then you can pass Id of a main category to find its subcategories and so on...
+		/// </summary>
+		/// <param name="categoryLevel"></param>
+		/// <returns></returns>
 		public async Task<Category[]> GetCategoriesByLevel(int categoryLevel)
         {
             using HttpClient client = new HttpClient();

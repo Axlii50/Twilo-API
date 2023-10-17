@@ -21,6 +21,8 @@ using Wszystko_API;
 using Wszystko_API.Categories;
 using static System.Net.Mime.MediaTypeNames;
 using System.Reflection;
+using Wszystko_API.Orders.Components;
+using Wszystko_API.Shipping;
 
 //kempo
 string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
@@ -362,11 +364,11 @@ while (!authenticate)
     Console.WriteLine(authenticate);
 }
 
-var test0 = await wszystkoApi.GetSessions();
-foreach (var session in test0)
-{
-	await wszystkoApi.DeleteConnection(session.Id);
-}
+//var test0 = await wszystkoApi.GetSessions();
+//foreach (var session in test0)
+//{
+//	await wszystkoApi.DeleteConnection(session.Id);
+//}
 
 //var test1 = await wszystkoApi.GetAllOffers();
 //System.Diagnostics.Debug.WriteLine(test1);
@@ -430,8 +432,17 @@ foreach (var session in test0)
 //	writer.WriteLine(sb.ToString());
 //}
 
+//var test10 = await wszystkoApi.GetShippingMethods();
+//foreach (ShippingModel model in test10)
+//{
+//    Console.WriteLine($"{model.Id} {model.Name} {model.Shipping} {model.logoUri} {model.AvailableShippingMethodOptions.AdvancePayment} {model.AvailableShippingMethodOptions.CashOnDelivery} {model.MinShippingDays} {model.MaxShippingDays} {model.EarliestEstimatedShippingDate} {model.LatestEstimatedShippingDate}");
+//}
+
 
 //TESTY BEZ ARGUMENTÓW OPCJONALNYCH W REQUESTACH
+
+//Shipping:
+//DZIAŁA: GetShippingMethods()
 
 //OFFERS:
 //DZIAŁA: GetSessions(), GetAllOffers(), GetOfferData("1006723824"), CreateOffer()

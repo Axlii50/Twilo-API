@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wszystko_API.Orders.Components
 {
-	public class ShippingModel
+	public class ShippingMethod
 	{
 		public string ShippingMethodId { get; set; }
 		public double Number {  get; set; }
