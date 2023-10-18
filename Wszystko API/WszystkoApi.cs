@@ -6,6 +6,7 @@ using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using Wszystko_API.Auth;
 using Wszystko_API.Categories;
+using Wszystko_API.File;
 using Wszystko_API.Integration;
 using Wszystko_API.Offers;
 using Wszystko_API.Offers.General_Offer_Model;
@@ -226,31 +227,31 @@ namespace Wszystko_API
             return shippingMethods;
         }
 
-        //public async Task GetAllShippingTariffs()
-        //{
-        //    using HttpClient client = new HttpClient();
-        //    client.DefaultRequestHeaders.Clear();
-        //    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-        //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        public async Task<ShippingTariffModel[]> GetAllShippingTariffs()
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-        //    HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/shipping/tariffs");
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/shipping/tariffs");
 
-        //    string responseBody = odp.Content.ReadAsStringAsync().Result;
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            ShippingTariffModel[] shippingTariffs = JsonConvert.DeserializeObject<ShippingTariffModel[]>(responseBody);
 
+            return shippingTariffs;
+        }
 
-        //    return
-        //}
+        #endregion
 
-		#endregion
+        #region Categories
 
-		#region Categories
-
-		/// <summary>
-		/// Passing categoryLevel equal to 0 returns main categories. Then you can pass Id of a main category to find its subcategories and so on...
-		/// </summary>
-		/// <param name="categoryLevel"></param>
-		/// <returns></returns>
-		public async Task<Category[]> GetCategoriesByLevel(int categoryLevel)
+        /// <summary>
+        /// Passing categoryLevel equal to 0 returns main categories. Then you can pass Id of a main category to find its subcategories and so on...
+        /// </summary>
+        /// <param name="categoryLevel"></param>
+        /// <returns></returns>
+        public async Task<Category[]> GetCategoriesByLevel(int categoryLevel)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -297,11 +298,8 @@ namespace Wszystko_API
 
 		#region Offers
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-		public async Task<SimpleOfferList> GetAllOffers()
+		public async Task<SimpleOfferList> GetSearchedForOffers(string phrase, string shippingTariffId, string[] status, OrderByType orderBy, int categoryId, int quantityFrom,
+                                                        int quantityTo, double priceFrom, double priceTo, int page, int pageSize, bool hasUserQuantityLimit)
 		{
 			using HttpClient client = new HttpClient();
 
@@ -314,10 +312,34 @@ namespace Wszystko_API
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			//System.Console.WriteLine(odpcontent);
 
+			SimpleOfferList simpleOfferList = JsonConvert.DeserializeObject<SimpleOfferList>(odpcontent);
+
+			return simpleOfferList;
+		}
+
+		/// <summary>
+		/// Downloads all offers.
+		/// </summary>
+		/// <returns></returns>
+		public async Task<SimpleOfferList> GetAllOffers()
+		{
+			using HttpClient client = new HttpClient();
+
+			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers");
+
+			string odpcontent = odp.Content.ReadAsStringAsync().Result;
+			//System.Console.WriteLine(odpcontent);
+
             SimpleOfferList simpleOfferList = JsonConvert.DeserializeObject<SimpleOfferList>(odpcontent);
 
 			return simpleOfferList;
 		}
+
+
 
 		// dokumentacji API wszystko.pl jest przekłamana
 		// prawdziwe obowiązkowe właściwości dla request body (RequestAddProductOffer):
@@ -455,9 +477,65 @@ namespace Wszystko_API
 		}
 		#endregion
 
+		#region Files
+
+        public async Task<BinaryFileResponse> AddBinaryFile(byte[] binaryFile)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            string json = JsonConvert.SerializeObject(binaryFile);
+            var content = new StringContent(json, Encoding.UTF8 , "multipart/form-data;version=1.0");
+
+            HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/files", content);
+			string responseBody = odp.Content.ReadAsStringAsync().Result;
+
+			BinaryFileResponse response = JsonConvert.DeserializeObject<BinaryFileResponse>(responseBody);
+
+            return response;
+        }
+
+        public async Task<BinaryFileResponse[]> AddFileFromUrl(Uri[] url)
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json;version=1.0"));
+
+            string json = JsonConvert.SerializeObject(url);
+            var content = new StringContent(json, Encoding.UTF8, "application/json;version=1.0");
+
+            HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/addFilesFromUrls", content);
+
+            string responsebody = odp.Content?.ReadAsStringAsync().Result;
+            BinaryFileResponse[] responseArray = JsonConvert.DeserializeObject<BinaryFileResponse[]>(responsebody);
+
+            return responseArray;
+        }
+
+		#endregion
+
+		#region Guarantees&Complaints&Returns
+
+        public async Task GetAllGuarantees()
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+
+
+            //return
+        }
+
+		#endregion
+
 		#region Orders
 
-        public async Task<OrderArrayModel> GetAllOrders()
+		public async Task<OrderArrayModel> GetAllOrders()
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();

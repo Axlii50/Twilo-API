@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.Shipping
+namespace Wszystko_API.Shipping.Components
 {
-	public class ShippingMethodModel
+	public class ShippingMethodOptionAgreementModel
 	{
 		public string ShippingMethodId { get; set; }
-		public ShippingMethodOption shippingMethodOption { get; set; }
+		public bool AgreementForElectronicDeliveryRequired { get; set; }
 	}
 }
