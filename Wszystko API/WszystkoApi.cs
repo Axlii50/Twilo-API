@@ -1,7 +1,11 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Specialized;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using Wszystko_API.Auth;
@@ -14,6 +18,10 @@ using Wszystko_API.Offers.Serial_Offer_Model;
 using Wszystko_API.Offers.Serial_Offer_Model.Components;
 using Wszystko_API.Orders;
 using Wszystko_API.Orders.Components;
+using Wszystko_API.Payment;
+using Wszystko_API.Payment.Components;
+using Wszystko_API.Policies.Complaint;
+using Wszystko_API.Policies.Return;
 using Wszystko_API.Product;
 using Wszystko_API.Shipping;
 
@@ -51,12 +59,82 @@ namespace Wszystko_API
 
         }
 
-        #region AUTH
-        /// <summary>
-        /// Class automaticly saves Device code for later use
-        /// </summary>
-        /// <returns></returns>
-        public async Task<BaseAuthModel> GenerateDeviceCode()
+		#region UtilityMethods
+
+		private void AddIfNotNullOrEmpty(ref NameValueCollection query, string key, string value)
+		{
+			if (!string.IsNullOrEmpty(value))
+			{
+				query.Add(key, value);
+			}
+		}
+
+		/// <summary>
+		/// Use with variables such as: int, bool, double
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		private void AddIfNotNull(ref NameValueCollection query, string key, object value)
+		{
+			if (value != null)
+			{
+				query.Add(key, value.ToString());
+			}
+		}
+
+		/// <summary>
+		/// Supposed to end url links with query string parameters. Not ended and not tested yet
+		/// </summary>
+		//public void HandleQueryStringParameters()
+		//{
+		//	Type? type = GetType();//typeof(Task<PaymentMethod[]>);
+		//	MethodInfo? method = type.GetMethod("GetSomePaymentMethods");
+		//	ParameterInfo[]? parametersInfo = method.GetParameters();
+
+		//	bool isFirstParameter = true;
+
+		//	StringBuilder parameters = new StringBuilder();
+		//	foreach (var parameter in parametersInfo)
+		//	{
+		//		string paramName = parameter.Name;
+
+		//		if (!parameter.ParameterType.IsArray)
+		//		{
+		//			var paramValue = (string)GetType().GetProperty(paramName).GetValue(this);
+
+		//			if (paramValue != null)
+		//			{
+		//				parameters.Append(isFirstParameter ? "?" : "&");
+		//				parameters.Append($"{paramName}={Uri.EscapeDataString(paramValue)}");
+		//				isFirstParameter = false;
+		//			}
+		//		}
+		//		else
+		//		{
+		//			Array paramArray = (Array)GetType().GetProperty(paramName).GetValue(this);
+		//			if (paramArray != null)
+		//			{
+		//				for (int i = 0; i < paramArray.Length; i++)
+		//				{
+		//					string elementValue = paramArray.GetValue(i).ToString();
+		//					parameters.Append(isFirstParameter ? "?" : "&");
+		//					parameters.Append($"{paramName}={Uri.EscapeDataString(elementValue)}");
+		//					isFirstParameter = false;
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
+
+		#endregion
+
+		#region AUTH
+		/// <summary>
+		/// Class automaticly saves Device code for later use
+		/// </summary>
+		/// <returns></returns>
+		public async Task<BaseAuthModel> GenerateDeviceCode()
         {
             using HttpClient client = new HttpClient();
             //create normal string for client id and client secret
@@ -267,29 +345,36 @@ namespace Wszystko_API
             return categories;
         }
 
-        public async Task<List<CategoryBatchInTree>> GetCategoryTreeAndAllParameters()
+        public async Task<List<CategoryBatchInTree>> GetCategoryTreeAndAllParameters(bool includeParameters = true, int pageSize = 100, int page = 1)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            int page = 1;
-
-            CategoryBatchInTree categoryBatch = new CategoryBatchInTree();
+			CategoryBatchInTree categoryBatch = new CategoryBatchInTree();
             List<CategoryBatchInTree> categoryList = new List<CategoryBatchInTree>();
 
-			do
+            do
             {
-                //temporarily includeParameters = false
-                HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/categories?includeParameters=false&pageSize=100&page={page}");
+                //Console.WriteLine(page);
+                UriBuilder builder = new UriBuilder(WszystkoBaseURL + $"/categories");
+				NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+				query.Add("includeParameters", includeParameters.ToString());
+				query.Add("pageSize", pageSize.ToString());
+
+				query.Add("page", page.ToString());
+				builder.Query = query.ToString();
+
+				HttpResponseMessage odp = await client.GetAsync(builder.Uri);
 
                 string responseBody = odp.Content.ReadAsStringAsync().Result;
-                System.Diagnostics.Debug.WriteLine(responseBody);
+                //System.Diagnostics.Debug.WriteLine(responseBody);
                 categoryBatch = JsonConvert.DeserializeObject<CategoryBatchInTree>(responseBody);
                 categoryList.Add(categoryBatch);
                 ++page;
-            } while (page < 200);
+            } while (page < 158);
 
             return categoryList;
         }
@@ -298,8 +383,8 @@ namespace Wszystko_API
 
 		#region Offers
 
-		public async Task<SimpleOfferList> GetSearchedForOffers(string phrase, string shippingTariffId, string[] status, OrderByType orderBy, int categoryId, int quantityFrom,
-                                                        int quantityTo, double priceFrom, double priceTo, int page, int pageSize, bool hasUserQuantityLimit)
+		public async Task<SimpleOfferList> GetSearchedForOffers(string? phrase, string? shippingTariffId, string[] status, OrderByType? orderBy, int? categoryId, int? quantityFrom,
+                                                                int? quantityTo, double? priceFrom, double? priceTo, int? page, int? pageSize, bool? hasUserQuantityLimit)
 		{
 			using HttpClient client = new HttpClient();
 
@@ -307,7 +392,39 @@ namespace Wszystko_API
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/offers?userId={AccessToken}");
+			UriBuilder builder = new UriBuilder(WszystkoBaseURL + $"/me/offers");
+			NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+			AddIfNotNullOrEmpty(ref query, "userId", AccessToken);
+			AddIfNotNullOrEmpty(ref query, "phrase", phrase);
+			AddIfNotNullOrEmpty(ref query, "shippingTariffId", shippingTariffId);
+
+			foreach (var s in status)
+			{
+				AddIfNotNullOrEmpty(ref query, "status", s);
+			}
+
+			if (orderBy != null)
+			{
+				query.Add("orderBy", orderBy.ToString());
+			}
+
+			if (categoryId != null)
+			{
+				query.Add("categoryId", categoryId.ToString());
+			}
+
+			AddIfNotNull(ref query, "quantityFrom", quantityFrom);
+			AddIfNotNull(ref query, "quantityTo", quantityTo);
+			AddIfNotNull(ref query, "priceFrom", priceFrom);
+			AddIfNotNull(ref query, "priceTo", priceTo);
+			AddIfNotNull(ref query, "page", page);
+			AddIfNotNull(ref query, "pageSize", pageSize);
+            AddIfNotNull(ref query, "hasUserQuantityLimit", hasUserQuantityLimit);
+
+			builder.Query = query.ToString();
+
+			HttpResponseMessage odp = await client.GetAsync(builder.Uri);
 
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			//System.Console.WriteLine(odpcontent);
@@ -346,31 +463,31 @@ namespace Wszystko_API
         // title, price, leadtime, stockquantityunit, offerstatus, userquantitylimit, isdraft
 		public async Task<RequestAddProductOffer> CreateOffer(string title, int price, int categoryId, bool isDraft, VatRateType vatRate, LeadTimeType leadTime,
                                                               StockQuantityUnitType stockQuantityUnitType, OfferStatusType offerStatus, int userQuantityLimit,
-                                                              int stockQuantity, string[]? photos, string? complaintPolicyId, string? returnPolicyId,
-                                                              string? shippingTarrifId, bool showUnitPrice = true)
+                                                              int stockQuantity, Uri[]? photos, string? guaranteeId, string? complaintPolicyId, string? returnPolicyId,
+                                                              string? shippingTarrifId, ParameterKit[] parameters, Description[] descriptions, bool showUnitPrice = true)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-			//czemu Title, OfferStatus i IsDraft(które są oznaczona jako obowiązkowe) muszą mieć odpowiedni[JsonProperty()], a VatRate, LeadTime, itd. (które niby nie są obowiązkowe) wymagają przypisania wartości mimo że i wtedy działają MIMO że nie mają odpowiednich[JsonProperty()]
-			RequestAddProductOffer addProductOffer = new RequestAddProductOffer()
+            //czemu Title, OfferStatus i IsDraft(które są oznaczona jako obowiązkowe) muszą mieć odpowiedni[JsonProperty()], a VatRate, LeadTime, itd. (które niby nie są obowiązkowe) wymagają przypisania wartości mimo że i wtedy działają MIMO że nie mają odpowiednich[JsonProperty()]
+            RequestAddProductOffer addProductOffer = new RequestAddProductOffer()
             {
                 Title = title,
                 Price = price,
                 CategoryId = categoryId,
                 Gallery = photos,
                 VatRate = vatRate.VatRateToString(),
-			    //Parameters = new List<ParameterKit>(),
-			    //Descriptions = new List<Description>(),
-			    //guaranteeId = "",
-			    ComplaintPolicyId = "",
-			    ReturnPolicyId = "",
-			    ShippingTariffId = "",
+                Parameters = parameters,
+			    Descriptions = descriptions,
+			    GuaranteeId = guaranteeId,
+			    ComplaintPolicyId = complaintPolicyId,
+			    ReturnPolicyId = returnPolicyId,
+			    ShippingTariffId = shippingTarrifId,
 			    LeadTime = leadTime.LeadTimeToString(),
 			    StockQuantityUnit = stockQuantityUnitType.StockQuantityUnitTypeToString(),
-			    OfferStatus = offerStatus,
+			    OfferStatus = offerStatus.ToString(),
                 UserQuantityLimit = userQuantityLimit,
                 IsDraft = isDraft,
                 StockQuantity = stockQuantity,
@@ -402,7 +519,39 @@ namespace Wszystko_API
             return requestAddProductOffer;
 		}
 
-        public async Task<DownloadableOfferModel> GetOfferData(string userId)
+		public async Task<RequestAddProductOffer> CreateOffer(RequestAddProductOffer addProductOffer)
+		{
+			using HttpClient client = new HttpClient();
+			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+			string json = JsonConvert.SerializeObject(addProductOffer);
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			HttpResponseMessage odp = null;
+			//try
+			//{
+			odp = await client.PostAsync(WszystkoBaseURL + $"/me/offers", content);
+			System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+			//}
+			//catch (HttpRequestException)
+			//{
+			//  System.Diagnostics.Debug.WriteLine("HttpRequestException");
+			//}
+			//catch (TaskCanceledException)
+			//{
+			//	System.Diagnostics.Debug.WriteLine("TaskCanceledException");
+			//}
+
+
+			string responseBody = odp.Content.ReadAsStringAsync().Result;
+			RequestAddProductOffer requestAddProductOffer = JsonConvert.DeserializeObject<RequestAddProductOffer>(responseBody);
+
+			return requestAddProductOffer;
+		}
+
+		public async Task<DownloadableOfferModel> GetOfferData(string userId)
         {
 			using HttpClient client = new HttpClient();
 			client.DefaultRequestHeaders.Clear();
@@ -447,7 +596,7 @@ namespace Wszystko_API
 
         // case-study by GPT:
         // W przypadku braku dostarczenia ResourceIntegerId w żądaniu, operacja może być stosowana do wszystkich dostępnych ofert, które nie są zablokowane, zamiast do jednego określonego zasobu. Proszę dokładnie przemyśleć, czy i jakie ResourceIntegerId chcesz dostarczyć w zapytaniu, zgodnie z wymaganiami Twojej aplikacji i zrozumieniem, co dokładnie chcesz osiągnąć za pomocą tej operacji
-        public async Task<FailedUpdateLogsSet[]> MassUpdateOffers(int[]? relevantOfferIds, SerialOfferChangesSet serialOfferModel)
+        public async Task<FailedUpdateLogsSet[]> MassUpdateOffers(int[] relevantOfferIds, SerialOfferChangesSet serialOfferModel)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -460,7 +609,7 @@ namespace Wszystko_API
 			switch (relevantOfferIds)
             {
                 case not null:
-					// Create a query string by joining the values
+					// Create a certain query string and expand by joining the values from array
 					string queryString = string.Join("&", relevantOfferIds.Select(id => $"resourceIntegerId={id}"));
 
                     odp = await client.PostAsync(WszystkoBaseURL + $"/me/update-offers?{queryString}", content);
@@ -486,8 +635,15 @@ namespace Wszystko_API
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            string json = JsonConvert.SerializeObject(binaryFile);
-            var content = new StringContent(json, Encoding.UTF8 , "multipart/form-data;version=1.0");
+			using MultipartFormDataContent content = new MultipartFormDataContent();
+			var fileContent = new ByteArrayContent(binaryFile);
+			fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+			{
+				Name = "file",
+				FileName = "czlowiek-w-pozukiwaniu-sensu-viktor-e-frankl-24h.png" // Nazwa pliku (zmień na właściwą)
+			};
+
+			content.Add(fileContent);
 
             HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/files", content);
 			string responseBody = odp.Content.ReadAsStringAsync().Result;
@@ -502,10 +658,10 @@ namespace Wszystko_API
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json;version=1.0"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             string json = JsonConvert.SerializeObject(url);
-            var content = new StringContent(json, Encoding.UTF8, "application/json;version=1.0");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/addFilesFromUrls", content);
 
@@ -515,11 +671,62 @@ namespace Wszystko_API
             return responseArray;
         }
 
+        #endregion
+
+        #region Payment
+
+		public async Task<PaymentMethod[]> GetSomePaymentMethods(int? amount, ShippingMethodType[] shippingMethods)
+        {
+			using HttpClient client = new HttpClient();
+			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+			UriBuilder builder = new UriBuilder($"{WszystkoBaseURL}/payment/paymentMethods");
+
+			NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+			if (amount.HasValue)
+			{
+                query.Add("amount", amount.Value.ToString());
+			}
+
+			foreach (var shippingMethod in shippingMethods)
+			{
+                query.Add("shippingMethodTypes", shippingMethod.ToString());
+			}
+
+            builder.Query = query.ToString();
+
+			HttpResponseMessage odp = await client.GetAsync(builder.Uri);
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            PaymentMethod[] paymentMethod = JsonConvert.DeserializeObject<PaymentMethod[]>(responseBody);
+
+            return paymentMethod;
+        }
+
+
+		public async Task<PaymentMethod[]> GetAllPaymentMethods()
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/payment/paymentMethods");
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            PaymentMethod[] paymentMethods = JsonConvert.DeserializeObject<PaymentMethod[]>(responseBody);
+
+            return paymentMethods;
+        }
+
 		#endregion
 
 		#region Guarantees&Complaints&Returns
 
-        public async Task GetAllGuarantees()
+		public async Task GetAllGuarantees()
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -530,6 +737,34 @@ namespace Wszystko_API
 
             //return
         }
+
+        public async Task<Complaint[]> GetAllComplaintsPolicies()
+        {
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/complaintPolicies");
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+            Complaint[] complaints = JsonConvert.DeserializeObject<Complaint[]>(responseBody);
+
+            return complaints;
+		}
+
+		public async Task<Return[]> GetAllReturnPolicies()
+		{
+			using HttpClient client = new HttpClient();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/returnPolicies");
+
+			string responseBody = odp.Content.ReadAsStringAsync().Result;
+			Return[] returns = JsonConvert.DeserializeObject<Return[]>(responseBody);
+
+			return returns;
+		}
 
 		#endregion
 

@@ -15,10 +15,10 @@ namespace Wszystko_API.Offers.Interfaces
         public double Price { get; set; }
         public int CategoryId { get; set; }
         //[Description("URL")]
-        public string[] Gallery { get; set; }
+        public Uri[] Gallery { get; set; }
         public string VatRate { get; set; }
-        public List<ParameterKit> Parameters { get; set; }
-        public List<Description> Descriptions { get; set; }
+        public ParameterKit[] Parameters { get; set; }
+        public Description[] Descriptions { get; set; }
         public string GuaranteeId { get; set; }
         public string ComplaintPolicyId { get; set; }
         public string ReturnPolicyId { get; set; }
@@ -26,7 +26,7 @@ namespace Wszystko_API.Offers.Interfaces
         public string LeadTime { get; set; }
         public string StockQuantityUnit { get; set; }
         //[Required]
-        public OfferStatusType OfferStatus { get; set; }
+        public string OfferStatus { get; set; }
         public int UserQuantityLimit { get; set; }
         //[Required]
         public bool IsDraft { get; set; }

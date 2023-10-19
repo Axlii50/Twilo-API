@@ -17,10 +17,12 @@ namespace Wszystko_API.Product
 		public string Title { get; set; }
 		public double Price { get; set; }
 		public int CategoryId { get; set; }
-		public string[] Gallery { get; set; }
+		public Uri[] Gallery { get; set; }
 		public string VatRate { get; set; }
-		public List<ParameterKit> Parameters { get; set; }
-		public List<Description> Descriptions { get; set; }
+		[JsonProperty("parameters")]
+		public ParameterKit[] Parameters { get; set; }
+		[JsonProperty("description")]
+		public Description[] Descriptions { get; set; }
 		public string GuaranteeId { get; set; }
 		public string ComplaintPolicyId { get; set; }
 		public string ReturnPolicyId { get; set; }
@@ -33,7 +35,7 @@ namespace Wszystko_API.Product
 		public bool IsDraft { get; set; }
 		public int StockQuantity { get; set; }
 		[JsonProperty("status")]
-		public OfferStatusType OfferStatus { get; set; }
+		public string OfferStatus { get; set; }
 		public bool ShowUnitPrice { get; set; }
 	}
 }
