@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,9 @@ namespace Wszystko_API.Product
 {
 	public class Item
 	{
-		public ContentTypeType ContentType { get; set; }
+		[JsonProperty("type")]
+		public string ContentType { get; set; }
+		[JsonProperty("value")]
 		public string Value { get; set; }
 	}
 }

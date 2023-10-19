@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,9 +12,11 @@ namespace Wszystko_API.Product
 	public class ParameterKit
 	{
 		//[Required]
+		[JsonProperty("id")]
 		public int Id { get; set; }
 		//[Required]
 		// typ value do poprawy
-		public ValueModel Value { get; set; }
+		[JsonProperty("value")]
+		public double Value { get; set; }
 	}
 }

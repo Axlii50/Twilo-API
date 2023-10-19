@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace Wszystko_API.Product
 {
 	public class Description
 	{
-		Item[] Items { get; set; }
+		[JsonProperty("items")]
+		public Item[] Items { get; set; }
 	}
 }

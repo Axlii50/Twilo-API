@@ -11,8 +11,4 @@
     <ProjectReference Include="..\Allegro Api\Allegro Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Policies\Complaint\" />
-  </ItemGroup>
-
 </Project>
