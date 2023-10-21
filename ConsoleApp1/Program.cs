@@ -406,8 +406,8 @@ ParameterKit[] parameters = new ParameterKit[]
 {
 	new ParameterKit
 	{
-		Id = 60,
-		Value = 5.45
+		Id = 5,
+		Value = "5.45"
 	}
 };
 
@@ -461,7 +461,7 @@ var test3 = await wszystkoApi.CreateOffer(product);
 //var test7 = await wszystkoApi.GetWaybillsAddedToOrder("");
 //System.Diagnostics.Debug.WriteLine(test7);
 
-var test8 = await wszystkoApi.GetCategoryTreeAndAllParameters();
+//var test8 = await wszystkoApi.GetCategoryTreeAndAllParameters();
 //StringBuilder sb = new StringBuilder();
 //foreach (Wszystko_API.Categories.CategoryBatchInTree categoryBatch in test8)
 //{
@@ -471,7 +471,7 @@ var test8 = await wszystkoApi.GetCategoryTreeAndAllParameters();
 //	}
 //}
 
-System.IO.File.WriteAllText(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt", test8.ToString());
+//System.IO.File.WriteAllText(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt", test8.ToString());
 //using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
 //{
 //	writer.Write(sb.ToString());

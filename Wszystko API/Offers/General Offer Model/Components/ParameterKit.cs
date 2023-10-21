@@ -17,6 +17,6 @@ namespace Wszystko_API.Product
 		//[Required]
 		// typ value do poprawy
 		[JsonProperty("value")]
-		public double Value { get; set; }
+		public string Value { get; set; }
 	}
 }
