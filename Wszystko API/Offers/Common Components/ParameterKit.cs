@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wszystko_API.Offers.General_Offer_Model.Components;
 
-namespace Wszystko_API.Product
+namespace Wszystko_API.Offers.Common_Components
 {
 	public class ParameterKit
 	{
@@ -17,6 +17,6 @@ namespace Wszystko_API.Product
 		//[Required]
 		// typ value do poprawy
 		[JsonProperty("value")]
-		public string Value { get; set; }
+		public int Value { get; set; }
 	}
 }

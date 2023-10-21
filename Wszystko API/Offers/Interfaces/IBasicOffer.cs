@@ -4,7 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wszystko_API.Product;
+using Wszystko_API.Offers.Common_Components;
+using Wszystko_API.Offers.General_Offer_Model.Components;
 
 namespace Wszystko_API.Offers.Interfaces
 {

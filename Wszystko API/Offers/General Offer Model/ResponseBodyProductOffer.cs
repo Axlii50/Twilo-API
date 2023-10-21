@@ -5,8 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wszystko_API.Offers.Common_Components;
+using Wszystko_API.Offers.General_Offer_Model.Components;
 using Wszystko_API.Offers.Interfaces;
-using Wszystko_API.Product;
 
 namespace Wszystko_API.Offers.General_Offer_Model
 {

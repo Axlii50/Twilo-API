@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wszystko_API.Offers
 {
-	public enum StatusType
+	public enum OfferStatusType
 	{
 		active,
 		ended,

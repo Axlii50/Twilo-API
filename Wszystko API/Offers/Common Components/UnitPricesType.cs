@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.Offers
+namespace Wszystko_API.Offers.Common_Components
 {
 	public class UnitPricesType
 	{

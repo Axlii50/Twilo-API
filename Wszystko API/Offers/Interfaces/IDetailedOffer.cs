@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wszystko_API.Offers;
-using Wszystko_API.Product;
+using Wszystko_API.Offers.Common_Components;
 
 namespace Wszystko_API.Offers.Interfaces
 {

@@ -28,6 +28,8 @@ using Wszystko_API.Product;
 using Wszystko_API.File;
 using System.Net.Mime;
 using Wszystko_API.Offers.General_Offer_Model.Components;
+using Wszystko_API.Offers.Common_Components;
+using Wszystko_API.Global_Components;
 
 //kempo
 string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
@@ -406,8 +408,8 @@ ParameterKit[] parameters = new ParameterKit[]
 {
 	new ParameterKit
 	{
-		Id = 5,
-		Value = "5.45"
+		Id = 1,
+		Value = 5
 	}
 };
 
@@ -417,10 +419,10 @@ RequestAddProductOffer product = new RequestAddProductOffer()
 	Price = 10,
 	CategoryId = 96,
 	Gallery = new Uri[] { x.Url },
-	VatRate = Wszystko_API.Product.VatRateType.zero.VatRateToString(),
-	LeadTime = Wszystko_API.Product.LeadTimeType.Natychmiast.LeadTimeToString(),
-	StockQuantityUnit = Wszystko_API.Product.StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
-	OfferStatus = Wszystko_API.Product.OfferStatusType.blocked.ToString(),
+	VatRate = VatRateType.zero.VatRateToString(),
+	LeadTime = LeadTimeType.Natychmiast.LeadTimeToString(),
+	StockQuantityUnit = StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
+	OfferStatus = Wszystko_API.General_Offer_Model.Components.OfferStatusType.blocked.ToString(),
 	UserQuantityLimit = 50,
 	StockQuantity = 50,
 	GuaranteeId = null,

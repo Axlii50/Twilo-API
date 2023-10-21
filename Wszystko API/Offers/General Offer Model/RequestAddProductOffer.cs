@@ -7,6 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wszystko_API.Offers.Common_Components;
+using Wszystko_API.Offers.General_Offer_Model.Components;
 using Wszystko_API.Offers.Interfaces;
 
 namespace Wszystko_API.Product

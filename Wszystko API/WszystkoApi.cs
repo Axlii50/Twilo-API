@@ -11,9 +11,13 @@ using System.Text;
 using Wszystko_API.Auth;
 using Wszystko_API.Categories;
 using Wszystko_API.File;
+using Wszystko_API.General_Offer_Model.Components;
+using Wszystko_API.Global_Components;
 using Wszystko_API.Integration;
 using Wszystko_API.Offers;
+using Wszystko_API.Offers.Common_Components;
 using Wszystko_API.Offers.General_Offer_Model;
+using Wszystko_API.Offers.General_Offer_Model.Components;
 using Wszystko_API.Offers.Serial_Offer_Model;
 using Wszystko_API.Offers.Serial_Offer_Model.Components;
 using Wszystko_API.Orders;
@@ -401,7 +405,7 @@ namespace Wszystko_API
 
 		#region Offers
 
-		public async Task<SimpleOfferList> GetSearchedForOffers(string? phrase, string? shippingTariffId, string[] status, OrderByType? orderBy, int? categoryId, int? quantityFrom,
+		public async Task<DownloadOfferListModel> GetSearchedForOffers(string? phrase, string? shippingTariffId, string[] status, OrderByType? orderBy, int? categoryId, int? quantityFrom,
                                                                 int? quantityTo, double? priceFrom, double? priceTo, int? page, int? pageSize, bool? hasUserQuantityLimit)
 		{
 			using HttpClient client = new HttpClient();
@@ -447,24 +451,33 @@ namespace Wszystko_API
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			//System.Console.WriteLine(odpcontent);
 
-			SimpleOfferList simpleOfferList = JsonConvert.DeserializeObject<SimpleOfferList>(odpcontent);
+			DownloadOfferListModel simpleOfferList = JsonConvert.DeserializeObject<DownloadOfferListModel>(odpcontent);
 
 			return simpleOfferList;
 		}
 
-		/// <summary>
-		/// Downloads all offers.
-		/// </summary>
-		/// <returns></returns>
-		public async Task<SimpleOfferList> GetAllOffers(bool isMyOffers = false, string userId = "")
+        /// <summary>
+        /// Downloads all offers.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DownloadOfferListModel> GetAllOffers(bool isFullData = false, bool isMyOffers = false, string userId = "")
 		{
 			using HttpClient client = new HttpClient();
 
 			client.DefaultRequestHeaders.Clear();
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            UriBuilder builder = new UriBuilder(WszystkoBaseURL);
+            if (!isFullData)
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.pl.wszystko.v1.full+json"));
+            }
+            else
+            {
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			}
+
+
+			UriBuilder builder = new UriBuilder(WszystkoBaseURL);
 
             if (isMyOffers)
             {
@@ -480,24 +493,33 @@ namespace Wszystko_API
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			//System.Console.WriteLine(odpcontent);
 
-            SimpleOfferList simpleOfferList = JsonConvert.DeserializeObject<SimpleOfferList>(odpcontent);
+            DownloadOfferListModel simpleOfferList = JsonConvert.DeserializeObject<DownloadOfferListModel>(odpcontent);
 
 			return simpleOfferList;
 		}
 
-		public async Task<SimpleOfferList> GetSpecificOffers(string phrase, string shippingTariffId,
-                                                            OfferStatusType[] offerStatusTypes, OrderByType? orderBy,
+		public async Task<DownloadOfferListModel> GetSpecificOffers(string phrase, string shippingTariffId,
+															General_Offer_Model.Components.OfferStatusType[] offerStatusTypes, OrderByType? orderBy,
                                                             int? categoryId, int? quantityFrom, int? quantityTo,
                                                             double? priceFrom, double? priceTo, int? page, int? pageSize,
-                                                            bool? hasUserQuantityLimit, bool isMyOffers = false, string userId = "")
+                                                            bool? hasUserQuantityLimit, bool isMyOffers = false, string userId = "",
+                                                            bool isDetailed = false)
 		{
 			using HttpClient client = new HttpClient();
 
 			client.DefaultRequestHeaders.Clear();
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            UriBuilder builder = new UriBuilder(WszystkoBaseURL);
+            if (!isDetailed)
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            }
+            else
+            {
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.pl.wszystko.v1.full+json"));
+			}
+
+			UriBuilder builder = new UriBuilder(WszystkoBaseURL);
 
 			if (isMyOffers)
 			{
@@ -536,7 +558,7 @@ namespace Wszystko_API
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			//System.Console.WriteLine(odpcontent);
 
-			SimpleOfferList simpleOfferList = JsonConvert.DeserializeObject<SimpleOfferList>(odpcontent);
+			DownloadOfferListModel simpleOfferList = JsonConvert.DeserializeObject<DownloadOfferListModel>(odpcontent);
 
 			return simpleOfferList;
 		}
@@ -545,7 +567,7 @@ namespace Wszystko_API
 		// prawdziwe obowiązkowe właściwości dla request body (RequestAddProductOffer):
 		// title, price, leadtime, stockquantityunit, offerstatus, userquantitylimit, isdraft
 		public async Task<RequestAddProductOffer> CreateOffer(string title, int price, int categoryId, bool isDraft, VatRateType vatRate, LeadTimeType leadTime,
-                                                              StockQuantityUnitType stockQuantityUnitType, OfferStatusType offerStatus, int userQuantityLimit,
+                                                              StockQuantityUnitType stockQuantityUnitType, General_Offer_Model.Components.OfferStatusType offerStatus, int userQuantityLimit,
                                                               int stockQuantity, Uri[]? photos, string? guaranteeId, string? complaintPolicyId, string? returnPolicyId,
                                                               string? shippingTarrifId, ParameterKit[] parameters, Description[] descriptions, bool showUnitPrice = true)
         {
@@ -684,29 +706,30 @@ namespace Wszystko_API
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			var json = JsonConvert.SerializeObject(serialOfferModel);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage odp = null;
-			switch (relevantOfferIds)
-            {
-                case not null:
-					// Create a certain query string and expand by joining the values from array
-					string queryString = string.Join("&", relevantOfferIds.Select(id => $"resourceIntegerId={id}"));
+			UriBuilder builder = new UriBuilder(WszystkoBaseURL + $"/me/update-offers");
 
-                    odp = await client.PostAsync(WszystkoBaseURL + $"/me/update-offers?{queryString}", content);
-                    break;
-                case null:
-					odp = await client.PostAsync(WszystkoBaseURL + $"/me/update-offers", content);
-					break;
+			NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+			foreach (var id in relevantOfferIds)
+			{
+				query.Add("resourceIntegerId", id.ToString());
 			}
 
-            string responseBody = odp.Content.ReadAsStringAsync().Result;
+			builder.Query = query.ToString();
+
+            HttpResponseMessage odp = await client.PostAsync(builder.Uri, content);
+
+			string responseBody = odp.Content.ReadAsStringAsync().Result;
             FailedUpdateLogsSet[] errors = JsonConvert.DeserializeObject<FailedUpdateLogsSet[]>(responseBody);
 
             return errors;
 		}
+
 		#endregion
 
 		#region Files

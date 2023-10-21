@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.Product
+namespace Wszystko_API.General_Offer_Model.Components
 {
 	public enum OfferStatusType
 	{
