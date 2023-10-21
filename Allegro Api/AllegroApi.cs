@@ -335,8 +335,6 @@ namespace Allegro_Api
             return retrvied;
         }
 
-
-
         /// <summary>
         /// funkcja do zmiany ceny konkretnej ofert (offerid)
         /// </summary>

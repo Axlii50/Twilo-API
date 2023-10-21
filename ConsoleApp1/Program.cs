@@ -279,8 +279,11 @@ string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 
 //System.Diagnostics.Debug.WriteLine(ClientSecret);
 
-//AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+AteneumApi ate = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
 
+var test = await ate.GetAllBooksWithMagazin(5);
+
+Console.WriteLine(test);
 
 //var boks = await ate.GetAllBooksWithMagazin(2);
 
@@ -344,29 +347,29 @@ string ClientID = "0292044ee78a47f2a7f315ece84edfe5";
 //ate.MakeOrder(atesApiOrder, "ALWZywNWMc");
 
 
-WszystkoApi wszystkoApi = new WszystkoApi(null, null, null);
+//WszystkoApi wszystkoApi = new WszystkoApi(null, null, null);
 
-var test = await wszystkoApi.GenerateDeviceCode();
+//var test = await wszystkoApi.GenerateDeviceCode();
 
-bool authenticate = false;
+//bool authenticate = false;
 
-Console.WriteLine(test.verificationUriPrettyComplete);
+//Console.WriteLine(test.verificationUriPrettyComplete);
 
-ProcessStartInfo sInfo = new ProcessStartInfo(test.verificationUriPrettyComplete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//ProcessStartInfo sInfo = new ProcessStartInfo(test.verificationUriPrettyComplete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-while (!authenticate)
-{
-    authenticate = await wszystkoApi.CheckForAccessToken();
-    Console.WriteLine(authenticate);
-}
+//while (!authenticate)
+//{
+//    authenticate = await wszystkoApi.CheckForAccessToken();
+//    Console.WriteLine(authenticate);
+//}
 
-var test0 = await wszystkoApi.GetSessions();
-foreach (var session in test0)
-{
-	await wszystkoApi.DeleteConnection(session.Id);
-}
+//var test0 = await wszystkoApi.GetSessions();
+//foreach (var session in test0)
+//{
+//	await wszystkoApi.DeleteConnection(session.Id);
+//}
 
 //var test1 = await wszystkoApi.GetAllOffers();
 //System.Diagnostics.Debug.WriteLine(test1);

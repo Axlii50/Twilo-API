@@ -78,21 +78,26 @@ namespace AteneumAPI
             {
                 string csv = sr.ReadToEnd();
 
-                csv = "ident_ate,EAN,ISBN,Tytuł,autor,wydawnictwo,opis_wydania,rok_wydania,krótka_charakterystyka,cena_detal_netto,stawka_vat,cena_detal_brutto,kategoria_poziom_1,kategoria_poziom_2,kategoria_poziom_3,plik_zdjecia,hash," +
+                csv = @"ident_ate,EAN,ISBN,Tytuł,autor,wydawnictwo,opis_wydania,rok_wydania,krótka_charakterystyka,cena_detal_netto,stawka_vat,cena_detal_brutto,kategoria_poziom_1,kategoria_poziom_2,kategoria_poziom_3,plik_zdjecia,hash," +
                     csv;
+
+                System.Diagnostics.Debug.WriteLine(csv.Substring(0, 725));
+
 
                 var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
                     Delimiter = ",",
                     HasHeaderRecord = true,
                     TrimOptions = TrimOptions.Trim,
-                    MissingFieldFound = null
+                    MissingFieldFound = null,
+                    BadDataFound = null
                 };
 
                 using (var textreader = new StringReader(csv))
                 using (var CsvReader = new CsvReader(textreader, config))
                 {
-                    books = (CsvReader.GetRecords<BookRecord>()).ToDictionary(b => b.ident_ate);
+                    books = (CsvReader.GetRecords<BookRecord>())
+                        .ToDictionary(b => b.ident_ate);
                 }
             }
 
@@ -104,7 +109,7 @@ namespace AteneumAPI
         private async Task<Dictionary<string, PriceWholeSale>> GetAllWholeSellerPrices()
         {
             var content = await DownloadPriceWholeSeller();
-            Dictionary<string,PriceWholeSale> books = null;
+            Dictionary<string, PriceWholeSale> books = null;
 
             using (var sr = new StreamReader(await content.ReadAsStreamAsync(), Encoding.GetEncoding("iso-8859-1")))
             {
