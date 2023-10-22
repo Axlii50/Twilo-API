@@ -13,5 +13,6 @@ namespace Wszystko_API.Categories
 		public string Name { get; set; }
 		public int ParentId { get; set; }
 		public bool HasSubcategories { get; set; }
+		public CategoryDetails[] CategoryDetails { get; set; }
 	}
 }

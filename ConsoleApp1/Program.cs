@@ -374,7 +374,7 @@ while (!authenticate)
 //var test0 = await wszystkoApi.GetSessions();
 //foreach (var session in test0)
 //{
-//	await wszystkoApi.DeleteConnection(session.Id);
+//	Console.WriteLine($"{session.Id} {session.UserName}");
 //}
 
 //var test1 = await wszystkoApi.GetAllOffers();
