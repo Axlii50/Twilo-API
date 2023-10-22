@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,9 @@ namespace Wszystko_API.Offers.General_Offer_Model
 {
     public class UpdateOfferModel : IBasicOffer
 	{
+		[JsonProperty("title")]
 		public string Title { get; set; }
+		[JsonProperty("price")]
 		public double Price { get; set; }
 		public int CategoryId { get; set; }
 		public Uri[] Gallery { get; set; }
@@ -26,6 +29,7 @@ namespace Wszystko_API.Offers.General_Offer_Model
 		public string StockQuantityUnit { get; set; }
 		public string OfferStatus { get; set; }
 		public int UserQuantityLimit { get; set; }
+		[JsonProperty("isDraft")]
 		public bool IsDraft { get; set; }
 		public int StockQuantity { get; set; }
 		public bool ShowUnitPrice { get; set; }

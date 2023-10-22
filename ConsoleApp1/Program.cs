@@ -30,6 +30,8 @@ using System.Net.Mime;
 using Wszystko_API.Offers.General_Offer_Model.Components;
 using Wszystko_API.Offers.Common_Components;
 using Wszystko_API.Global_Components;
+using Wszystko_API.Offers;
+using Wszystko_API.Offers.General_Offer_Model;
 
 //kempo
 string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
@@ -377,66 +379,112 @@ while (!authenticate)
 //	Console.WriteLine($"{session.Id} {session.UserName}");
 //}
 
-//var test1 = await wszystkoApi.GetAllOffers();
-//System.Diagnostics.Debug.WriteLine(test1);
+//DownloadOfferArrayModel test1 = await wszystkoApi.GetAllOffers();
+//foreach (Wszystko_API.Offers.Simple_Offer_Model.Interface.IDownloadOffersModel offer in test1.Offers)
+//{
+//    Console.WriteLine($"{offer.Title} {offer.Id} {offer.Price}");
+//}
 
-byte[] binaryData = System.IO.File.ReadAllBytes($"D:/Pobrane/czlowiek-w-pozukiwaniu-sensu-viktor-e-frankl-24h.png");
-BinaryFileResponse x = await wszystkoApi.AddBinaryFile(binaryData);
+//ShippingModel[] test11 = await wszystkoApi.GetShippingMethods();
+//foreach (var shippingModel in test11)
+//{
+//	Console.WriteLine(shippingModel.Name);
+//}
 
-var shippingPolicies = await wszystkoApi.GetAllShippingTariffs();
-var complaintPolicies = await wszystkoApi.GetAllComplaintsPolicies();
-var returnPolicies = await wszystkoApi.GetAllReturnPolicies();
+//ShippingTariffModel[] test12 = await wszystkoApi.GetAllShippingTariffs();
+//foreach (var shippingTariff in test12)
+//{
+//	Console.WriteLine($"{shippingTariff.Name} {shippingTariff.Id}");
+//}
 
-Item[] descriptionItem = new Item[]
-{
-	new Item
-	{
-		ContentType = ContentTypeType.text.ToString(),
-		Value = "Your Text Value"
-	}
-};
 
-Description[] descriptions = new Description[]
-{
-    new Description
-    {
-        Items = descriptionItem
-    }
-};
 
-ParameterKit[] parameters = new ParameterKit[]
-{
-	new ParameterKit
-	{
-		Id = 1,
-		Value = 5
-	}
-};
+//------------------------------------------------------
+//byte[] binaryData = System.IO.File.ReadAllBytes($"D:/Pobrane/czlowiek-w-pozukiwaniu-sensu-viktor-e-frankl-24h.png");
+//BinaryFileResponse x = await wszystkoApi.AddBinaryFile(binaryData);
 
-RequestAddProductOffer product = new RequestAddProductOffer()
-{
-	Title = "tytuł",
-	Price = 10,
-	CategoryId = 96,
-	Gallery = new Uri[] { x.Url },
-	VatRate = VatRateType.zero.VatRateToString(),
-	LeadTime = LeadTimeType.Natychmiast.LeadTimeToString(),
-	StockQuantityUnit = StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
-	OfferStatus = Wszystko_API.General_Offer_Model.Components.OfferStatusType.blocked.ToString(),
-	UserQuantityLimit = 50,
-	StockQuantity = 50,
-	GuaranteeId = null,
-	ComplaintPolicyId = complaintPolicies[0].Id.ToString(),
-	ReturnPolicyId = returnPolicies[0].Id.ToString(),
-	ShippingTariffId = shippingPolicies[0].Id.ToString(),
-	Parameters = parameters,
-	Descriptions = descriptions
-};
+//var shippingPolicies = await wszystkoApi.GetAllShippingTariffs();
+//var complaintPolicies = await wszystkoApi.GetAllComplaintsPolicies();
+//var returnPolicies = await wszystkoApi.GetAllReturnPolicies();
 
-var test3 = await wszystkoApi.CreateOffer(product);
+//Item[] descriptionItem = new Item[]
+//{
+//	new Item
+//	{
+//		ContentType = ContentTypeType.text.ToString(),
+//		Value = "Your Text Value"
+//	}
+//};
+
+//Description[] descriptions = new Description[]
+//{
+//	new Description
+//	{
+//		Items = descriptionItem
+//	}
+//};
+
+//ParameterKit[] parameters = new ParameterKit[]
+//{
+//	new ParameterKit
+//	{
+//		Id = 1,
+//		Value = 5
+//	}
+//};
+
+//RequestAddProductOffer product = new RequestAddProductOffer()
+//{
+//	Title = "tytuł",
+//	Price = 10,
+//	CategoryId = 96,
+//	Gallery = new Uri[] { x.Url },
+//	VatRate = VatRateType.zero.VatRateToString(),
+//	LeadTime = LeadTimeType.Natychmiast.LeadTimeToString(),
+//	StockQuantityUnit = StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
+//	OfferStatus = Wszystko_API.General_Offer_Model.Components.OfferStatusType.blocked.ToString(),
+//	IsDraft = true,
+//	UserQuantityLimit = 50,
+//	StockQuantity = 50,
+//	GuaranteeId = null,
+//	ComplaintPolicyId = complaintPolicies[0].Id.ToString(),
+//	ReturnPolicyId = returnPolicies[0].Id.ToString(),
+//	ShippingTariffId = shippingPolicies[0].Id.ToString(),
+//	Parameters = parameters,
+//	Descriptions = descriptions,
+//	ShowUnitPrice = true
+//};
+
+//var test3 = await wszystkoApi.CreateOffer(product);
+//-----------------------------------------------------------------
 
 //var test4 = await wszystkoApi.GetOfferData("1006723824");
-//System.Diagnostics.Debug.WriteLine(test3);
+//System.Diagnostics.Debug.WriteLine(test4.OfferLink);
+
+//UpdateOfferModel updateOfferModel = new UpdateOfferModel()
+//{
+//	Title = "xdxd",
+//	Price = 21.37,
+//	CategoryId = 96,
+//	Gallery = new Uri[] { },
+//	VatRate = VatRateType.five.VatRateToString(),
+//	LeadTime = LeadTimeType.Natychmiast.LeadTimeToString(),
+//	StockQuantityUnit = StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
+//	OfferStatus = Wszystko_API.General_Offer_Model.Components.OfferStatusType.blocked.ToString(),
+//	IsDraft = true,
+//	UserQuantityLimit = 50,
+//	StockQuantity = 50,
+//	GuaranteeId = null,
+//	ComplaintPolicyId = complaintPolicies[0].Id.ToString(),
+//	ReturnPolicyId = returnPolicies[0].Id.ToString(),
+//	ShippingTariffId = shippingPolicies[0].Id.ToString(),
+//	Parameters = parameters,
+//	Descriptions = descriptions,
+//	ShowUnitPrice = true
+//};
+//var test14 = await wszystkoApi.UpdateOfferData(1007020828, updateOfferModel);
+//System.Diagnostics.Debug.WriteLine(test14);
+
 
 //var test5 = await wszystkoApi.GetAllOrders();
 //foreach (var order in test5.simpleOrderModels)

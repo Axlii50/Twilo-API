@@ -17,6 +17,6 @@ namespace Wszystko_API.Offers.Common_Components
 		//[Required]
 		// typ value do poprawy
 		[JsonProperty("value")]
-		public int Value { get; set; }
+		public object Value { get; set; }
 	}
 }

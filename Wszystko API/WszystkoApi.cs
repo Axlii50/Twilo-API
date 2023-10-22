@@ -19,6 +19,7 @@ using Wszystko_API.Offers.General_Offer_Model;
 using Wszystko_API.Offers.General_Offer_Model.Components;
 using Wszystko_API.Offers.Serial_Offer_Model;
 using Wszystko_API.Offers.Serial_Offer_Model.Components;
+using Wszystko_API.Offers.Simple_Offer_Model.JsonConverter;
 using Wszystko_API.Orders;
 using Wszystko_API.Orders.Components;
 using Wszystko_API.Payment;
@@ -478,7 +479,7 @@ namespace Wszystko_API
 		/// <param name="isMyOffers"></param>
 		/// <param name="userId"></param>
 		/// <returns></returns>
-		public async Task<DownloadOfferListModel> GetAllOffers(bool isFullData = false, bool isMyOffers = false, string userId = "")
+		public async Task<DownloadOfferArrayModel> GetAllOffers(bool isFullData = false, bool isMyOffers = true, string userId = "")
 		{
 			using HttpClient client = new HttpClient();
 
@@ -509,11 +510,12 @@ namespace Wszystko_API
 			HttpResponseMessage odp = await client.GetAsync(builder.Uri);
 
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
-			//System.Console.WriteLine(odpcontent);
+            //System.Console.WriteLine(odpcontent);
 
-            DownloadOfferListModel simpleOfferList = JsonConvert.DeserializeObject<DownloadOfferListModel>(odpcontent);
+            var converter = new DownloadOffersModelConverter(isFullData);
+            DownloadOfferArrayModel downloadOfferArray = JsonConvert.DeserializeObject<DownloadOfferArrayModel>(odpcontent, new JsonSerializerSettings { Converters = new List<JsonConverter> { converter } });
 
-			return simpleOfferList;
+			return downloadOfferArray;
 		}
 
 		/// <summary>
@@ -535,7 +537,7 @@ namespace Wszystko_API
 		/// <param name="userId"></param>
 		/// <param name="isFullData"></param>
 		/// <returns></returns>
-		public async Task<DownloadOfferListModel> GetSpecificOffers(string phrase, string shippingTariffId,
+		public async Task<DownloadOfferArrayModel> GetSpecificOffers(string phrase, string shippingTariffId,
 															General_Offer_Model.Components.OfferStatusType[] offerStatusTypes, OrderByType? orderBy,
                                                             int? categoryId, int? quantityFrom, int? quantityTo,
                                                             double? priceFrom, double? priceTo, int? page, int? pageSize,
@@ -595,7 +597,7 @@ namespace Wszystko_API
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			//System.Console.WriteLine(odpcontent);
 
-			DownloadOfferListModel simpleOfferList = JsonConvert.DeserializeObject<DownloadOfferListModel>(odpcontent);
+			DownloadOfferArrayModel simpleOfferList = JsonConvert.DeserializeObject<DownloadOfferArrayModel>(odpcontent);
 
 			return simpleOfferList;
 		}
@@ -1007,6 +1009,7 @@ namespace Wszystko_API
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/sales");
@@ -1037,6 +1040,7 @@ namespace Wszystko_API
 		{
 			using HttpClient client = new HttpClient();
 			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             UriBuilder builder = new UriBuilder(WszystkoBaseURL + $"/me/sales");
@@ -1082,7 +1086,8 @@ namespace Wszystko_API
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $" /me/sales/{orderId}");
 
@@ -1101,8 +1106,9 @@ namespace Wszystko_API
         {
 			using HttpClient client = new HttpClient();
 			client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 
-            string json = JsonConvert.SerializeObject(updateOrderStatusModel);
+			string json = JsonConvert.SerializeObject(updateOrderStatusModel);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             HttpResponseMessage odp = await client.PutAsync(WszystkoBaseURL + $"/me/sales/updateStatus", content);
@@ -1119,7 +1125,8 @@ namespace Wszystko_API
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/sales/{orderId}/trackingNumbers");
 			string responseBody = odp.Content.ReadAsStringAsync().Result;
@@ -1139,8 +1146,9 @@ namespace Wszystko_API
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 
-            string json = JsonConvert.SerializeObject(waybills);
+			string json = JsonConvert.SerializeObject(waybills);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             HttpResponseMessage odp = await client.PutAsync(WszystkoBaseURL + $"/me/sales/{orderId}/trackingNumbers", content);

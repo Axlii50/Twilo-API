@@ -7,9 +7,9 @@ using Wszystko_API.Offers.Simple_Offer_Model.Interface;
 
 namespace Wszystko_API.Offers
 {
-	public class DownloadOfferListModel
+	public class DownloadOfferArrayModel
 	{
-		public List<IDownloadOffersModel> Offerts { get; set; }
+		public IDownloadOffersModel[] Offers { get; set; }
 		public int NumberOfOffers { get; set; }
 	}
 }
