@@ -406,6 +406,9 @@ Console.WriteLine(test);
 //byte[] binaryData = System.IO.File.ReadAllBytes($"D:/Pobrane/czlowiek-w-pozukiwaniu-sensu-viktor-e-frankl-24h.png");
 //BinaryFileResponse x = await wszystkoApi.AddBinaryFile(binaryData);
 
+//FileResponse[] xd = await wszystkoApi.AddFileFromUrl(new Uri[] { new Uri("https://a.allegroimg.com/s512/111265/bd6fed534047b427eea0dcce1a3a/FOLWARK-ZWIERZECY-ROK-1984-G-Orwell-Zestaw") });
+
+
 //var shippingPolicies = await wszystkoApi.GetAllShippingTariffs();
 //var complaintPolicies = await wszystkoApi.GetAllComplaintsPolicies();
 //var returnPolicies = await wszystkoApi.GetAllReturnPolicies();
