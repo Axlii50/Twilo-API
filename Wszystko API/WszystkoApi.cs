@@ -81,7 +81,7 @@ namespace Wszystko_API
 		}
 
 		/// <summary>
-		/// Use with types such as: int, bool, double, enums, custom types
+		/// Use with types such as: int?, bool?, double?, enums, CustomType?
 		/// </summary>
 		/// <param name="query"></param>
 		/// <param name="key"></param>
@@ -259,7 +259,7 @@ namespace Wszystko_API
         //}
 
         /// <summary>
-        /// Returns list of active sessions (not-terminated connections of external systems with wszystko.pl accounmt)
+        /// Returns list of active sessions (not-terminated connections of external systems with wszystko.pl account)
         /// </summary>
         /// <returns></returns>
         public async Task<Session[]> GetSessions()
@@ -640,9 +640,9 @@ namespace Wszystko_API
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
 			HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/offers", content);
-            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
+			//System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
-            string responseBody = odp.Content.ReadAsStringAsync().Result;
+			string responseBody = odp.Content.ReadAsStringAsync().Result;
             RequestAddProductOffer requestAddProductOffer = JsonConvert.DeserializeObject<RequestAddProductOffer>(responseBody);
 
             return requestAddProductOffer;
@@ -757,7 +757,7 @@ namespace Wszystko_API
 
             HttpResponseMessage odp = await client.PostAsync(builder.Uri, content);
 
-			string responseBody = odp.Content.ReadAsStringAsync().Result;
+			string responseBody = await odp.Content.ReadAsStringAsync();
             FailedUpdateLogsSet[] errors = JsonConvert.DeserializeObject<FailedUpdateLogsSet[]>(responseBody);
 
             return errors;
@@ -772,7 +772,7 @@ namespace Wszystko_API
         /// </summary>
         /// <param name="binaryFile"></param>
         /// <returns></returns>
-        public async Task<BinaryFileResponse> AddBinaryFile(byte[] binaryFile)
+        public async Task<FileResponse> AddBinaryFile(byte[] binaryFile)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
@@ -783,8 +783,8 @@ namespace Wszystko_API
 			var fileContent = new ByteArrayContent(binaryFile);
 			fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
 			{
-				Name = "file",
-				FileName = "czlowiek-w-pozukiwaniu-sensu-viktor-e-frankl-24h.png" // Nazwa pliku (zmień na właściwą)
+				Name = $"file--{DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss")}",
+				FileName = $"file-added-at-{DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss")}"
 			};
 
 			content.Add(fileContent);
@@ -792,7 +792,7 @@ namespace Wszystko_API
             HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/files", content);
 			string responseBody = odp.Content.ReadAsStringAsync().Result;
 
-			BinaryFileResponse response = JsonConvert.DeserializeObject<BinaryFileResponse>(responseBody);
+			FileResponse response = JsonConvert.DeserializeObject<FileResponse>(responseBody);
 
             return response;
         }
@@ -802,20 +802,20 @@ namespace Wszystko_API
         /// </summary>
         /// <param name="urls"></param>
         /// <returns></returns>
-        public async Task<BinaryFileResponse[]> AddFileFromUrl(Uri[] urls)
+        public async Task<FileResponse[]> AddFileFromUrl(Uri[] urls)
         {
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json;version=1.0"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             string json = JsonConvert.SerializeObject(urls);
-            var content = new StringContent(json, Encoding.UTF8, "application/json;version=1.0");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             HttpResponseMessage odp = await client.PostAsync(WszystkoBaseURL + $"/me/addFilesFromUrls", content);
 
             string responsebody = odp.Content.ReadAsStringAsync().Result;
-            BinaryFileResponse[] responseArray = JsonConvert.DeserializeObject<BinaryFileResponse[]>(responsebody);
+            FileResponse[] responseArray = JsonConvert.DeserializeObject<FileResponse[]>(responsebody);
 
             return responseArray;
         }
