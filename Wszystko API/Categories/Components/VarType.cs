@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.General_Offer_Model.Components
+namespace Wszystko_API.Categories.Components
 {
-	public enum OfferStatusType
+	public enum VarType
 	{
-		active,
-		ended,
-		blocked,
-		draft
+		STRING,
+		integer,
+		FLOAT,
+		dictionary,
+		color
 	}
 }

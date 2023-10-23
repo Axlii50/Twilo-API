@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.General_Offer_Model.Components
+namespace Wszystko_API.Policies.Return.Components
 {
-	public enum OfferStatusType
+	public enum ShippingCostPayer
 	{
-		active,
-		ended,
-		blocked,
-		draft
+		seller,
+		buyer
 	}
 }

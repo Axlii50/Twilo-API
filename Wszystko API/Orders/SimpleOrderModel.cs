@@ -19,7 +19,7 @@ namespace Wszystko_API.Orders
 		public bool VatInvoice { get; set; }
 		public string[] TrackingNumbers {  get; set; }
 		public PaymentStatusType PaymentStatus { get; set; }
-		public ShippingModel Shipping { get; set; }
+		public ShippingMethod Shipping { get; set; }
 		public OrderItem[] Items { get; set; }
 		public int TotalElements {  get; set; }
 	}

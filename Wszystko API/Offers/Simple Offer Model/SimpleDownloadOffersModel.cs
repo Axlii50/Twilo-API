@@ -6,17 +6,19 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wszystko_API.Offers.Common_Components;
+using Wszystko_API.Offers.Simple_Offer_Model.Interface;
 
 namespace Wszystko_API.Offers
 {
 	[Description("Used for downloading offers from https://wszystko.pl/")]
-	public class SimpleOfferModel
+	public class SimpleDownloadOffersModel: IDownloadOffersModel
 	{
 		//[ReadOnly(true)]
 		public int Id { get; set; }
 		public string Title { get; set; }
-		public string MainPhotoUrl { get; set; }
-		public StatusType status { get; set; }
+		public Uri MainPhotoUrl { get; set; }
+		public OfferStatusType Status { get; set; }
 		public double Price { get; set; }
 		public int Quantity { get; set; }
 		//[Required]

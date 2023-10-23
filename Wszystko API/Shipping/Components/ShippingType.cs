@@ -4,15 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.Offers
+namespace Wszystko_API.Shipping.Components
 {
-	public enum StatusType
+	public enum ShippingType
 	{
-		active,
-		ended,
-		blocked,
-		draft,
-		underVerification,
-		archived
+		courier,
+		pickupPoint,
+		postal,
+		digital
 	}
 }

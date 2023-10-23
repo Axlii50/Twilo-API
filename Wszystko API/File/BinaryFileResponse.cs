@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.General_Offer_Model.Components
+namespace Wszystko_API.File
 {
-	public enum OfferStatusType
+	public class BinaryFileResponse
 	{
-		active,
-		ended,
-		blocked,
-		draft
+		public Uri Url { get; set; }
+		public string Name { get; set; }
 	}
 }

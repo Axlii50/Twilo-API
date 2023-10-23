@@ -21,6 +21,17 @@ using Wszystko_API;
 using Wszystko_API.Categories;
 using static System.Net.Mime.MediaTypeNames;
 using System.Reflection;
+using Wszystko_API.Orders.Components;
+using Wszystko_API.Shipping;
+using static System.Net.WebRequestMethods;
+using Wszystko_API.Product;
+using Wszystko_API.File;
+using System.Net.Mime;
+using Wszystko_API.Offers.General_Offer_Model.Components;
+using Wszystko_API.Offers.Common_Components;
+using Wszystko_API.Global_Components;
+using Wszystko_API.Offers;
+using Wszystko_API.Offers.General_Offer_Model;
 
 //kempo
 string ClientSecret = "aKgn8GbxJqghLVvqvYpM3Bdlb5eQmCdx6jm2KBybsmSNEfYZtnuHCemwLa5xOvde";
@@ -368,17 +379,115 @@ Console.WriteLine(test);
 //var test0 = await wszystkoApi.GetSessions();
 //foreach (var session in test0)
 //{
-//	await wszystkoApi.DeleteConnection(session.Id);
+//	Console.WriteLine($"{session.Id} {session.UserName}");
 //}
 
-//var test1 = await wszystkoApi.GetAllOffers();
-//System.Diagnostics.Debug.WriteLine(test1);
+//DownloadOfferArrayModel test1 = await wszystkoApi.GetAllOffers();
+//foreach (Wszystko_API.Offers.Simple_Offer_Model.Interface.IDownloadOffersModel offer in test1.Offers)
+//{
+//    Console.WriteLine($"{offer.Title} {offer.Id} {offer.Price}");
+//}
 
-//var test3 = await wszystkoApi.CreateOffer("tytuł", 10, 96, true, Wszystko_API.Product.VatRateType.zero, Wszystko_API.Product.LeadTimeType.Natychmiast, Wszystko_API.Product.StockQuantityUnitType.sztuk, Wszystko_API.Product.OfferStatusType.blocked, 50, 50, null, null, null, null);
-//System.Diagnostics.Debug.WriteLine(test3);
+//ShippingModel[] test11 = await wszystkoApi.GetShippingMethods();
+//foreach (var shippingModel in test11)
+//{
+//	Console.WriteLine(shippingModel.Name);
+//}
+
+//ShippingTariffModel[] test12 = await wszystkoApi.GetAllShippingTariffs();
+//foreach (var shippingTariff in test12)
+//{
+//	Console.WriteLine($"{shippingTariff.Name} {shippingTariff.Id}");
+//}
+
+
+
+//------------------------------------------------------
+//byte[] binaryData = System.IO.File.ReadAllBytes($"D:/Pobrane/czlowiek-w-pozukiwaniu-sensu-viktor-e-frankl-24h.png");
+//BinaryFileResponse x = await wszystkoApi.AddBinaryFile(binaryData);
+
+//var shippingPolicies = await wszystkoApi.GetAllShippingTariffs();
+//var complaintPolicies = await wszystkoApi.GetAllComplaintsPolicies();
+//var returnPolicies = await wszystkoApi.GetAllReturnPolicies();
+
+//Item[] descriptionItem = new Item[]
+//{
+//	new Item
+//	{
+//		ContentType = ContentTypeType.text.ToString(),
+//		Value = "Your Text Value"
+//	}
+//};
+
+//Description[] descriptions = new Description[]
+//{
+//	new Description
+//	{
+//		Items = descriptionItem
+//	}
+//};
+
+//ParameterKit[] parameters = new ParameterKit[]
+//{
+//	new ParameterKit
+//	{
+//		Id = 1,
+//		Value = 5
+//	}
+//};
+
+//RequestAddProductOffer product = new RequestAddProductOffer()
+//{
+//	Title = "tytuł",
+//	Price = 10,
+//	CategoryId = 96,
+//	Gallery = new Uri[] { x.Url },
+//	VatRate = VatRateType.zero.VatRateToString(),
+//	LeadTime = LeadTimeType.Natychmiast.LeadTimeToString(),
+//	StockQuantityUnit = StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
+//	OfferStatus = Wszystko_API.General_Offer_Model.Components.OfferStatusType.blocked.ToString(),
+//	IsDraft = true,
+//	UserQuantityLimit = 50,
+//	StockQuantity = 50,
+//	GuaranteeId = null,
+//	ComplaintPolicyId = complaintPolicies[0].Id.ToString(),
+//	ReturnPolicyId = returnPolicies[0].Id.ToString(),
+//	ShippingTariffId = shippingPolicies[0].Id.ToString(),
+//	Parameters = parameters,
+//	Descriptions = descriptions,
+//	ShowUnitPrice = true
+//};
+
+//var test3 = await wszystkoApi.CreateOffer(product);
+//-----------------------------------------------------------------
 
 //var test4 = await wszystkoApi.GetOfferData("1006723824");
-//System.Diagnostics.Debug.WriteLine(test3);
+//System.Diagnostics.Debug.WriteLine(test4.OfferLink);
+
+//UpdateOfferModel updateOfferModel = new UpdateOfferModel()
+//{
+//	Title = "xdxd",
+//	Price = 21.37,
+//	CategoryId = 96,
+//	Gallery = new Uri[] { },
+//	VatRate = VatRateType.five.VatRateToString(),
+//	LeadTime = LeadTimeType.Natychmiast.LeadTimeToString(),
+//	StockQuantityUnit = StockQuantityUnitType.sztuk.StockQuantityUnitTypeToString(),
+//	OfferStatus = Wszystko_API.General_Offer_Model.Components.OfferStatusType.blocked.ToString(),
+//	IsDraft = true,
+//	UserQuantityLimit = 50,
+//	StockQuantity = 50,
+//	GuaranteeId = null,
+//	ComplaintPolicyId = complaintPolicies[0].Id.ToString(),
+//	ReturnPolicyId = returnPolicies[0].Id.ToString(),
+//	ShippingTariffId = shippingPolicies[0].Id.ToString(),
+//	Parameters = parameters,
+//	Descriptions = descriptions,
+//	ShowUnitPrice = true
+//};
+//var test14 = await wszystkoApi.UpdateOfferData(1007020828, updateOfferModel);
+//System.Diagnostics.Debug.WriteLine(test14);
+
 
 //var test5 = await wszystkoApi.GetAllOrders();
 //foreach (var order in test5.simpleOrderModels)
@@ -411,30 +520,42 @@ Console.WriteLine(test);
 //{
 //	foreach (Wszystko_API.Categories.CategoryInTree category in categoryBatch.Categories)
 //	{
-//		sb.AppendLine(category.Name + " " + category.Id);
+//		sb.AppendLine(category.Name + " " + category.Id + category.);
 //	}
 //}
 
-//File.WriteAllText(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt", string.Empty);
+//System.IO.File.WriteAllText(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt", test8.ToString());
 //using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
 //{
 //	writer.Write(sb.ToString());
 //}
 
+//var testx = await wszystkoApi.GetCategoryTreeAndAllParameters(8829);
+
+
 //StringBuilder sb = new StringBuilder();
 //using (StreamWriter writer = new StreamWriter(@"C:\Users\ATEM\source\repos\Axlii50\categories.txt"))
 //{
-//	var test9 = await wszystkoApi.GetCategoriesByLevel(1);
+//	var test9 = await wszystkoApi.GetCategoriesByLevel(0);
 
 //	foreach (Wszystko_API.Categories.Category category in test9)
 //	{
-//		sb.AppendLine($"{category.Name}\t{category.Id}\t{category.ParentId}");
+//		sb.AppendLine($"{category.Name}\t{category.Id}\t{category.ParentId}\t{category.UrlPart}");
 //	}
 //	writer.WriteLine(sb.ToString());
 //}
 
+//var test10 = await wszystkoApi.GetShippingMethods();
+//foreach (ShippingModel model in test10)
+//{
+//    Console.WriteLine($"{model.Id} {model.Name} {model.Shipping} {model.logoUri} {model.AvailableShippingMethodOptions.AdvancePayment} {model.AvailableShippingMethodOptions.CashOnDelivery} {model.MinShippingDays} {model.MaxShippingDays} {model.EarliestEstimatedShippingDate} {model.LatestEstimatedShippingDate}");
+//}
+
 
 //TESTY BEZ ARGUMENTÓW OPCJONALNYCH W REQUESTACH
+
+//Shipping:
+//DZIAŁA: GetShippingMethods()
 
 //OFFERS:
 //DZIAŁA: GetSessions(), GetAllOffers(), GetOfferData("1006723824"), CreateOffer()

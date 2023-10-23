@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace Wszystko_API.Offers
 {
-	public class SimpleOfferList
+	public enum OfferStatusType
 	{
-		public List<SimpleOfferModel> Offerts { get; set; }
-		public int NumberOfOffers { get; set; }
+		active,
+		ended,
+		blocked,
+		draft,
+		underVerification,
+		archived
 	}
 }

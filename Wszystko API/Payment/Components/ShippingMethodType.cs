@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wszystko_API.General_Offer_Model.Components
+namespace Wszystko_API.Payment.Components
 {
-	public enum OfferStatusType
+	public enum ShippingMethodType
 	{
-		active,
-		ended,
-		blocked,
-		draft
+		courier,
+		pickupPoint,
+		postal,
+		digital
 	}
 }
