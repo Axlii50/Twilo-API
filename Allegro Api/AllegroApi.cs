@@ -156,6 +156,8 @@ namespace Allegro_Api
 
             VerificationULRModel model = JsonConvert.DeserializeObject<VerificationULRModel>(odp.Content.ReadAsStringAsync().Result);
 
+            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
             DeviceCode = model.device_code;
             return model;
         }
@@ -676,7 +678,7 @@ namespace Allegro_Api
 
             string json = JsonConvert.SerializeObject(allegrooffer);
             System.Diagnostics.Debug.WriteLine(json);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
 
             //https://api.{environment}/sale/product-offers
             HttpResponseMessage odp = null;
@@ -963,7 +965,7 @@ namespace Allegro_Api
             string json = JsonConvert.SerializeObject(product);
 
             var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
-            //System.Diagnostics.Debug.WriteLine("Test :" +json);
+            System.Diagnostics.Debug.WriteLine(json);
             HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/sale/product-proposals", content);
 
             if (odp == null) return ("", null);
@@ -1003,10 +1005,11 @@ namespace Allegro_Api
             ProductModel product = null;
 
             var result = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result);
+            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             odp.Dispose();
 
-            if (product == null) return null;
+            if (result == null) return null;
 
             if (result.products != null && result.products.Length > 0)
                 product = result.products[0];

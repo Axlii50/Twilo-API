@@ -18,5 +18,7 @@ namespace Allegro_Api.Models.Product
         public StandardizedDescription description { get; set; }    
 
         public ProductParameter[] parameters { get; set; }
+
+        public string language { get; set; } = "pl-PL";
     }
 }
