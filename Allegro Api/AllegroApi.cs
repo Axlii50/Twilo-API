@@ -1017,16 +1017,19 @@ namespace Allegro_Api
             return product;
         }
 
-        public async Task<bool> ValidateProduct(string productdesciption, string ISBN)
+        public async Task<string> ValidateProduct(string productdesciption, string ISBN)
         {
             //search for url in description
             Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            if (rx.IsMatch(productdesciption))
-            {
-                return false;
-            }
+
+            productdesciption = rx.Replace(productdesciption, @"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)");
+
+            //if (rx.IsMatch(productdesciption))SS
+            //{
+            //    return false;
+            //}
             rx = null;
-            return true;
+            return productdesciption;
         }
 
         #endregion

@@ -34,10 +34,6 @@ namespace Wszystko_API
 {
     public class WszystkoApi
     {
-        //client informations
-        private string ClientID = string.Empty;
-        private string ClientSecret = string.Empty;
-
         //Wszystko URLs
         private string WszystkoBaseURL = $"https://wszystko.pl/api";
 
@@ -58,13 +54,18 @@ namespace Wszystko_API
         public event RefreshTokenDelgate RefreshTokenEvent;
 
 
-        public WszystkoApi(string ClientID, string ClientSecret, RefreshTokenDelgate refreshtokenevent)
+        public WszystkoApi(string RefreshToken, RefreshTokenDelgate refreshtokenevent)
         {
-
-
+            RefreshTokenEvent += refreshtokenevent;
+            this.RefreshToken = RefreshToken;
         }
 
-		#region UtilityMethods
+        public WszystkoApi(RefreshTokenDelgate refreshtokenevent)
+        {
+            RefreshTokenEvent += refreshtokenevent;
+        }
+
+        #region UtilityMethods
 
         /// <summary>
         /// Use with types such as: string
@@ -72,7 +73,7 @@ namespace Wszystko_API
         /// <param name="query"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
-		private void AddIfNotNullOrEmpty(ref NameValueCollection query, string key, string value)
+        private void AddIfNotNullOrEmpty(ref NameValueCollection query, string key, string value)
 		{
 			if (!string.IsNullOrEmpty(value))
 			{
@@ -148,19 +149,9 @@ namespace Wszystko_API
 		public async Task<BaseAuthModel> GenerateDeviceCode()
         {
             using HttpClient client = new HttpClient();
-            //create normal string for client id and client secret
-            string formatedstring = $"{ClientID}:{ClientSecret}";
-
-            byte[] bytes = Encoding.UTF8.GetBytes(formatedstring);
-            //create auth string containg normal in base 64
-            string AuthString = "Basic " + Convert.ToBase64String(bytes);
 
             client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", AuthString);
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-
-            //tutaj zwieramy params oraz header do typu aplikacji ponieważ content-type header jest typem contentu nie requesta
-            var content = new StringContent($"client_id={ClientID}", Encoding.UTF8, "application/x-www-form-urlencoded");
 
             HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + "/integration/register");
 
