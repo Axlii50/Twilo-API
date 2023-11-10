@@ -588,9 +588,10 @@ namespace Wszystko_API
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 			//System.Console.WriteLine(odpcontent);
 
-			DownloadOfferArrayModel simpleOfferList = JsonConvert.DeserializeObject<DownloadOfferArrayModel>(odpcontent);
+			var converter = new DownloadOffersModelConverter(isFullData);
+			DownloadOfferArrayModel DownloadOfferList = JsonConvert.DeserializeObject<DownloadOfferArrayModel>(odpcontent, new JsonSerializerSettings { Converters = new List<JsonConverter> { converter } });
 
-			return simpleOfferList;
+			return DownloadOfferList;
 		}
 
 		// niejasne argumenty obowiązkowe

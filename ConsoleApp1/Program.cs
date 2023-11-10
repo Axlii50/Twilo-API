@@ -71,9 +71,9 @@ string ClientID = "94a3f5cfe4a1412ea0aa0e90392fb7f4";
 
 //var offer = await AllegroApi.GetDetailedOffer("14550670527");
 
-WszystkoApi wszystkoApi = new(null);
+//WszystkoApi wszystkoApi = new(null);
 
-var test = await wszystkoApi.GenerateDeviceCode();
+//var test = await wszystkoApi.GenerateDeviceCode();
 
 
 Console.ReadLine();
