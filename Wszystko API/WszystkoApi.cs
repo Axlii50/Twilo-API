@@ -733,19 +733,16 @@ namespace Wszystko_API
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-			var json = JsonConvert.SerializeObject(serialOfferModel);
+            SerialOfferChangeModel changeModel = new SerialOfferChangeModel()
+            {
+                Ids = relevantOfferIds,
+                ChangesSet = serialOfferModel
+            };
+
+			var json = JsonConvert.SerializeObject(changeModel);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
 			UriBuilder builder = new UriBuilder(WszystkoBaseURL + $"/me/update-offers");
-
-			NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
-
-			foreach (var id in relevantOfferIds)
-			{
-				query.Add("resourceIntegerId", id.ToString());
-			}
-
-			builder.Query = query.ToString();
 
             HttpResponseMessage odp = await client.PostAsync(builder.Uri, content);
 
