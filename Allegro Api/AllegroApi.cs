@@ -1020,15 +1020,18 @@ namespace Allegro_Api
         public async Task<string> ValidateProduct(string productdesciption, string ISBN)
         {
             //search for url in description
-            Regex rx = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            Regex Links = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            Regex CompanyLogos = new Regex(@"[a-zA-Z]{0,100}\(R\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-            productdesciption = rx.Replace(productdesciption, @"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)");
+            productdesciption = Links.Replace(productdesciption, "");
+            productdesciption = CompanyLogos.Replace(productdesciption, "");
 
             //if (rx.IsMatch(productdesciption))SS
             //{
             //    return false;
             //}
-            rx = null;
+            Links = null;
+            CompanyLogos = null;
             return productdesciption;
         }
 
@@ -1307,8 +1310,18 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
-
-            HttpContent odp = (await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{OrderID}")).Content;
+            HttpContent odp = null;
+            try
+            {
+                 odp = (await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{OrderID}")).Content;
+            }
+            catch (HttpRequestException)
+            {
+                while (odp == null)
+                {
+                    odp = (await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{OrderID}")).Content;
+                }
+            }
 
             DetailedCheckOutForm model = JsonConvert.DeserializeObject<DetailedCheckOutForm>(odp.ReadAsStringAsync().Result);
 

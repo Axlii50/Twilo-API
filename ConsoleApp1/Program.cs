@@ -34,12 +34,12 @@ using Wszystko_API.Offers;
 using Wszystko_API.Offers.General_Offer_Model;
 
 //kempo
-string ClientSecret = "TboT3xZ0fH3F5bEEOR0KDVSugW9iLv9gBBphn8U2aKM2TKp9tgJAEoYu0motWoUU";
-string ClientID = "94a3f5cfe4a1412ea0aa0e90392fb7f4";
+//string ClientSecret = "TboT3xZ0fH3F5bEEOR0KDVSugW9iLv9gBBphn8U2aKM2TKp9tgJAEoYu0motWoUU";
+//string ClientID = "94a3f5cfe4a1412ea0aa0e90392fb7f4";
 
 //twilo1
-//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 ////twilo3
 ////string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
@@ -48,32 +48,36 @@ string ClientID = "94a3f5cfe4a1412ea0aa0e90392fb7f4";
 
 
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-//Console.WriteLine(t.device_code);
-//Console.WriteLine(t.verification_uri_complete);
+Console.WriteLine(t.device_code);
+Console.WriteLine(t.verification_uri_complete);
 
-//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-//sInfo.UseShellExecute = true;
-//Process Verification = Process.Start(sInfo);
+ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
 
-//bool access = false;
-//while (!access)
-//{
-//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+bool access = false;
+while (!access)
+{
+    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-//    Thread.Sleep(5000);
-//}
+    Thread.Sleep(5000);
+}
+
+var offers = AllegroApi.GetAllOffers();
+
+var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
 
 //var offer = await AllegroApi.GetDetailedOffer("14550670527");
 
-WszystkoApi wszystkoApi = new(null);
+//WszystkoApi wszystkoApi = new(null);
 
-var test = await wszystkoApi.GenerateDeviceCode();
+//var test = await wszystkoApi.GenerateDeviceCode();
 
 
 Console.ReadLine();
