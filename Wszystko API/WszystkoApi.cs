@@ -479,11 +479,11 @@ namespace Wszystko_API
 
             if (!isFullData)
             {
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.pl.wszystko.v1.full+json"));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             }
             else
             {
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.pl.wszystko.v1.full+json"));
 			}
 
 
@@ -501,10 +501,15 @@ namespace Wszystko_API
 			HttpResponseMessage odp = await client.GetAsync(builder.Uri);
 
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
-            //System.Console.WriteLine(odpcontent);
 
-            var converter = new DownloadOffersModelConverter(isFullData);
-            DownloadOfferArrayModel downloadOfferArray = JsonConvert.DeserializeObject<DownloadOfferArrayModel>(odpcontent, new JsonSerializerSettings { Converters = new List<JsonConverter> { converter } });
+            DownloadOffersModelConverter converter = new DownloadOffersModelConverter(isFullData);
+
+            var settings = new JsonSerializerSettings()
+            {
+                Converters = new List<JsonConverter> { converter }
+            };
+
+			DownloadOfferArrayModel downloadOfferArray = JsonConvert.DeserializeObject<DownloadOfferArrayModel>(odpcontent, settings);
 
 			return downloadOfferArray;
 		}
@@ -589,7 +594,12 @@ namespace Wszystko_API
 			//System.Console.WriteLine(odpcontent);
 
 			var converter = new DownloadOffersModelConverter(isFullData);
-			DownloadOfferArrayModel DownloadOfferList = JsonConvert.DeserializeObject<DownloadOfferArrayModel>(odpcontent, new JsonSerializerSettings { Converters = new List<JsonConverter> { converter } });
+            var settings = new JsonSerializerSettings()
+            {
+                Converters = new List<JsonConverter> { converter }
+            };
+
+			DownloadOfferArrayModel DownloadOfferList = JsonConvert.DeserializeObject<DownloadOfferArrayModel>(odpcontent, settings);
 
 			return DownloadOfferList;
 		}
