@@ -45,6 +45,7 @@ namespace Wszystko_API.Offers.General_Offer_Model
 		public int Purchased { get; set; }
 		public int Visits { get; set; }
 		public int Sold { get; set; }
+		public bool AdultOnly { get; set; }
 		public bool ShowUnitPrice { get; set; }
 		public string GuaranteeSnapshotId { get; set; }
 		public string ComplaintPolicySnapshotId { get; set; }

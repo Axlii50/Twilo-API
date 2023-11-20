@@ -606,7 +606,7 @@ namespace Wszystko_API
 
 		// niejasne argumenty obowiązkowe
 		// title, price, leadtime, stockquantityunit, offerstatus, userquantitylimit, isdraft
-		public async Task<RequestAddProductOffer> CreateOffer(string title, int price, int categoryId, bool isDraft, VatRateType vatRate, LeadTimeType leadTime,
+		public async Task<ResponseBodyProductOffer> CreateOffer(string title, int price, int categoryId, bool isDraft, VatRateType vatRate, LeadTimeType leadTime,
                                                               StockQuantityUnitType stockQuantityUnitType, General_Offer_Model.Components.OfferStatusType offerStatus, int userQuantityLimit,
                                                               int stockQuantity, Uri[]? photos, string? guaranteeId, string? complaintPolicyId, string? returnPolicyId,
                                                               string? shippingTarrifId, ParameterKit[] parameters, Description[] descriptions, bool showUnitPrice = true)
@@ -645,9 +645,9 @@ namespace Wszystko_API
 			//System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
 			string responseBody = odp.Content.ReadAsStringAsync().Result;
-            RequestAddProductOffer requestAddProductOffer = JsonConvert.DeserializeObject<RequestAddProductOffer>(responseBody);
+			ResponseBodyProductOffer responseAddProductOffer = JsonConvert.DeserializeObject<ResponseBodyProductOffer>(responseBody);
 
-            return requestAddProductOffer;
+            return responseAddProductOffer;
 		}
 
         /// <summary>
@@ -655,7 +655,7 @@ namespace Wszystko_API
         /// </summary>
         /// <param name="addProductOffer"></param>
         /// <returns></returns>
-		public async Task<RequestAddProductOffer> CreateOffer(RequestAddProductOffer addProductOffer)
+		public async Task<ResponseBodyProductOffer> CreateOffer(RequestAddProductOffer addProductOffer)
 		{
 			using HttpClient client = new HttpClient();
 			client.DefaultRequestHeaders.Clear();
@@ -670,9 +670,9 @@ namespace Wszystko_API
 			//System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
 			string responseBody = odp.Content.ReadAsStringAsync().Result;
-			RequestAddProductOffer requestAddProductOffer = JsonConvert.DeserializeObject<RequestAddProductOffer>(responseBody);
+			ResponseBodyProductOffer responseAddProductOffer = JsonConvert.DeserializeObject<ResponseBodyProductOffer>(responseBody);
 
-			return requestAddProductOffer;
+			return responseAddProductOffer;
 		}
 
         /// <summary>
@@ -892,9 +892,12 @@ namespace Wszystko_API
             using HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.pl.wszystko.v1.full+json"));
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			//client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.pl.wszystko.v1.full+json"));
 
-            HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/guarantees");
+			HttpResponseMessage odp = await client.GetAsync(WszystkoBaseURL + $"/me/guarantees");
+
+            System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             string responseBody = odp.Content.ReadAsStringAsync().Result;
             Guarantee[] guarantees = JsonConvert.DeserializeObject<Guarantee[]>(responseBody);

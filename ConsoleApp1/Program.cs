@@ -29,6 +29,7 @@ using Wszystko_API.File;
 using System.Net.Mime;
 using Wszystko_API.Offers.General_Offer_Model.Components;
 using Wszystko_API.Offers.Common_Components;
+using Wszystko_API.Offers.Simple_Offer_Model.Interface;
 
 //kempo
 //string ClientSecret = "TboT3xZ0fH3F5bEEOR0KDVSugW9iLv9gBBphn8U2aKM2TKp9tgJAEoYu0motWoUU";
@@ -45,36 +46,62 @@ string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//bool access = false;
+//while (!access)
+//{
+//	Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+//	access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-    Thread.Sleep(5000);
-}
+//	Thread.Sleep(5000);
+//}
 
-var offers = AllegroApi.GetAllOffers();
+//var offers = AllegroApi.GetAllOffers();
 
-var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
+//var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
 
 //var offer = await AllegroApi.GetDetailedOffer("14550670527");
 
-//WszystkoApi wszystkoApi = new(null);
+WszystkoApi wszystkoApi = new(null);
 
-//var test = await wszystkoApi.GenerateDeviceCode();
+var test = await wszystkoApi.GenerateDeviceCode();
 
+bool authenticate = false;
+
+Console.WriteLine(test.verificationUriPrettyComplete);
+
+ProcessStartInfo sInfo2 = new ProcessStartInfo(test.verificationUriPrettyComplete);
+sInfo2.UseShellExecute = true;
+Process Verification2 = Process.Start(sInfo2);
+
+while (!authenticate)
+{
+	authenticate = await wszystkoApi.CheckForAccessToken();
+	Console.WriteLine(authenticate);
+}
+
+//var test1 = await wszystkoApi.GetAllOffers();
+//IDownloadOffersModel[] model = test1.Offers;
+//foreach (var model2 in model)
+//{
+//	System.Diagnostics.Debug.WriteLine(model2.Title);
+//}
+
+var test2 = await wszystkoApi.GetAllGuarantees();
+foreach (var guarantee in test2)
+{
+	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
+}
 
 Console.ReadLine();
