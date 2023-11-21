@@ -29,9 +29,7 @@ using Wszystko_API.File;
 using System.Net.Mime;
 using Wszystko_API.Offers.General_Offer_Model.Components;
 using Wszystko_API.Offers.Common_Components;
-using Wszystko_API.Global_Components;
-using Wszystko_API.Offers;
-using Wszystko_API.Offers.General_Offer_Model;
+using Wszystko_API.Offers.Simple_Offer_Model.Interface;
 
 //kempo
 //string ClientSecret = "TboT3xZ0fH3F5bEEOR0KDVSugW9iLv9gBBphn8U2aKM2TKp9tgJAEoYu0motWoUU";
@@ -62,11 +60,11 @@ string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 //bool access = false;
 //while (!access)
 //{
-//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//	Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+//	access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-//    Thread.Sleep(5000);
+//	Thread.Sleep(5000);
 //}
 
 //var offers = AllegroApi.GetAllOffers();
@@ -75,24 +73,35 @@ string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 //var offer = await AllegroApi.GetDetailedOffer("14550670527");
 
-//WszystkoApi wszystkoApi = new(null);
+WszystkoApi wszystkoApi = new(null);
 
-//var test = await wszystkoApi.GenerateDeviceCode();
+var test = await wszystkoApi.GenerateDeviceCode();
 
+bool authenticate = false;
 
-string AteneumLogin = "kempo_warszawa";
-string AteneumPassword = "6KsSGWT6dhD9r8Xvvr";
-string LiberLogin = "38103";
-string LiberPassword = "38103_2345";
+Console.WriteLine(test.verificationUriPrettyComplete);
 
-var AteneumApi = new AteneumApi(AteneumLogin, AteneumPassword);
+ProcessStartInfo sInfo2 = new ProcessStartInfo(test.verificationUriPrettyComplete);
+sInfo2.UseShellExecute = true;
+Process Verification2 = Process.Start(sInfo2);
 
-var LibreApi = new LibreApi(LiberPassword, LiberLogin);
+while (!authenticate)
+{
+	authenticate = await wszystkoApi.CheckForAccessToken();
+	Console.WriteLine(authenticate);
+}
 
-//var test = await AteneumApi.GetAllBooksWithMagazin(0);
-var Libe = await LibreApi.GetAllBooks(0);
+//var test1 = await wszystkoApi.GetAllOffers();
+//IDownloadOffersModel[] model = test1.Offers;
+//foreach (var model2 in model)
+//{
+//	System.Diagnostics.Debug.WriteLine(model2.Title);
+//}
 
-//var temp = test.Where(x => x.ident_ate == "466393" || x.ident_ate == "333353" || x.ident_ate == "474565").ToList();
-var temp = Libe.Where(x => x.ID == "284737").ToList();
+var test2 = await wszystkoApi.GetAllGuarantees();
+foreach (var guarantee in test2)
+{
+	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
+}
 
 Console.ReadLine();

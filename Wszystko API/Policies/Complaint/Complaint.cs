@@ -13,5 +13,8 @@ namespace Wszystko_API.Policies.Complaint
 		public int ComplaintYears { get; set; }
 		public bool IsForBusiness { get; set; }
 		public PolicyAddress Address { get; set; }
+		public string CompanyName { get; set; }
+		public string Name { get; set; }
+		public string AdditionalInformation { get; set; }
 	}
 }

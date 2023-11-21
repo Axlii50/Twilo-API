@@ -23,6 +23,7 @@ namespace Wszystko_API.Offers.Interfaces
         public int Visits { get; set; }
         public int Sold { get; set; }
         public bool ShowUnitPrice { get; set; }
+        public bool AdultOnly { get; set; }
         public string GuaranteeSnapshotId { get; set; }
         public string ComplaintPolicySnapshotId { get; set; }
         public string ReturnPolicySnapshotId { get; set; }
