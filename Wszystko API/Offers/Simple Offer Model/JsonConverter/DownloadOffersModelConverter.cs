@@ -24,11 +24,23 @@ namespace Wszystko_API.Offers.Simple_Offer_Model.JsonConverter
 
 			if (!isFullDetail)
 			{
+				System.Diagnostics.Debug.WriteLine("działa");
+				const string jsonProperty = "Records";
+
+				JToken propertyValue = jsonObject["Offers"];
+
+				JProperty newProperty = new JProperty(jsonProperty, propertyValue);
+
+				jsonObject.Property("Offers").Remove();
+
+				jsonObject.Add(newProperty);
+
 				return jsonObject.ToObject<SimpleDownloadOffersModel>();
 			}
 			else
 			{
-				return jsonObject.ToObject<DetailedDownloadOffersModel>();
+				var obj = jsonObject.ToObject<DetailedDownloadOffersModel>();
+				return obj;
 			}
 		}
 

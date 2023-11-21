@@ -11,7 +11,6 @@ namespace Wszystko_API.Offers
 {
 	public class DownloadOfferArrayModel
 	{
-		[JsonProperty("records")]
 		public IDownloadOffersModel[] Offers { get; set; }
 		[JsonProperty("totalElements")]
 		public int NumberOfOffers { get; set; }
