@@ -48,30 +48,30 @@ string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-bool access = false;
-while (!access)
-{
-    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//bool access = false;
+//while (!access)
+//{
+//    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
 
-    access = AllegroApi.CheckForAccessToken(Permissions).Result;
+//    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-    Thread.Sleep(5000);
-}
+//    Thread.Sleep(5000);
+//}
 
-var offers = AllegroApi.GetAllOffers();
+//var offers = AllegroApi.GetAllOffers();
 
-var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
+//var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
 
 //var offer = await AllegroApi.GetDetailedOffer("14550670527");
 
@@ -79,5 +79,20 @@ var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault
 
 //var test = await wszystkoApi.GenerateDeviceCode();
 
+
+string AteneumLogin = "kempo_warszawa";
+string AteneumPassword = "6KsSGWT6dhD9r8Xvvr";
+string LiberLogin = "38103";
+string LiberPassword = "38103_2345";
+
+var AteneumApi = new AteneumApi(AteneumLogin, AteneumPassword);
+
+var LibreApi = new LibreApi(LiberPassword, LiberLogin);
+
+//var test = await AteneumApi.GetAllBooksWithMagazin(0);
+var Libe = await LibreApi.GetAllBooks(0);
+
+//var temp = test.Where(x => x.ident_ate == "466393" || x.ident_ate == "333353" || x.ident_ate == "474565").ToList();
+var temp = Libe.Where(x => x.ID == "284737").ToList();
 
 Console.ReadLine();

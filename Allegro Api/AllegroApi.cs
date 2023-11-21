@@ -1005,7 +1005,6 @@ namespace Allegro_Api
             ProductModel product = null;
 
             var result = JsonConvert.DeserializeObject<AllegroProductResponse>(odp.Content.ReadAsStringAsync().Result);
-            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             odp.Dispose();
 
@@ -1026,10 +1025,6 @@ namespace Allegro_Api
             productdesciption = Links.Replace(productdesciption, "");
             productdesciption = CompanyLogos.Replace(productdesciption, "");
 
-            //if (rx.IsMatch(productdesciption))SS
-            //{
-            //    return false;
-            //}
             Links = null;
             CompanyLogos = null;
             return productdesciption;
