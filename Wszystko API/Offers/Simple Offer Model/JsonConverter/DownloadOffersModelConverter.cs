@@ -31,7 +31,9 @@ namespace Wszystko_API.Offers.Simple_Offer_Model.JsonConverter
 
 				JProperty newProperty = new JProperty(jsonProperty, propertyValue);
 
-				jsonObject.Property("Offers").Remove();
+				var jso = jsonObject.Property("Offers");
+
+				System.Diagnostics.Debug.WriteLine(jsonObject.Remove(jsonProperty));
 
 				jsonObject.Add(newProperty);
 
