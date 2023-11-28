@@ -137,7 +137,7 @@ namespace Libre_API
             using (var client = new WebClient())
             {
                 client.Credentials = new NetworkCredential(ftpUserName, ftpPassword);
-                _ = client.UploadFile($"ftp://83.142.195.2/{FileName}", WebRequestMethods.Ftp.UploadFile, FileName);
+                _ = client.UploadFile($"ftp://83.142.195.2/{(ftpUserName == "twilo" ? "Zamówienia/Twilo/" : "")}{FileName}", WebRequestMethods.Ftp.UploadFile, FileName);
             }
         }
 

@@ -31,77 +31,120 @@ using Wszystko_API.Offers.General_Offer_Model.Components;
 using Wszystko_API.Offers.Common_Components;
 using Wszystko_API.Offers.Simple_Offer_Model.Interface;
 
-//kempo
+////kempo
 //string ClientSecret = "TboT3xZ0fH3F5bEEOR0KDVSugW9iLv9gBBphn8U2aKM2TKp9tgJAEoYu0motWoUU";
 //string ClientID = "94a3f5cfe4a1412ea0aa0e90392fb7f4";
 
-//twilo1
+////kempopakiety
+//string ClientSecret = "7dW5xjpaa6S9tzZvrb4Sw8SSsWL1kuRqf27tCdc1Gnk8a7FhJJCLJ5ClyY0xDXIZ";
+//string ClientID = "22054e3f234443a1bdaaa373b06d3053";
+
+////twilo1
 string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
 string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
+////twilo2
+//string ClientSecret = "TWGWXn93FMpJg95ILioJvBrYr01pODTfSHfrPY2uX190OD9anosHhMEZrnNQGgXG";
+//string ClientID = "41eadd79d2dd475cb5697f3802f01775";
+
 ////twilo3
-////string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
-////string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
+//string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
+//string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
 
 
 
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-//Console.WriteLine(t.device_code);
-//Console.WriteLine(t.verification_uri_complete);
+Console.WriteLine(t.device_code);
+Console.WriteLine(t.verification_uri_complete);
 
-//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-//sInfo.UseShellExecute = true;
-//Process Verification = Process.Start(sInfo);
+ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
 
-//bool access = false;
-//while (!access)
+bool access = false;
+while (!access)
+{
+	Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+
+	access = AllegroApi.CheckForAccessToken(Permissions).Result;
+
+	Thread.Sleep(5000);
+}
+
+var offers = AllegroApi.GetAllOffers();
+DateTime now = DateTime.Now;
+now = now.AddHours(-96);
+DateTime Formatted = new DateTime(now.Ticks, DateTimeKind.Utc);
+Formatted = Formatted.AddHours(-3);
+var orders = await AllegroApi.GetOrders(Formatted, Allegro_Api.OrderStatusType.PROCESSING);
+
+List<string> list = new List<string>();
+foreach (var order in orders)
+	list.Add(order.id.ToString());
+
+System.IO.File.WriteAllLines("TestTestTEStTwilo1.txt", list.ToArray());
+
+#region Get Emails
+
+//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+//var list = new List<string>();
+
+//foreach (var order in orders)
 //{
-//	Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write;
+//	if (order.delivery.time.from == "2023-11-28T23:00:00Z")
+//	{
+//		Console.WriteLine(order.id + "   " + order.buyer.email + "    " + order.delivery.time.from);
 
-//	access = AllegroApi.CheckForAccessToken(Permissions).Result;
-
-//	Thread.Sleep(5000);
+//		list.Add(order.buyer.email);
+//	}
 //}
 
-//var offers = AllegroApi.GetAllOffers();
+//System.IO.File.WriteAllText("Maile.txt", list.Aggregate((a,b) => a + ";" + b));
+#endregion
+
+
+
+
+
+
 
 //var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
 
 //var offer = await AllegroApi.GetDetailedOffer("14550670527");
 
-WszystkoApi wszystkoApi = new(null);
+//WszystkoApi wszystkoApi = new(null);
 
-var test = await wszystkoApi.GenerateDeviceCode();
+//var test = await wszystkoApi.GenerateDeviceCode();
 
-bool authenticate = false;
+//bool authenticate = false;
 
-Console.WriteLine(test.verificationUriPrettyComplete);
+//Console.WriteLine(test.verificationUriPrettyComplete);
 
-ProcessStartInfo sInfo2 = new ProcessStartInfo(test.verificationUriPrettyComplete);
-sInfo2.UseShellExecute = true;
-Process Verification2 = Process.Start(sInfo2);
+//ProcessStartInfo sInfo2 = new ProcessStartInfo(test.verificationUriPrettyComplete);
+//sInfo2.UseShellExecute = true;
+//Process Verification2 = Process.Start(sInfo2);
 
-while (!authenticate)
-{
-	authenticate = await wszystkoApi.CheckForAccessToken();
-	Console.WriteLine(authenticate);
-}
-
-//var test1 = await wszystkoApi.GetAllOffers();
-//IDownloadOffersModel[] model = test1.Offers;
-//foreach (var model2 in model)
+//while (!authenticate)
 //{
-//	System.Diagnostics.Debug.WriteLine(model2.Title);
+//	authenticate = await wszystkoApi.CheckForAccessToken();
+//	Console.WriteLine(authenticate);
 //}
 
-var test2 = await wszystkoApi.GetAllGuarantees();
-foreach (var guarantee in test2)
-{
-	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
-}
+////var test1 = await wszystkoApi.GetAllOffers();
+////IDownloadOffersModel[] model = test1.Offers;
+////foreach (var model2 in model)
+////{
+////	System.Diagnostics.Debug.WriteLine(model2.Title);
+////}
+
+//var test2 = await wszystkoApi.GetAllGuarantees();
+//foreach (var guarantee in test2)
+//{
+//	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
+//}
 
 Console.ReadLine();
