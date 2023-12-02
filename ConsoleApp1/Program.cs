@@ -75,35 +75,41 @@ while (!access)
 	Thread.Sleep(5000);
 }
 
-var offers = AllegroApi.GetAllOffers();
-DateTime now = DateTime.Now;
-now = now.AddHours(-96);
-DateTime Formatted = new DateTime(now.Ticks, DateTimeKind.Utc);
-Formatted = Formatted.AddHours(-3);
-var orders = await AllegroApi.GetOrders(Formatted, Allegro_Api.OrderStatusType.PROCESSING);
+#region Get orders id for auto order
+//var offers = AllegroApi.GetAllOffers();
 
-List<string> list = new List<string>();
-foreach (var order in orders)
-	list.Add(order.id.ToString());
+//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
 
-System.IO.File.WriteAllLines("TestTestTEStTwilo1.txt", list.ToArray());
+//List<string> list = new List<string>();
+//foreach (var order in orders)
+//	list.Add(order.id.ToString());
+
+//System.IO.File.WriteAllLines("TestTestTEStTwilo1.txt", list.ToArray()); 
+#endregion
 
 #region Get Emails
 
-//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
-//var list = new List<string>();
+var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+var list = new List<string>();
 
-//foreach (var order in orders)
-//{
-//	if (order.delivery.time.from == "2023-11-28T23:00:00Z")
-//	{
-//		Console.WriteLine(order.id + "   " + order.buyer.email + "    " + order.delivery.time.from);
+//var temp = orders.Where(x => x.id == "ee74a380-8de6-11ee-b3a8-6133a263ad6b").FirstOrDefault();
 
-//		list.Add(order.buyer.email);
-//	}
-//}
+foreach (var order in orders)
+{
+	Console.Write(order.id + "   " + order.buyer.email + "    " + order.delivery.time.from + "     " + order.delivery.time.dispatch.to);
+	if (/*order.delivery.time.from == "2023-11-29T23:00:00Z" || *//*order.delivery.time.dispatch.to == "2023-11-29T22:59:59.999Z"*/ order.status != "NEW" || order.status != "PROCESSING")
+	{
+		Console.Write("  Added \n");
 
-//System.IO.File.WriteAllText("Maile.txt", list.Aggregate((a,b) => a + ";" + b));
+		list.Add(order.buyer.email);
+	}
+	else
+	{
+		Console.Write("\n");
+	}
+}
+
+System.IO.File.WriteAllText("Maile.txt", list.Aggregate((a, b) => a + ";" + b));
 #endregion
 
 
