@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -18,6 +18,18 @@
     <ProjectReference Include="..\AteneumAPI\AteneumAPI.csproj" />
     <ProjectReference Include="..\Libre API\Libre API.csproj" />
     <ProjectReference Include="..\Wszystko API\Wszystko API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Allegro Api">
+      <HintPath>..\Allegro Api\bin\Debug\net6.0\Allegro Api.dll</HintPath>
+    </Reference>
+    <Reference Include="AteneumAPI">
+      <HintPath>..\AteneumAPI\bin\Debug\net6.0\AteneumAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="Libre API">
+      <HintPath>..\Libre API\bin\Debug\net6.0\Libre API.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -431,7 +431,7 @@ namespace Allegro_Api
             return response;
         }
 
-        public async Task<HttpResponseMessage> ChangeDeliveryTime(string offerId, DeliveryOfferModel deliveryOffer, string handlingtime)
+        public async Task<HttpResponseMessage> ChangeDeliveryTime(string offerId, DeliveryOfferModel deliveryOffer, string handlingtime = "")
         {
             using HttpClient client = new HttpClient();
 
@@ -442,7 +442,8 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
-            deliveryOffer.handlingTime = handlingtime;
+            if (handlingtime != "")
+                deliveryOffer.handlingTime = handlingtime;
 
             var jsonobject = new
             {
@@ -458,15 +459,15 @@ namespace Allegro_Api
                 client.Dispose();
                 return response;
             }
-            catch (SocketException)
+            catch (Exception)
             {
-                Task.Delay(TimeSpan.FromSeconds(TimeoutSeconds)).Wait();
+                Task.Delay(TimeSpan.FromSeconds(2)).Wait();
                 var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
                 client.Dispose();
                 return response;
             }
+           
         }
-
 
         public async Task<HttpResponseMessage> ChangeExternal(string offerId, string externalID)
         {

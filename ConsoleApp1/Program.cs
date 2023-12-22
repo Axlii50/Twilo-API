@@ -40,12 +40,12 @@ using Wszystko_API.Offers.Simple_Offer_Model.Interface;
 //string ClientID = "22054e3f234443a1bdaaa373b06d3053";
 
 ////twilo1
-string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 ////twilo2
-//string ClientSecret = "TWGWXn93FMpJg95ILioJvBrYr01pODTfSHfrPY2uX190OD9anosHhMEZrnNQGgXG";
-//string ClientID = "41eadd79d2dd475cb5697f3802f01775";
+string ClientSecret = "TWGWXn93FMpJg95ILioJvBrYr01pODTfSHfrPY2uX190OD9anosHhMEZrnNQGgXG";
+string ClientID = "41eadd79d2dd475cb5697f3802f01775";
 
 ////twilo3
 //string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
@@ -89,34 +89,61 @@ while (!access)
 
 #region Get Emails
 
-var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
-var list = new List<string>();
+//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+//var list = new List<string>();
 
-//var temp = orders.Where(x => x.id == "ee74a380-8de6-11ee-b3a8-6133a263ad6b").FirstOrDefault();
+////var temp = orders.Where(x => x.id == "ee74a380-8de6-11ee-b3a8-6133a263ad6b").FirstOrDefault();
 
-foreach (var order in orders)
-{
-	Console.Write(order.id + "   " + order.buyer.email + "    " + order.delivery.time.from + "     " + order.delivery.time.dispatch.to);
-	if (/*order.delivery.time.from == "2023-11-29T23:00:00Z" || *//*order.delivery.time.dispatch.to == "2023-11-29T22:59:59.999Z"*/ order.status != "NEW" || order.status != "PROCESSING")
-	{
-		Console.Write("  Added \n");
+//foreach (var order in orders)
+//{
+//	Console.Write(order.id + "   " + order.buyer.email + "    " + order.delivery.time.from + "     " + order.delivery.time.dispatch.to);
+//	if (true/*order.delivery.time.from == "2023-12-12T23:00:00Z"*/ /*order.status != "NEW" || order.status != "PROCESSING"*/)
+//	{
+//		Console.Write("  Added \n");
 
-		list.Add(order.buyer.email);
-	}
-	else
-	{
-		Console.Write("\n");
-	}
-}
+//		list.Add(order.buyer.email);
+//	}
+//	else
+//	{
+//		Console.Write("\n");
+//	}
+//}
 
-System.IO.File.WriteAllText("Maile.txt", list.Aggregate((a, b) => a + ";" + b));
+//System.IO.File.WriteAllText("Maile.txt", list.Aggregate((a, b) => a + ";" + b));
 #endregion
 
+var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+
+int count = 0;
+foreach (var Offer in Offers.offers)
+{
+	count++;
+	try {
+		var temp = await AllegroApi.ChangeDeliveryTime(Offer.id,
+			new Allegro_Api.Models.Offer.offerComponents.delivery.DeliveryOfferModel()
+			{
+				shipmentDate = "2024-01-04T00:00:00Z",
+				handlingTime = "P2D",
+				shippingRates = new Allegro_Api.Models.Base() { id = "a0034365-2cf3-4b50-86aa-065c65bdf8b0" }
+			});
+		if (count % 100 == 0) Console.WriteLine(count / (float)Offers.totalCount * 100 + "     " + DateTime.Now.ToString());
+
+	}
+	catch (HttpRequestException)
+	{
+        _ = await AllegroApi.ChangeDeliveryTime(Offer.id,
+            new Allegro_Api.Models.Offer.offerComponents.delivery.DeliveryOfferModel()
+            {
+                shipmentDate = "2024-01-04T00:00:00Z",
+                handlingTime = "P2D",
+                shippingRates = new Allegro_Api.Models.Base() { id = "a0034365-2cf3-4b50-86aa-065c65bdf8b0" }
+            });
+        if (count % 100 == 0) Console.WriteLine(count / (float)Offers.totalCount * 100 + "     " + DateTime.Now.ToString());
+    }
+}
 
 
-
-
-
+Console.ReadLine();
 
 //var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
 
@@ -152,5 +179,19 @@ System.IO.File.WriteAllText("Maile.txt", list.Aggregate((a, b) => a + ";" + b));
 //{
 //	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
 //}
+//string AteneumLogin = "kempo_warszawa";
+//string AteneumPassword = "6KsSGWT6dhD9r8Xvvr";
+
+//AteneumApi ateneumApi = new AteneumApi(AteneumLogin, AteneumPassword);
+
+//var list = new List<string>();
+
+//var TEST = await ateneumApi.GetAllBooksWithMagazin(0);
+
+//foreach (var book in TEST)
+//    if (book.BookData.wydawnictwo == "IUVI Games")
+//        list.Add(book.BookData.Tytuł + ";" + book.PriceWholeSaleBrutto.ToString());
+
+//System.IO.File.WriteAllLines("Ceny.csv",list.ToArray());; ;
 
 Console.ReadLine();
