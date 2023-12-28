@@ -19,7 +19,6 @@ using System.Reflection;
 using System.Text;
 using Wszystko_API;
 using Wszystko_API.Categories;
-using static System.Net.Mime.MediaTypeNames;
 using System.Reflection;
 using Wszystko_API.Orders.Components;
 using Wszystko_API.Shipping;
@@ -40,12 +39,12 @@ using Wszystko_API.Offers.Simple_Offer_Model.Interface;
 //string ClientID = "22054e3f234443a1bdaaa373b06d3053";
 
 ////twilo1
-//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 ////twilo2
-string ClientSecret = "TWGWXn93FMpJg95ILioJvBrYr01pODTfSHfrPY2uX190OD9anosHhMEZrnNQGgXG";
-string ClientID = "41eadd79d2dd475cb5697f3802f01775";
+//string ClientSecret = "TWGWXn93FMpJg95ILioJvBrYr01pODTfSHfrPY2uX190OD9anosHhMEZrnNQGgXG";
+//string ClientID = "41eadd79d2dd475cb5697f3802f01775";
 
 ////twilo3
 //string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
@@ -112,35 +111,71 @@ while (!access)
 //System.IO.File.WriteAllText("Maile.txt", list.Aggregate((a, b) => a + ";" + b));
 #endregion
 
+string LibreLogin = "38103_2345";
+string LibrePassword = "38103";
+
+var LibreApi = new LibreApi(LibrePassword, LibreLogin);
+var books = await LibreApi.GetAllBooks(0);
+
 var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
 
-int count = 0;
-foreach (var Offer in Offers.offers)
+foreach(var Offer in Offers.offers)
 {
-	count++;
-	try {
-		var temp = await AllegroApi.ChangeDeliveryTime(Offer.id,
-			new Allegro_Api.Models.Offer.offerComponents.delivery.DeliveryOfferModel()
-			{
-				shipmentDate = "2024-01-04T00:00:00Z",
-				handlingTime = "P2D",
-				shippingRates = new Allegro_Api.Models.Base() { id = "a0034365-2cf3-4b50-86aa-065c65bdf8b0" }
-			});
-		if (count % 100 == 0) Console.WriteLine(count / (float)Offers.totalCount * 100 + "     " + DateTime.Now.ToString());
+    if (Offer.external == null)
+        continue;
 
-	}
-	catch (HttpRequestException)
-	{
-        _ = await AllegroApi.ChangeDeliveryTime(Offer.id,
-            new Allegro_Api.Models.Offer.offerComponents.delivery.DeliveryOfferModel()
-            {
-                shipmentDate = "2024-01-04T00:00:00Z",
-                handlingTime = "P2D",
-                shippingRates = new Allegro_Api.Models.Base() { id = "a0034365-2cf3-4b50-86aa-065c65bdf8b0" }
-            });
-        if (count % 100 == 0) Console.WriteLine(count / (float)Offers.totalCount * 100 + "     " + DateTime.Now.ToString());
+    if (Offer.external.id.Contains("-2"))
+        continue;
+
+    var book = books.Find(bk => bk.ID == Offer.external.id.Replace("-1",""));
+
+    if (book.Publisher == "ZYSK I S-KA" || book.Publisher == "NOWA BAŚŃ")
+    {
+        AllegroApi.ChangeExternal(Offer.id, Offer.id + "--R");
+        Console.WriteLine(Offer.name);
     }
+        
 }
+
+//int count = 0;
+//foreach (var Offer in Offers.offers)
+//{
+//	count++;
+
+//	if (count % 100 == 0) Console.WriteLine(count / (float)Offers.totalCount * 100 + "     " + DateTime.Now.ToString());
+
+//	if (Offer.external == null) 
+//		continue;
+
+//	if (!Offer.external.id.Contains("-2"))
+//		continue;
+
+//	try
+//	{
+//		var temp = await AllegroApi.ChangeDeliveryTime(Offer.id,
+//			new Allegro_Api.Models.Offer.offerComponents.delivery.DeliveryOfferModel()
+//			{
+//				shipmentDate = "2024-01-03T00:00:00Z",
+//				handlingTime = "P2D",
+//				shippingRates = new Allegro_Api.Models.Base() { id = "90c012a8-549c-495c-95f2-379e865372a8" }
+//			});
+
+
+//	}
+//	catch (HttpRequestException)
+//	{
+//        _ = await AllegroApi.ChangeDeliveryTime(Offer.id,
+//            new Allegro_Api.Models.Offer.offerComponents.delivery.DeliveryOfferModel()
+//            {
+//                shipmentDate = "2024-01-03T00:00:00Z",
+//                handlingTime = "P2D",
+//                shippingRates = new Allegro_Api.Models.Base() { id = "90c012a8-549c-495c-95f2-379e865372a8" }
+//            });
+
+//    }
+
+
+//}
 
 
 Console.ReadLine();
