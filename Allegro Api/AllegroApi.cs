@@ -32,6 +32,8 @@ using Allegro_Api.Models.Order.checkoutform;
 using System.Runtime.Intrinsics.Arm;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using Allegro_Api.Models.Invoce;
+using System.Collections.Generic;
 
 namespace Allegro_Api
 {
@@ -431,7 +433,7 @@ namespace Allegro_Api
             return response;
         }
 
-        public async Task<HttpResponseMessage> ChangeDeliveryTime(string offerId, DeliveryOfferModel deliveryOffer, string handlingtime)
+        public async Task<HttpResponseMessage> ChangeDeliveryTime(string offerId, DeliveryOfferModel deliveryOffer, string handlingtime = "")
         {
             using HttpClient client = new HttpClient();
 
@@ -442,7 +444,8 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
 
-            deliveryOffer.handlingTime = handlingtime;
+            if (handlingtime != "")
+                deliveryOffer.handlingTime = handlingtime;
 
             var jsonobject = new
             {
@@ -458,15 +461,15 @@ namespace Allegro_Api
                 client.Dispose();
                 return response;
             }
-            catch (SocketException)
+            catch (Exception)
             {
-                Task.Delay(TimeSpan.FromSeconds(TimeoutSeconds)).Wait();
+                Task.Delay(TimeSpan.FromSeconds(2)).Wait();
                 var response = await client.PatchAsync(AllegroBaseURL + $"/sale/product-offers/{offerId}", content);
                 client.Dispose();
                 return response;
             }
+           
         }
-
 
         public async Task<HttpResponseMessage> ChangeExternal(string offerId, string externalID)
         {
@@ -1297,6 +1300,42 @@ namespace Allegro_Api
             return retrevied.checkoutForms;
         }
 
+        public async Task<CheckOutForm> GetOrder(string DeliveryID)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms?delivery.method.id={DeliveryID}");
+
+            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
+
+            OrdersModel model = JsonConvert.DeserializeObject<OrdersModel>(odp.Content.ReadAsStringAsync().Result);
+
+
+            if (model.totalCount != 0)
+                return model.checkoutForms.First();
+            else
+                return null;
+        }
+
+        public async Task GetParcelNumbers(string orderID)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/shipments");
+
+            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
+        }
+
         public async Task<DetailedCheckOutForm> GetOrderDetails(string OrderID)
         {
             using HttpClient client = new HttpClient();
@@ -1323,7 +1362,7 @@ namespace Allegro_Api
             return model;
         }
 
-        public async Task<(HttpContent,HttpStatusCode)> ChangeOrderStatus(OrderStatusType type, string orderID)
+        public async Task<(HttpContent, HttpStatusCode)> ChangeOrderStatus(OrderStatusType type, string orderID)
         {
             using HttpClient client = new HttpClient();
 
@@ -1343,13 +1382,51 @@ namespace Allegro_Api
             try
             {
                 var response = (await client.PutAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/fulfillment", content));
-                return (response.Content,response.StatusCode);
+                return (response.Content, response.StatusCode);
             }
             catch (HttpRequestException)
             {
-                return (null,0);
+                return (null, 0);
             }
         }
+
+
+        #endregion
+
+        #region Invoce
+
+        public async Task<Base> PostNewInvoice(string orderID, string fileName, string invoiceNumber)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.Timeout = TimeSpan.FromSeconds(TimeoutSeconds);
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            PostInvoce postInvoce = new PostInvoce()
+            {
+                file = new CheckFormsNewOrderInvoiceFile()
+                {
+                    name = fileName
+                },
+                invoiceNumber = invoiceNumber
+            };
+
+            string json = JsonConvert.SerializeObject(postInvoce);
+
+            //tutaj zwieramy params oraz header do typu aplikacji ponieważ content-type header jest typem contentu nie requesta
+            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/invoices", content);
+
+            Base @base = JsonConvert.DeserializeObject<Base>(odp.Content.ReadAsStringAsync().Result);
+
+            return @base;
+        }
+
         #endregion
     }
 }

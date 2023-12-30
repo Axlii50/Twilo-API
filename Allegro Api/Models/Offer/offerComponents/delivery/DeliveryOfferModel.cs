@@ -15,5 +15,8 @@ namespace Allegro_Api.Models.Offer.offerComponents.delivery
         public string handlingTime { get; set; }
 
         public Base shippingRates { get; set; }
+
+        //przedsprzedaż
+        public string shipmentDate { get; set; }
     }
 }
