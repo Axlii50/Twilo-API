@@ -14,13 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Allegro Api\Allegro Api.csproj" />
-    <ProjectReference Include="..\AteneumAPI\AteneumAPI.csproj" />
-    <ProjectReference Include="..\Libre API\Libre API.csproj" />
-    <ProjectReference Include="..\Wszystko API\Wszystko API.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Allegro Api">
       <HintPath>..\Allegro Api\bin\Debug\net6.0\Allegro Api.dll</HintPath>
     </Reference>

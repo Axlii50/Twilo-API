@@ -1,34 +1,6 @@
 ﻿using Allegro_Api;
-using Allegro_Api.Models;
-using Allegro_Api.Models.Offer;
-using Allegro_Api.Models.Product;
-using Allegro_Api.Models.Product.ProductComponents;
-using AteneumAPI;
-using ConsoleApp1;
-using Libre_API;
-using Libre_API.OrderStructure;
-using Newtonsoft.Json;
-using System;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
-using Wszystko_API;
-using Wszystko_API.Categories;
-using System.Reflection;
-using Wszystko_API.Orders.Components;
-using Wszystko_API.Shipping;
-using static System.Net.WebRequestMethods;
-using Wszystko_API.Product;
-using Wszystko_API.File;
-using System.Net.Mime;
-using Wszystko_API.Offers.General_Offer_Model.Components;
-using Wszystko_API.Offers.Common_Components;
-using Wszystko_API.Offers.Simple_Offer_Model.Interface;
+using System.Runtime.CompilerServices;
 
 ////kempo
 //string ClientSecret = "TboT3xZ0fH3F5bEEOR0KDVSugW9iLv9gBBphn8U2aKM2TKp9tgJAEoYu0motWoUU";
@@ -111,31 +83,48 @@ while (!access)
 //System.IO.File.WriteAllText("Maile.txt", list.Aggregate((a, b) => a + ";" + b));
 #endregion
 
-string LibreLogin = "38103_2345";
-string LibrePassword = "38103";
+#region Changing ID
+//string LibreLogin = "38103_2345";
+//string LibrePassword = "38103";
 
-var LibreApi = new LibreApi(LibrePassword, LibreLogin);
-var books = await LibreApi.GetAllBooks(0);
+//var LibreApi = new LibreApi(LibrePassword, LibreLogin);
+//var books = await LibreApi.GetAllBooks(0);
 
-var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+//var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
 
-foreach(var Offer in Offers.offers)
-{
-    if (Offer.external == null)
-        continue;
+//foreach(var Offer in Offers.offers)
+//{
+//    if (Offer.external == null)
+//        continue;
 
-    if (Offer.external.id.Contains("-2"))
-        continue;
+//    if (Offer.external.id.Contains("-2"))
+//        continue;
 
-    var book = books.Find(bk => bk.ID == Offer.external.id.Replace("-1",""));
+//    var book = books.Find(bk => bk.ID == Offer.external.id.Replace("-1",""));
 
-    if (book.Publisher == "ZYSK I S-KA" || book.Publisher == "NOWA BAŚŃ")
-    {
-        AllegroApi.ChangeExternal(Offer.id, Offer.id + "--R");
-        Console.WriteLine(Offer.name);
-    }
-        
-}
+//    if (book.Publisher == "ZYSK I S-KA" || book.Publisher == "NOWA BAŚŃ")
+//    {
+//        AllegroApi.ChangeExternal(Offer.id, Offer.id + "--R");
+//        Console.WriteLine(Offer.name);
+//    }
+
+//} 
+#endregion
+
+//847bd2c0-a4b4-11ee-8db6-6ff55152933d
+
+//invoice id
+//49856987-c2fa-49ae-826e-0ac0ca4c8c9f
+
+var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.SENT);
+
+var order = orders.Find(or => or.id == "d7a31770-a648-11ee-bda1-4bfbe848971d");
+
+await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
+
+//var test = await AllegroApi.PostNewInvoice("847bd2c0-a4b4-11ee-8db6-6ff55152933d", "test.pdf", "FV 54/12/2023");
+
+Console.WriteLine("");
 
 //int count = 0;
 //foreach (var Offer in Offers.offers)
@@ -178,7 +167,7 @@ foreach(var Offer in Offers.offers)
 //}
 
 
-Console.ReadLine();
+//Console.ReadLine();
 
 //var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
 

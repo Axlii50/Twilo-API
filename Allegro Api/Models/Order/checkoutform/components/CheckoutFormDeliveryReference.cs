@@ -9,5 +9,7 @@ namespace Allegro_Api.Models.Order.checkoutform.components
     public class CheckoutFormDeliveryReference
     {
         public CheckoutFormDeliveryTime time { get; set; }
+
+        public CheckoutFormDeliveryMethod method { get; set; }
     }
 }
