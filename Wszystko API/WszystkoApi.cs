@@ -35,7 +35,7 @@ namespace Wszystko_API
     public class WszystkoApi
     {
         //Wszystko URLs
-        private string WszystkoBaseURL = $"https://wszystko.pl/api";
+        private readonly string WszystkoBaseURL = $"https://wszystko.pl/api";
 
         private string DeviceCode = string.Empty;
 
@@ -92,6 +92,21 @@ namespace Wszystko_API
 			if (value != null)
 			{
 				query.Add(key, value.ToString());
+			}
+		}
+
+		private static string ReplaceFirstOccurrence(string input, string oldValue, string newValue)
+		{
+			int index = input.IndexOf(oldValue);
+			if (index != -1)
+			{
+				// Replace the first occurrence of oldValue with newValue
+				return input.Substring(0, index) + newValue + input.Substring(index + oldValue.Length);
+			}
+			else
+			{
+				// If oldValue is not found, return the original text
+				return input;
 			}
 		}
 
@@ -477,13 +492,13 @@ namespace Wszystko_API
 			client.DefaultRequestHeaders.Clear();
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 
-            if (!isFullData)
+            if (isFullData)
             {
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.pl.wszystko.v1.full+json"));
             }
             else
             {
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.pl.wszystko.v1.full+json"));
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 			}
 
 
@@ -502,7 +517,13 @@ namespace Wszystko_API
 
 			string odpcontent = odp.Content.ReadAsStringAsync().Result;
 
-            DownloadOffersModelConverter converter = new DownloadOffersModelConverter(isFullData);
+            //adjust json property to fit simpler (!isfulldata) implementation of interface
+            if (!isFullData)
+            {
+                ReplaceFirstOccurrence(odpcontent, "records", "offers");
+            }
+
+			DownloadOffersModelConverter converter = new DownloadOffersModelConverter(isFullData);
 
             var settings = new JsonSerializerSettings()
             {
