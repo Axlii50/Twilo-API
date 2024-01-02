@@ -1336,6 +1336,19 @@ namespace Allegro_Api
             Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
         }
 
+        public async Task CreatePackage()
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            throw new NotImplementedException();
+
+        }
+
         public async Task<DetailedCheckOutForm> GetOrderDetails(string OrderID)
         {
             using HttpClient client = new HttpClient();

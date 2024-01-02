@@ -17,5 +17,13 @@ namespace Allegro_Api.Models.Order.checkoutform
         public string status { get; set; }
 
         public CheckoutFormFulfillment fulfillment { get; set; }
+
+        public List<CheckoutFormLineItem> lineItems { get; set; }
+
+        public CheckoutFormBuyerReference buyer { get; set; }
+
+        public CheckoutFormDeliveryReference delivery { get; set; }
+
+        public CheckoutFormInvoiceInfo invoice { get; set; }
     }
 }
