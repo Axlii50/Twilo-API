@@ -2,5 +2,9 @@
 {
     public class CheckoutFormInvoiceInfo
     {
+        public bool required { get; set; }
+
+        public CheckoutFormInvoiceAddress address { get; set; }
+
     }
 }

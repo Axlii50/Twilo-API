@@ -2,5 +2,8 @@
 {
     public class CheckoutFormInvoiceAddressCompany
     {
+        public string name { get; set; }
+
+        public string taxId { get; set; }
     }
 }

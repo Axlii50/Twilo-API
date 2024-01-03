@@ -1,4 +1,5 @@
 ﻿using Allegro_Api;
+using Allegro_Api.Shipment;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -116,16 +117,47 @@ while (!access)
 //invoice id
 //49856987-c2fa-49ae-826e-0ac0ca4c8c9f
 
-var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.SENT);
+var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
 
-var order = orders.Find(or => or.id == "d7a31770-a648-11ee-bda1-4bfbe848971d");
+var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
 
-await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
+//await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
 
 //var test = await AllegroApi.PostNewInvoice("847bd2c0-a4b4-11ee-8db6-6ff55152933d", "test.pdf", "FV 54/12/2023");
 
+var shimpment = new ShipmentCreateRequestDto()
+{
+	sender = new Allegro_Api.Shipment.Components.SenderAddressDto()
+	{
+		company = "TWILO SP. Z O.O.",
+		street = "ul. Igołomska",
+		streetNumber = "1/30",
+		postalCode = "31-980",
+		city = "Kraków",
+		countryCode = "PL",
+		email = "test",
+		phone = "+48 572 353 814",
+	},
+	receiver = new Allegro_Api.Shipment.Components.ReceiverAddressDto()
+	{
+		name = order.buyer.login,
+		street = order.delivery.address.street,
+		streetNumber = order.delivery.address.street,
+		postalCode = "31-980",
+		city = "Kraków",
+		countryCode = "PL",
+		email = "test",
+		phone = "+48 572 353 814",
+	}
+};
+
+
+
+//var test = AllegroApi.CreatePackage();
+
 Console.WriteLine("");
 
+#region PreSold
 //int count = 0;
 //foreach (var Offer in Offers.offers)
 //{
@@ -164,6 +196,7 @@ Console.WriteLine("");
 //    }
 
 
+#endregion
 //}
 
 

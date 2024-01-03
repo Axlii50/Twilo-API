@@ -11,5 +11,7 @@ namespace Allegro_Api.Models.Order.checkoutform.components
         public CheckoutFormDeliveryTime time { get; set; }
 
         public CheckoutFormDeliveryMethod method { get; set; }
+
+        public CheckoutFormDeliveryAddress address { get;set; }
     }
 }

@@ -34,6 +34,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using Allegro_Api.Models.Invoce;
 using System.Collections.Generic;
+using Allegro_Api.Shipment;
 
 namespace Allegro_Api
 {
@@ -1336,7 +1337,7 @@ namespace Allegro_Api
             Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
         }
 
-        public async Task CreatePackage()
+        public async Task CreatePackage(ShipmentCreateRequestDto PackageInfo)
         {
             using HttpClient client = new HttpClient();
 
@@ -1344,6 +1345,13 @@ namespace Allegro_Api
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            string json = JsonConvert.SerializeObject(PackageInfo);
+
+            //tutaj zwieramy params oraz header do typu aplikacji ponieważ content-type header jest typem contentu nie requesta
+            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            HttpResponseMessage odp = await client.PostAsync(AllegroBaseURL + $"/shipment-management/shipments/create-commands", content);
 
             throw new NotImplementedException();
 
