@@ -119,9 +119,9 @@ while (!access)
 
 await AllegroApi.GetListOfDelivery();
 
-//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
 
-//var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
+var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
 
 //await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
 
