@@ -127,6 +127,7 @@ var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
 
 var shimpment = new ShipmentCreateRequestDto()
 {
+	deliveryMethodId = order.delivery.method.id,
 	sender = new Allegro_Api.Shipment.Components.SenderAddressDto()
 	{
 		company = "TWILO SP. Z O.O.",
@@ -142,13 +143,26 @@ var shimpment = new ShipmentCreateRequestDto()
 	{
 		name = order.buyer.login,
 		street = order.delivery.address.street,
-		streetNumber = order.delivery.address.street,
-		postalCode = "31-980",
-		city = "Kraków",
-		countryCode = "PL",
-		email = "test",
-		phone = "+48 572 353 814",
+		streetNumber = order.delivery.address.street,//do ogarniecia jest złożony ticket na allegro github
+		postalCode = order.delivery.address.zipCode,
+		city = order.delivery.address.city,
+		countryCode = order.delivery.address.countryCode,
+		email = order.buyer.email,
+		phone = order.buyer.phoneNumber,
+	},
+
+	packages = new Allegro_Api.Shipment.Components.Packages[]
+	{
+		new Allegro_Api.Shipment.Components.Packages()
+		{
+			type = "PACKAGE",
+			weight = new Allegro_Api.Shipment.Components.WeightValue(){value = 25},
+			width = new Allegro_Api.Shipment.Components.DimensionValue(){value = 38},
+			height = new Allegro_Api.Shipment.Components.DimensionValue(){value = 8},
+			length = new Allegro_Api.Shipment.Components.DimensionValue(){value = 64}
+        }
 	}
+	
 };
 
 
