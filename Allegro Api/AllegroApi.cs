@@ -1449,5 +1449,22 @@ namespace Allegro_Api
         }
 
         #endregion
+
+        #region Delivery
+
+        public async Task GetListOfDelivery()
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/sale/delivery-methods?marketplace=allegro-pl");
+
+            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
+        }
+        #endregion
     }
 }

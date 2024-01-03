@@ -117,53 +117,58 @@ while (!access)
 //invoice id
 //49856987-c2fa-49ae-826e-0ac0ca4c8c9f
 
-var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+await AllegroApi.GetListOfDelivery();
 
-var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
+//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+
+//var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
 
 //await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
 
 //var test = await AllegroApi.PostNewInvoice("847bd2c0-a4b4-11ee-8db6-6ff55152933d", "test.pdf", "FV 54/12/2023");
 
-var shimpment = new ShipmentCreateRequestDto()
-{
-	deliveryMethodId = order.delivery.method.id,
-	sender = new Allegro_Api.Shipment.Components.SenderAddressDto()
-	{
-		company = "TWILO SP. Z O.O.",
-		street = "ul. Igołomska",
-		streetNumber = "1/30",
-		postalCode = "31-980",
-		city = "Kraków",
-		countryCode = "PL",
-		email = "test",
-		phone = "+48 572 353 814",
-	},
-	receiver = new Allegro_Api.Shipment.Components.ReceiverAddressDto()
-	{
-		name = order.buyer.login,
-		street = order.delivery.address.street,
-		streetNumber = order.delivery.address.street,//do ogarniecia jest złożony ticket na allegro github
-		postalCode = order.delivery.address.zipCode,
-		city = order.delivery.address.city,
-		countryCode = order.delivery.address.countryCode,
-		email = order.buyer.email,
-		phone = order.buyer.phoneNumber,
-	},
+//var shimpment = new ShipmentCreateRequestDto()
+//{
+//	deliveryMethodId = order.delivery.method.id,
+//	sender = new Allegro_Api.Shipment.Components.SenderAddressDto()
+//	{
+//		company = "TWILO SP. Z O.O.",
+//		street = "ul. Igołomska",
+//		streetNumber = "1/30",
+//		postalCode = "31-980",
+//		city = "Kraków",
+//		countryCode = "PL",
+//		email = "test",
+//		phone = "+48 572 353 814",
+//	},
+//	receiver = new Allegro_Api.Shipment.Components.ReceiverAddressDto()
+//	{
+//		name = order.buyer.login,
+//		street = order.delivery.address.street,
+//		streetNumber = order.delivery.address.street,//do ogarniecia jest złożony ticket na allegro github
+//		postalCode = order.delivery.address.zipCode,
+//		city = order.delivery.address.city,
+//		countryCode = order.delivery.address.countryCode,
+//		email = order.buyer.email,
+//		phone = order.buyer.phoneNumber,
+//	},
 
-	packages = new Allegro_Api.Shipment.Components.Packages[]
-	{
-		new Allegro_Api.Shipment.Components.Packages()
-		{
-			type = "PACKAGE",
-			weight = new Allegro_Api.Shipment.Components.WeightValue(){value = 25},
-			width = new Allegro_Api.Shipment.Components.DimensionValue(){value = 38},
-			height = new Allegro_Api.Shipment.Components.DimensionValue(){value = 8},
-			length = new Allegro_Api.Shipment.Components.DimensionValue(){value = 64}
-        }
-	}
+//	packages = new Allegro_Api.Shipment.Components.Packages[]
+//	{
+//		new Allegro_Api.Shipment.Components.Packages()
+//		{
+//			type = "PACKAGE",
+//			weight = new Allegro_Api.Shipment.Components.WeightValue(){value = 25},
+//			width = new Allegro_Api.Shipment.Components.DimensionValue(){value = 38},
+//			height = new Allegro_Api.Shipment.Components.DimensionValue(){value = 8},
+//			length = new Allegro_Api.Shipment.Components.DimensionValue(){value = 64}
+//        }
+//	},
+
+//	cachOnDelivery = null
 	
-};
+	
+//};
 
 
 
@@ -269,11 +274,11 @@ Console.WriteLine("");
 //	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
 //}
 
-var test3 = await wszystkoApi.GetAllOffers();
-foreach (var offer in test3.Offers)
-{
-	System.Diagnostics.Debug.WriteLine(offer.Title);
-}
+//var test3 = await wszystkoApi.GetAllOffers();
+//foreach (var offer in test3.Offers)
+//{
+//	System.Diagnostics.Debug.WriteLine(offer.Title);
+//}
 //System.IO.File.WriteAllLines("Ceny.csv",list.ToArray());; ;
 
 Console.ReadLine();

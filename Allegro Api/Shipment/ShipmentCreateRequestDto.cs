@@ -17,6 +17,8 @@ namespace Allegro_Api.Shipment
 
         public Packages[] packages { get; set; }
 
+        public CashOnDeliveryDto cachOnDelivery { get; set; }
+
         public string labelFormat { get; set; } = "PDF";
 
     }
