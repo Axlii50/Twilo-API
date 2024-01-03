@@ -263,6 +263,17 @@ Console.WriteLine("");
 //    if (book.BookData.wydawnictwo == "IUVI Games")
 //        list.Add(book.BookData.Tytuł + ";" + book.PriceWholeSaleBrutto.ToString());
 
+//var test2 = await wszystkoApi.GetAllGuarantees();
+//foreach (var guarantee in test2)
+//{
+//	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
+//}
+
+var test3 = await wszystkoApi.GetAllOffers();
+foreach (var offer in test3.Offers)
+{
+	System.Diagnostics.Debug.WriteLine(offer.Title);
+}
 //System.IO.File.WriteAllLines("Ceny.csv",list.ToArray());; ;
 
 Console.ReadLine();
