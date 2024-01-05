@@ -1,7 +1,9 @@
 ﻿using Allegro_Api;
 using Allegro_Api.Shipment;
+using AteneumAPI;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 ////kempo
 //string ClientSecret = "TboT3xZ0fH3F5bEEOR0KDVSugW9iLv9gBBphn8U2aKM2TKp9tgJAEoYu0motWoUU";
@@ -85,43 +87,73 @@ while (!access)
 #endregion
 
 #region Changing ID
-//string LibreLogin = "38103_2345";
-//string LibrePassword = "38103";
+string LibreLogin = "38103_2345";
+string LibrePassword = "38103";
 
-//var LibreApi = new LibreApi(LibrePassword, LibreLogin);
-//var books = await LibreApi.GetAllBooks(0);
+var LibreApi = new Libre_API.LibreApi(LibrePassword, LibreLogin);
+var books = await LibreApi.GetAllBooks(0);
 
-//var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
 
-//foreach(var Offer in Offers.offers)
-//{
-//    if (Offer.external == null)
-//        continue;
+foreach (var Offer in Offers.offers)
+{
+    if (Offer.external == null)
+        continue;
 
-//    if (Offer.external.id.Contains("-2"))
-//        continue;
+    if (Offer.external.id.Contains("-2"))
+        continue;
 
-//    var book = books.Find(bk => bk.ID == Offer.external.id.Replace("-1",""));
+    var book = books.Find(bk => bk.ID == Offer.external.id.Replace("-1", ""));
 
-//    if (book.Publisher == "ZYSK I S-KA" || book.Publisher == "NOWA BAŚŃ")
-//    {
-//        AllegroApi.ChangeExternal(Offer.id, Offer.id + "--R");
-//        Console.WriteLine(Offer.name);
-//    }
+    if (book == null) continue;
 
-//} 
+    if (book.Publisher == "ZYSK I S-KA" || book.Publisher == "NOWA BAŚŃ")
+    {
+        AllegroApi.ChangeExternal(Offer.id, Offer.external.id + "--R");
+        Console.WriteLine(Offer.name);
+    }
+
+}
 #endregion
 
+
+//static string[] SplitString(string input)
+//{
+//    string[] result = new string[2];
+
+//    // Wyrażenie regularne do odnalezienia pierwszej spacji i liczby po niej
+//    Regex regex = new Regex(@"\s+\d.*");
+
+//    Match match = regex.Match(input);
+
+//    if (match.Success)
+//    {
+//        // Grupa 1 zawiera tekst przed spacją, a grupa 2 zawiera liczbę
+//        result[0] = input.Replace(match.Groups[0].Value,"");
+//        result[1] = match.Groups[0].Value;
+//        return result;
+
+//    }
+//    // W przypadku braku dopasowania
+//    return null;
+//}
 //847bd2c0-a4b4-11ee-8db6-6ff55152933d
 
 //invoice id
 //49856987-c2fa-49ae-826e-0ac0ca4c8c9f
 
-await AllegroApi.GetListOfDelivery();
+//await AllegroApi.GetListOfDelivery();
 
-var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
 
-var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
+//foreach(var order in orders)
+//{
+//    var ter = SplitString(order.delivery.address.street);
+
+//    Console.WriteLine(ter[0] + "          " + ter[1]  );
+//}
+
+//var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
 
 //await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
 
@@ -166,8 +198,8 @@ var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
 //	},
 
 //	cachOnDelivery = null
-	
-	
+
+
 //};
 
 
@@ -263,6 +295,8 @@ Console.WriteLine("");
 //var list = new List<string>();
 
 //var TEST = await ateneumApi.GetAllBooksWithMagazin(0);
+
+//var ter = TEST.Where(t => t.ident_ate == "501339").FirstOrDefault();
 
 //foreach (var book in TEST)
 //    if (book.BookData.wydawnictwo == "IUVI Games")
