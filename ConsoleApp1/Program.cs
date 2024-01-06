@@ -87,34 +87,36 @@ while (!access)
 #endregion
 
 #region Changing ID
-string LibreLogin = "38103_2345";
-string LibrePassword = "38103";
+//string LibreLogin = "38103_2345";
+//string LibrePassword = "38103";
 
-var LibreApi = new Libre_API.LibreApi(LibrePassword, LibreLogin);
-var books = await LibreApi.GetAllBooks(0);
+//var LibreApi = new Libre_API.LibreApi(LibrePassword, LibreLogin);
+//var books = await LibreApi.GetAllBooks(0);
 
-var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+//var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
 
-foreach (var Offer in Offers.offers)
-{
-    if (Offer.external == null)
-        continue;
+//foreach (var Offer in Offers.offers)
+//{
+//    if (Offer.external == null)
+//        continue;
 
-    if (Offer.external.id.Contains("-2"))
-        continue;
+//    if (Offer.external.id.Contains("-2"))
+//        continue;
 
-    var book = books.Find(bk => bk.ID == Offer.external.id.Replace("-1", ""));
+//    var book = books.Find(bk => bk.ID == Offer.external.id.Replace("-1", ""));
 
-    if (book == null) continue;
+//    if (book == null) continue;
 
-    if (book.Publisher == "ZYSK I S-KA" || book.Publisher == "NOWA BAŚŃ")
-    {
-        AllegroApi.ChangeExternal(Offer.id, Offer.external.id + "--R");
-        Console.WriteLine(Offer.name);
-    }
+//    if (book.Publisher == "ZYSK I S-KA" || book.Publisher == "NOWA BAŚŃ")
+//    {
+//        AllegroApi.ChangeExternal(Offer.id, Offer.external.id + "--R");
+//        Console.WriteLine(Offer.name);
+//    }
 
-}
+//}
 #endregion
+
+
 
 
 //static string[] SplitString(string input)
@@ -144,14 +146,14 @@ foreach (var Offer in Offers.offers)
 
 //await AllegroApi.GetListOfDelivery();
 
-//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.SENT);
 
-//foreach(var order in orders)
-//{
-//    var ter = SplitString(order.delivery.address.street);
+foreach (var order in orders)
+{
+	var ter = order.delivery.method.name;
 
-//    Console.WriteLine(ter[0] + "          " + ter[1]  );
-//}
+	Console.WriteLine(ter);
+}
 
 //var order = orders.Find(or => or.id == "3dfbb540-a9cd-11ee-896b-cb253fa9f7e3");
 

@@ -25,5 +25,7 @@ namespace Allegro_Api.Models.Order.checkoutform
         public CheckoutFormDeliveryReference delivery { get; set; }
 
         public CheckoutFormInvoiceInfo invoice { get; set; }
+
+        public CheckoutFormSummary summary { get; set; }
     }
 }

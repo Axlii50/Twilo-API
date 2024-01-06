@@ -23,6 +23,7 @@ namespace AteneumAPI
             userPassword = password;
 
             _client = new HttpClient();
+            _client.Timeout = TimeSpan.FromSeconds(200);
         }
 
         public async Task<HttpContent> DownloadBase()
@@ -244,6 +245,7 @@ namespace AteneumAPI
         public async Task<HttpContent> GetPhoto(string bookid)
         {
             _client.DefaultRequestHeaders.Clear();
+
 
             var authenticationString = $"{userName}:{userPassword}";
             var base64String = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(authenticationString));
