@@ -13,5 +13,7 @@ namespace Allegro_Api.Models.Order.checkoutform.components
         public CheckoutFormDeliveryMethod method { get; set; }
 
         public CheckoutFormDeliveryAddress address { get;set; }
+
+        public CheckoutFormDeliveryPickupPoint pickupPoint { get; set; }
     }
 }

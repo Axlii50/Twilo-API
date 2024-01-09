@@ -31,8 +31,12 @@ namespace Allegro_Api
 		allegro_api_bids = 32768,
 		allegro_api_messaging = 65536,
 		allegro_api_fulfillment_read = 131072,
-		allegro_api_fulfillment_write = 262144
-	}
+		allegro_api_fulfillment_write = 262144,
+
+        //shipment 
+        allegro_api_shipments_read = 524288,
+        allegro_api_shipments_write = 1048576
+    }
 
 	public static class AllegroPermissionStateClass
 	{

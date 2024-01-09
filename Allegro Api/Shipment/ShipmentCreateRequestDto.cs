@@ -10,6 +10,7 @@ namespace Allegro_Api.Shipment
     public class ShipmentCreateRequestDto
     {
         public string deliveryMethodId { get; set; }
+        public string credentialsId { get; set; }
 
         public SenderAddressDto sender { get; set; }
 
