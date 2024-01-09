@@ -197,7 +197,6 @@ var shimpment = new ShipmentCreateRequestDto()
 			length = new Allegro_Api.Shipment.Components.DimensionValue(){value = 64}
 		}
 	},
-
 	cachOnDelivery = null
 };
 
