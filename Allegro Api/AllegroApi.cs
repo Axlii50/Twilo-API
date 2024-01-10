@@ -34,8 +34,8 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using Allegro_Api.Models.Invoce;
 using System.Collections.Generic;
-using Allegro_Api.Models.Shipment;
 using Allegro_Api.Shipment;
+using Allegro_Api.Models.Shipment;
 
 namespace Allegro_Api
 {
@@ -470,7 +470,7 @@ namespace Allegro_Api
                 client.Dispose();
                 return response;
             }
-           
+
         }
 
         public async Task<HttpResponseMessage> ChangeExternal(string offerId, string externalID)
@@ -1324,85 +1324,6 @@ namespace Allegro_Api
                 return null;
         }
 
-        public async Task GetParcelNumbers(string orderID)
-        {
-            using HttpClient client = new HttpClient();
-
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
-
-            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/shipments");
-
-            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
-        }
-
-        public async Task<TimeSpan?> CreatePackage(ShipmentObject PackageInfo)
-        {
-            using HttpClient client = new HttpClient();
-
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
-
-            string json = JsonConvert.SerializeObject(PackageInfo);
-
-            System.Diagnostics.Debug.WriteLine(json);
-
-            // Tutaj zwieramy params oraz header do typu aplikacji, ponieważ content-type header jest typem contentu, nie requesta
-            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
-
-            HttpResponseMessage response = await client.PostAsync(AllegroBaseURL + $"/shipment-management/shipments/create-commands", content);
-
-            System.Diagnostics.Debug.WriteLine("odp paczka: " + await response.Content.ReadAsStringAsync());
-
-            // Sprawdzenie, czy odpowiedź zawiera nagłówek "Retry-After"
-            if (response.Headers.TryGetValues("Retry-After", out var retryAfterValues))
-            {
-                if (int.TryParse(retryAfterValues.FirstOrDefault(), out var retryAfterSeconds))
-                {
-                    TimeSpan retryAfterTimeSpan = TimeSpan.FromSeconds(retryAfterSeconds);
-                    return retryAfterTimeSpan;
-                }
-            }
-
-            return null;
-        }
-
-        public async Task<string> CheckPackageCreationStatus(string ShipmentCreationId)
-        {
-            using HttpClient client = new HttpClient();
-
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
-
-            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/shipment-management/shipments/create-commands/{ShipmentCreationId}");
-
-            System.Diagnostics.Debug.WriteLine("" + odp.Content.ReadAsStringAsync().Result);
-
-            return "";
-        }
-
-        public async Task<AviableDeliveryServices> GetDeliveryServices()
-        {
-            using HttpClient client = new HttpClient();
-
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
-
-            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/shipment-management/delivery-services");
-
-            AviableDeliveryServices model = JsonConvert.DeserializeObject<AviableDeliveryServices>(odp.Content.ReadAsStringAsync().Result);
-
-            return model;
-        }
-
         public async Task<DetailedCheckOutForm> GetOrderDetails(string OrderID)
         {
             using HttpClient client = new HttpClient();
@@ -1511,6 +1432,88 @@ namespace Allegro_Api
 
             Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
         }
+
+        public async Task GetParcelNumbers(string orderID)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/shipments");
+
+            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
+        }
+
+        public async Task<TimeSpan?> CreatePackage(ShipmentObject PackageInfo)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            string json = JsonConvert.SerializeObject(PackageInfo);
+
+            System.Diagnostics.Debug.WriteLine(json);
+
+            // Tutaj zwieramy params oraz header do typu aplikacji, ponieważ content-type header jest typem contentu, nie requesta
+            var content = new StringContent(json, Encoding.UTF8, "application/vnd.allegro.public.v1+json");
+
+            HttpResponseMessage response = await client.PostAsync(AllegroBaseURL + $"/shipment-management/shipments/create-commands", content);
+
+            System.Diagnostics.Debug.WriteLine("odp paczka: " + await response.Content.ReadAsStringAsync());
+
+            // Sprawdzenie, czy odpowiedź zawiera nagłówek "Retry-After"
+            if (response.Headers.TryGetValues("Retry-After", out var retryAfterValues))
+            {
+                if (int.TryParse(retryAfterValues.FirstOrDefault(), out var retryAfterSeconds))
+                {
+                    TimeSpan retryAfterTimeSpan = TimeSpan.FromSeconds(retryAfterSeconds);
+                    return retryAfterTimeSpan;
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<ShipmentCreationStatus> CheckPackageCreationStatus(string ShipmentCreationId)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/shipment-management/shipments/create-commands/{ShipmentCreationId}");
+
+            string responseBody = odp.Content.ReadAsStringAsync().Result;
+
+            ShipmentCreationStatus shipmentCreationStatus = JsonConvert.DeserializeObject<ShipmentCreationStatus>(responseBody);
+
+            return shipmentCreationStatus;
+        }
+
+        public async Task<AviableDeliveryServices> GetDeliveryServices()
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/shipment-management/delivery-services");
+
+            AviableDeliveryServices model = JsonConvert.DeserializeObject<AviableDeliveryServices>(odp.Content.ReadAsStringAsync().Result);
+
+            return model;
+        }
+
         #endregion
     }
 }
