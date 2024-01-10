@@ -34,6 +34,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using Allegro_Api.Models.Invoce;
 using System.Collections.Generic;
+using Allegro_Api.Models.Shipment;
 using Allegro_Api.Shipment;
 
 namespace Allegro_Api

@@ -71,7 +71,7 @@ while (!access)
 //foreach (var order in orders)
 //{
 //	Console.Write(order.id + "   " + order.buyer.email + "    " + order.delivery.time.from + "     " + order.delivery.time.dispatch.to);
-//	if (true/*order.delivery.time.from == "2023-12-12T23:00:00Z"*/ /*order.status != "NEW" || order.status != "PROCESSING"*/)
+//	if (order.delivery.time.from == "2024-01-09T23:00:00Z" /*order.status != "NEW" || order.status != "PROCESSING"*/)
 //	{
 //		Console.Write("  Added \n");
 
@@ -146,75 +146,75 @@ while (!access)
 
 //await AllegroApi.GetListOfDelivery();
 
-var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
 
-var order = orders.Find(or => or.id == "92d97400-ae08-11ee-b262-ff71639ff274");
+//var order = orders.Find(or => or.id == "92d97400-ae08-11ee-b262-ff71639ff274");
 
-var services = await AllegroApi.GetDeliveryServices();
+//var services = await AllegroApi.GetDeliveryServices();
 
-var OrderService = services.services.Where(o => o.id.deliveryMethodId == order.delivery.method.id).FirstOrDefault();
+//var OrderService = services.services.Where(o => o.id.deliveryMethodId == order.delivery.method.id).FirstOrDefault();
 
 //await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
 
 //var test = await AllegroApi.PostNewInvoice("847bd2c0-a4b4-11ee-8db6-6ff55152933d", "test.pdf", "FV 54/12/2023");
 
-var shimpment = new ShipmentCreateRequestDto()
-{
-	deliveryMethodId = order.delivery.method.id,
-	credentialsId = OrderService.id.credentialsId,
-	sender = new Allegro_Api.Shipment.Components.SenderAddressDto()
-	{
-		company = "TWILO SP. Z O.O.",
-		street = "ul. Igołomska",
-		streetNumber = "1/30",
-		postalCode = "31-980",
-		city = "Kraków",
-		countryCode = "PL",
-		email = "Arkadiusz.kruszyna@twilo.pl",
-		phone = "+48 572 353 814",
-	},
-	receiver = new Allegro_Api.Shipment.Components.ReceiverAddressDto()
-	{
-		name = order.buyer.firstName + ' ' + order.buyer.lastName,
-		street = order.delivery.address.streetAndNumber[0],
-		streetNumber = order.delivery.address.streetAndNumber[1],//do ogarniecia jest złożony ticket na allegro github
-		postalCode = order.delivery.address.zipCode,
-		city = order.delivery.address.city,
-		countryCode = order.delivery.address.countryCode,
-		email = order.buyer.email,
-		phone = order.buyer.phoneNumber,
-		point = order.delivery.pickupPoint.id
-	},
+//var shimpment = new ShipmentCreateRequestDto()
+//{
+//	deliveryMethodId = order.delivery.method.id,
+//	credentialsId = OrderService.id.credentialsId,
+//	sender = new Allegro_Api.Shipment.Components.SenderAddressDto()
+//	{
+//		company = "TWILO SP. Z O.O.",
+//		street = "ul. Igołomska",
+//		streetNumber = "1/30",
+//		postalCode = "31-980",
+//		city = "Kraków",
+//		countryCode = "PL",
+//		email = "Arkadiusz.kruszyna@twilo.pl",
+//		phone = "+48 572 353 814",
+//	},
+//	receiver = new Allegro_Api.Shipment.Components.ReceiverAddressDto()
+//	{
+//		name = order.buyer.firstName + ' ' + order.buyer.lastName,
+//		street = order.delivery.address.streetAndNumber[0],
+//		streetNumber = order.delivery.address.streetAndNumber[1],//do ogarniecia jest złożony ticket na allegro github
+//		postalCode = order.delivery.address.zipCode,
+//		city = order.delivery.address.city,
+//		countryCode = order.delivery.address.countryCode,
+//		email = order.buyer.email,
+//		phone = order.buyer.phoneNumber,
+//		point = order.delivery.pickupPoint.id
+//	},
 
-	packages = new Allegro_Api.Shipment.Components.Packages[]
-	{
-		new Allegro_Api.Shipment.Components.Packages()
-		{
-			type = "PACKAGE",
-			weight = new Allegro_Api.Shipment.Components.WeightValue(){value = 25},
-			width = new Allegro_Api.Shipment.Components.DimensionValue(){value = 38},
-			height = new Allegro_Api.Shipment.Components.DimensionValue(){value = 8},
-			length = new Allegro_Api.Shipment.Components.DimensionValue(){value = 64}
-		}
-	},
-	cachOnDelivery = null
-};
+//	packages = new Allegro_Api.Shipment.Components.Packages[]
+//	{
+//		new Allegro_Api.Shipment.Components.Packages()
+//		{
+//			type = "PACKAGE",
+//			weight = new Allegro_Api.Shipment.Components.WeightValue(){value = 25},
+//			width = new Allegro_Api.Shipment.Components.DimensionValue(){value = 38},
+//			height = new Allegro_Api.Shipment.Components.DimensionValue(){value = 8},
+//			length = new Allegro_Api.Shipment.Components.DimensionValue(){value = 64}
+//		}
+//	},
+//	cachOnDelivery = null
+//};
 
-var shipmentobject = new ShipmentObject()
-{
-	commandId = Guid.NewGuid().ToString(),
-	input = shimpment
-};
+//var shipmentobject = new ShipmentObject()
+//{
+//	commandId = Guid.NewGuid().ToString(),
+//	input = shimpment
+//};
 
-var test = await AllegroApi.CreatePackage(shipmentobject);
+//var test = await AllegroApi.CreatePackage(shipmentobject);
 
-while (true)
-{
-	_ = await AllegroApi.CheckPackageCreationStatus(shipmentobject.commandId);
-	Thread.Sleep((int)test.Value.TotalMilliseconds);
-}
+//while (true)
+//{
+//	_ = await AllegroApi.CheckPackageCreationStatus(shipmentobject.commandId);
+//	Thread.Sleep((int)test.Value.TotalMilliseconds);
+//}
 
-Console.WriteLine("");
+//Console.WriteLine("");
 
 #region PreSold
 //int count = 0;
