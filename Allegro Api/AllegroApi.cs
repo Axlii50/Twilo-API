@@ -1498,6 +1498,10 @@ namespace Allegro_Api
             return shipmentCreationStatus;
         }
 
+        /// <summary>
+        /// Pobiera wszystkie dostepne metody dostawy dla użytkownika
+        /// </summary>
+        /// <returns></returns>
         public async Task<AviableDeliveryServices> GetDeliveryServices()
         {
             using HttpClient client = new HttpClient();
