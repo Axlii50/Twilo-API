@@ -1,6 +1,7 @@
 ﻿using Allegro_Api;
 using Allegro_Api.Shipment;
 using AteneumAPI;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -14,16 +15,16 @@ using System.Text.RegularExpressions;
 //string ClientID = "22054e3f234443a1bdaaa373b06d3053";
 
 ////twilo1
-string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 ////twilo2
 //string ClientSecret = "TWGWXn93FMpJg95ILioJvBrYr01pODTfSHfrPY2uX190OD9anosHhMEZrnNQGgXG";
 //string ClientID = "41eadd79d2dd475cb5697f3802f01775";
 
-////twilo3
-//string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
-//string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
+//twilo3
+string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
+string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
 
 
 
@@ -208,11 +209,12 @@ while (!access)
 
 //var test = await AllegroApi.CreatePackage(shipmentobject);
 
-//while (true)
-//{
-//	_ = await AllegroApi.CheckPackageCreationStatus(shipmentobject.commandId);
-//	Thread.Sleep((int)test.Value.TotalMilliseconds);
-//}
+while (true)
+{
+	var te = await AllegroApi.CheckPackageCreationStatus("0bb6b7c1-f3a7-4355-a256-a7122e57edbb");
+	System.Diagnostics.Debug.WriteLine($"{te.Status}");
+	Thread.Sleep(5000);
+}
 
 //Console.WriteLine("");
 

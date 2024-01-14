@@ -1495,6 +1495,9 @@ namespace Allegro_Api
 
             ShipmentCreationStatus shipmentCreationStatus = JsonConvert.DeserializeObject<ShipmentCreationStatus>(responseBody);
 
+            if (shipmentCreationStatus.Status == "ERROR")
+                System.Diagnostics.Debug.WriteLine(responseBody);
+
             return shipmentCreationStatus;
         }
 
@@ -1514,6 +1517,9 @@ namespace Allegro_Api
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/shipment-management/delivery-services");
 
             AviableDeliveryServices model = JsonConvert.DeserializeObject<AviableDeliveryServices>(odp.Content.ReadAsStringAsync().Result);
+
+            //if(model == null )
+                System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
 
             return model;
         }
