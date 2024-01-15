@@ -36,6 +36,7 @@ using Allegro_Api.Models.Invoce;
 using System.Collections.Generic;
 using Allegro_Api.Shipment;
 using Allegro_Api.Models.Shipment;
+using Allegro_Api.Models.Order.Parcel;
 
 namespace Allegro_Api
 {
@@ -1433,7 +1434,7 @@ namespace Allegro_Api
             Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
         }
 
-        public async Task GetParcelNumbers(string orderID)
+        public async Task<parceltrackingnumbers> GetParcelNumbers(string orderID)
         {
             using HttpClient client = new HttpClient();
 
@@ -1444,7 +1445,9 @@ namespace Allegro_Api
 
             HttpResponseMessage odp = await client.GetAsync(AllegroBaseURL + $"/order/checkout-forms/{orderID}/shipments");
 
-            Console.WriteLine(odp.Content.ReadAsStringAsync().Result);
+            parceltrackingnumbers ParcelNumber = JsonConvert.DeserializeObject<parceltrackingnumbers>(odp.Content.ReadAsStringAsync().Result);
+
+            return ParcelNumber;
         }
 
         public async Task<TimeSpan?> CreatePackage(ShipmentObject PackageInfo)
@@ -1495,8 +1498,7 @@ namespace Allegro_Api
 
             ShipmentCreationStatus shipmentCreationStatus = JsonConvert.DeserializeObject<ShipmentCreationStatus>(responseBody);
 
-            if (shipmentCreationStatus.Status == "ERROR")
-                System.Diagnostics.Debug.WriteLine(responseBody);
+            System.Diagnostics.Debug.WriteLine(responseBody);
 
             return shipmentCreationStatus;
         }
