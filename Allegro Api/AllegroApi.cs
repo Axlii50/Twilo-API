@@ -36,6 +36,7 @@ using Allegro_Api.Models.Invoce;
 using System.Collections.Generic;
 using Allegro_Api.Shipment;
 using Allegro_Api.Models.Shipment;
+using System.Collections.Specialized;
 
 namespace Allegro_Api
 {
@@ -339,6 +340,46 @@ namespace Allegro_Api
             client.Dispose();
 
             return retrvied;
+        }
+
+        /// <summary>
+        /// Get offers with given Ids
+        /// </summary>
+        /// <param name="offerIds"></param>
+        /// <returns></returns>
+        public async Task<List<SimpleOfferModel>> GetSpecifiedOffers(string[] offerIds)
+        {
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
+            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("pl-PL"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.allegro.public.v1+json"));
+
+            List<SimpleOfferModel> offers = new List<SimpleOfferModel>();
+
+            UriBuilder builder = new UriBuilder(AllegroBaseURL + $"/sale/offers");
+
+            foreach (var id in offerIds)
+            {
+                NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+                query.Add("offer.id", id);
+                builder.Query = query.ToString();
+                HttpResponseMessage response = await client.GetAsync(builder.Uri);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = response.Content.ReadAsStringAsync().Result;
+                    var offer = JsonConvert.DeserializeObject<SimpleOfferModel>(jsonResponse);
+                    offers.Add(offer);
+                }
+                else
+                {
+                    offers.Add(null);
+                }
+            }
+
+            return offers;
         }
 
         /// <summary>
