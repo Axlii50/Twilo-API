@@ -371,8 +371,8 @@ namespace Allegro_Api
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonResponse = response.Content.ReadAsStringAsync().Result;
-                    var offer = JsonConvert.DeserializeObject<SimpleOfferModel>(jsonResponse);
-                    offers.Add(offer);
+                    var offer = JsonConvert.DeserializeObject<OffersModel>(jsonResponse);
+                    offers.Add(offer.offers.FirstOrDefault());
                 }
                 else
                 {

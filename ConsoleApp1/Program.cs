@@ -50,6 +50,11 @@ while (!access)
 	Thread.Sleep(5000);
 }
 
+
+var test = await AllegroApi.GetSpecifiedOffers(new string[] { "15045980652", "15045980469", "15045980311" });
+
+Console.ReadLine();
+
 #region Get orders id for auto order
 //var offers = AllegroApi.GetAllOffers();
 
@@ -209,13 +214,13 @@ while (!access)
 
 //var test = await AllegroApi.CreatePackage(shipmentobject);
 
-while (true)
-{
-	var te = await AllegroApi.CheckPackageCreationStatus("dc17a707-0626-4f4a-8583-35d8a7660bd5");
+//while (true)
+//{
+//	var te = await AllegroApi.CheckPackageCreationStatus("dc17a707-0626-4f4a-8583-35d8a7660bd5");
 
-    System.Diagnostics.Debug.WriteLine($"{te.Status}");
-	Thread.Sleep(5000);
-}
+//    System.Diagnostics.Debug.WriteLine($"{te.Status}");
+//	Thread.Sleep(5000);
+//}
 
 //Console.WriteLine("");
 
