@@ -39,6 +39,12 @@ namespace Allegro_Api.Models.Order.checkoutform.components
                 return result;
 
             }
+            else
+            {
+                result[0] = input;
+                result[1] = string.Empty;
+                return result;
+            }
             // W przypadku braku dopasowania
             return null;
         }

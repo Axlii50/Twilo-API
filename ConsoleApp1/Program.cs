@@ -1,6 +1,7 @@
 ﻿using Allegro_Api;
 using Allegro_Api.Shipment;
 using AteneumAPI;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -14,16 +15,16 @@ using System.Text.RegularExpressions;
 //string ClientID = "22054e3f234443a1bdaaa373b06d3053";
 
 ////twilo1
-string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 ////twilo2
 //string ClientSecret = "TWGWXn93FMpJg95ILioJvBrYr01pODTfSHfrPY2uX190OD9anosHhMEZrnNQGgXG";
 //string ClientID = "41eadd79d2dd475cb5697f3802f01775";
 
-////twilo3
-//string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
-//string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
+//twilo3
+string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
+string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
 
 
 
@@ -146,17 +147,17 @@ while (!access)
 
 //await AllegroApi.GetListOfDelivery();
 
-//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.PROCESSING);
+//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.NEW);
 
-//var order = orders.Find(or => or.id == "92d97400-ae08-11ee-b262-ff71639ff274");
+//var order = orders.Find(or => or.id == "3add8360-b2e3-11ee-896b-cb253fa9f7e3");
 
 //var services = await AllegroApi.GetDeliveryServices();
 
 //var OrderService = services.services.Where(o => o.id.deliveryMethodId == order.delivery.method.id).FirstOrDefault();
 
-//await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
+////await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
 
-//var test = await AllegroApi.PostNewInvoice("847bd2c0-a4b4-11ee-8db6-6ff55152933d", "test.pdf", "FV 54/12/2023");
+////var test = await AllegroApi.PostNewInvoice("847bd2c0-a4b4-11ee-8db6-6ff55152933d", "test.pdf", "FV 54/12/2023");
 
 //var shimpment = new ShipmentCreateRequestDto()
 //{
@@ -183,7 +184,7 @@ while (!access)
 //		countryCode = order.delivery.address.countryCode,
 //		email = order.buyer.email,
 //		phone = order.buyer.phoneNumber,
-//		point = order.delivery.pickupPoint.id
+//		point = order.delivery.pickupPoint?.id
 //	},
 
 //	packages = new Allegro_Api.Shipment.Components.Packages[]
@@ -208,11 +209,13 @@ while (!access)
 
 //var test = await AllegroApi.CreatePackage(shipmentobject);
 
-//while (true)
-//{
-//	_ = await AllegroApi.CheckPackageCreationStatus(shipmentobject.commandId);
-//	Thread.Sleep((int)test.Value.TotalMilliseconds);
-//}
+while (true)
+{
+	var te = await AllegroApi.CheckPackageCreationStatus("dc17a707-0626-4f4a-8583-35d8a7660bd5");
+
+    System.Diagnostics.Debug.WriteLine($"{te.Status}");
+	Thread.Sleep(5000);
+}
 
 //Console.WriteLine("");
 
