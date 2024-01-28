@@ -263,8 +263,6 @@ namespace Allegro_Api
 
             RefreshTokenEvent?.Invoke();
 
-            System.Diagnostics.Debug.WriteLine("Refreshuje:    " + RefreshToken);
-
             try
             {
                 this.timer.Interval = (TokenExpiresIn / 2) * 1000;
