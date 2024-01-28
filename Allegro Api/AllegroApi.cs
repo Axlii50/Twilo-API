@@ -215,7 +215,10 @@ namespace Allegro_Api
                 RefreshToken = model.refresh_token;
                 TokenExpiresIn = model.expires_in;
 
-                Console.WriteLine((TokenExpiresIn / 2) * 1000);
+                Console.WriteLine("Refresh token Interval: " + (TokenExpiresIn / 2) * 1000);
+                //this.timer.Interval = 5000;
+
+                Console.WriteLine("Refresh token Interval: " + this.timer.Interval);
 
                 this.timer.Interval = (TokenExpiresIn / 2) * 1000;
                 this.timer.Start();
@@ -259,16 +262,26 @@ namespace Allegro_Api
             RefreshToken = model.refresh_token;
 
             RefreshTokenEvent?.Invoke();
+
+            System.Diagnostics.Debug.WriteLine("Refreshuje:    " + RefreshToken);
+
             try
             {
                 this.timer.Interval = (TokenExpiresIn / 2) * 1000;
             }
             catch (ArgumentException)
             {
-                this.timer.Interval = 21599000;
+                this.timer.Interval = 10799500;
             }
 
+            //this.timer.Interval = 5000;
+
             this.timer.Start();
+        }
+
+        public bool IsAuthorized()
+        {
+            return AccessToken != string.Empty;
         }
         #endregion
 
