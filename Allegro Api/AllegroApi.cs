@@ -272,8 +272,6 @@ namespace Allegro_Api
                 this.timer.Interval = 10799500;
             }
 
-            //this.timer.Interval = 5000;
-
             this.timer.Start();
         }
 
@@ -631,7 +629,7 @@ namespace Allegro_Api
         /// <param name="price"></param>
         /// <returns></returns>
         public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(
-            ProductModel _product, string EAN, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price)
+            ProductModel _product, string EAN, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price, string ShippingDate)
         {
             using HttpClient client = new HttpClient();
 
@@ -720,7 +718,8 @@ namespace Allegro_Api
                 {
                     id = deliveryid
                 },
-                handlingTime = handlingTime
+                handlingTime = handlingTime, 
+                shipmentDate = ShippingDate
             };
 
             allegrooffer.category = new Base()
@@ -1550,7 +1549,7 @@ namespace Allegro_Api
 
             ShipmentCreationStatus shipmentCreationStatus = JsonConvert.DeserializeObject<ShipmentCreationStatus>(responseBody);
 
-            System.Diagnostics.Debug.WriteLine(responseBody);
+            System.Diagnostics.Debug.WriteLine(new StackFrame().GetMethod().Name + "   " + responseBody);
 
             return shipmentCreationStatus;
         }
