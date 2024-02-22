@@ -230,58 +230,63 @@ Console.ReadLine();
 #endregion
 
 
-LibreApi liber = new LibreApi("38231", "38231_3337");
+//LibreApi liber = new LibreApi("38231", "38231_3337");
 
-DocumentOrder documentOrder = new DocumentOrder()
-{
-    products = new OrderLines()
-    {
-        Line = new Line[]
-        {
-            new Line()
-            {
-                item =new LineItem()
-                {
-                    LineNumber = 1,
-                    EAN = "9788322452165",
-                    BuyerItemCode = "252287",
-                    ItemDescription = "Zatrzymane dźwięki",
-                    OrderedQuantity = 1,
-                    OrderUnitNetPrice = 1
-                }
-            }
-        }
-    },
-    summary = new OrderSummary()
-    {
-        TotalLines = 1,
-        TotalOrderedAmount = 1
-    },
-    parties = new OrderParties()
-    {
-        Buyer = new Libre_API.OrderStructure.Base()
-        {
-            ILN = "38231"
-        },
-        Seller = new Libre_API.OrderStructure.Base()
-        {
-            ILN = ""
-        },
-        DeliveryPoint = new Libre_API.OrderStructure.Base()
-        {
-            ILN = "38231"
-        }
-    },
-    Head = new OrderHead()
-    {
-        Remarks = DateTime.Now.ToString("yyyy-MM-dd-H-m-ss").Replace("-", ""),
-        OrderNumber = DateTime.Now.ToString("yyyy MM dd H m ss").Replace(" ", ""),
-        OrderDate = DateTime.Now.ToString("yyyy-MM-dd"),
-        ExpectedDeliveryDate = DateTime.Now.ToString("yyyy-MM-dd")
-    }
-};
+//DocumentOrder documentOrder = new DocumentOrder()
+//{
+//    products = new OrderLines()
+//    {
+//        Line = new Line[]
+//        {
+//            new Line()
+//            {
+//                item =new LineItem()
+//                {
+//                    LineNumber = 1,
+//                    EAN = "9788322452165",
+//                    BuyerItemCode = "252287",
+//                    ItemDescription = "Zatrzymane dźwięki",
+//                    OrderedQuantity = 1,
+//                    OrderUnitNetPrice = 1
+//                }
+//            }
+//        }
+//    },
+//    summary = new OrderSummary()
+//    {
+//        TotalLines = 1,
+//        TotalOrderedAmount = 1
+//    },
+//    parties = new OrderParties()
+//    {
+//        Buyer = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = "38231"
+//        },
+//        Seller = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = ""
+//        },
+//        DeliveryPoint = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = "38231"
+//        }
+//    },
+//    Head = new OrderHead()
+//    {
+//        Remarks = DateTime.Now.ToString("yyyy-MM-dd-H-m-ss").Replace("-", ""),
+//        OrderNumber = DateTime.Now.ToString("yyyy MM dd H m ss").Replace(" ", ""),
+//        OrderDate = DateTime.Now.ToString("yyyy-MM-dd"),
+//        ExpectedDeliveryDate = DateTime.Now.ToString("yyyy-MM-dd")
+//    }
+//};
 
 
-liber.MakeOrder(documentOrder, "twilo", "gy$@msu!@3H");
+//liber.MakeOrder(documentOrder, "twilo", "gy$@msu!@3H");
+
+
+AteneumApi ateneumApi = new AteneumApi("twilo_krakow", "6mkfeEVRoUFVRF3QCz");
+
+var test = await ateneumApi.GetAllBooksWithMagazin(10);
 
 Console.ReadLine();

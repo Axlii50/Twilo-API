@@ -5,6 +5,7 @@ using System.Formats.Asn1;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -35,7 +36,23 @@ namespace AteneumAPI
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64String);
 
-            var response = await _client.GetAsync("https://www.ateneum.pl/bazaksiazek/baza_ksiazek.csv");
+            HttpResponseMessage response = null;
+
+            do
+            {
+                try
+                {
+                    response = await _client.GetAsync("https://www.ateneum.pl/bazaksiazek/baza_ksiazek.csv");
+                }
+                catch (TaskCanceledException e)
+                {
+                    return null;
+                }
+                catch (HttpRequestException)
+                {
+                    return null;
+                }
+            }while(response == null);
 
             return response.Content;
         }
@@ -51,7 +68,7 @@ namespace AteneumAPI
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64String);
 
-            var response = await _client.GetAsync("https://ateneum.pl/kempo_warszawa/ceny.csv");
+            var response = await _client.GetAsync($"https://ateneum.pl/{userName}/ceny.csv");
 
             return response.Content;
         }
@@ -75,15 +92,16 @@ namespace AteneumAPI
             var content = await DownloadBase();
             Dictionary<string,BookRecord> books = null;
 
+            //System.Diagnostics.Debug.WriteLine(content.ReadAsStringAsync().Result);
+
             using (var sr = new StreamReader(await content.ReadAsStreamAsync(), Encoding.GetEncoding("iso-8859-1")))
             {
                 string csv = sr.ReadToEnd();
 
+                //System.Diagnostics.Debug.WriteLine(csv);
+
                 csv = @"ident_ate,EAN,ISBN,Tytuł,autor,wydawnictwo,opis_wydania,rok_wydania,krótka_charakterystyka,cena_detal_netto,stawka_vat,cena_detal_brutto,kategoria_poziom_1,kategoria_poziom_2,kategoria_poziom_3,plik_zdjecia,hash," +
                     csv;
-
-                System.Diagnostics.Debug.WriteLine(csv.Substring(0, 725));
-
 
                 var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
@@ -124,7 +142,9 @@ namespace AteneumAPI
                     Delimiter = ",",
                     HasHeaderRecord = true,
                     TrimOptions = TrimOptions.Trim,
-                    MissingFieldFound = null
+                    MissingFieldFound = null,
+                    BadDataFound = null
+                    
                 };
 
                 using (var textreader = new StringReader(csv))
