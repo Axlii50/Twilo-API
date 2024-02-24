@@ -64,7 +64,7 @@ Console.ReadLine();
 //foreach (var order in orders)
 //	list.Add(order.id.ToString());
 
-//System.IO.File.WriteAllLines("TestTestTEStTwilo1.txt", list.ToArray()); 
+//System.IO.File.WriteAllLines("TestTestTEStTwilo1.txt", list.ToArray());
 #endregion
 
 #region Get Emails
@@ -232,7 +232,7 @@ Console.ReadLine();
 
 //	if (count % 100 == 0) Console.WriteLine(count / (float)Offers.totalCount * 100 + "     " + DateTime.Now.ToString());
 
-//	if (Offer.external == null) 
+//	if (Offer.external == null)
 //		continue;
 
 //	if (!Offer.external.id.Contains("-2"))

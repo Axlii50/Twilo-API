@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace Libre_API
 {
-    
+
     public class Book
     {
         [XmlAttribute("id")]
@@ -28,14 +28,13 @@ namespace Libre_API
         /// <summary>
         ///  ilość stanu magazynowego,
         /// </summary>
-        /// 
         [XmlElement("stock")]
         public int MagazineCount;
 
         /// <summary>
         ///  nazwa grupy towarów,
+        ///  pole dostępne przy pobraniu z dane3.aspx (dokumentacja)
         /// </summary>
-        
         public string Group;
 
         /// <summary>
@@ -60,7 +59,7 @@ namespace Libre_API
         /// tłumacz książki (nazwisko i imię) lub tłumacze rozdzieleni przecinkiem
         /// </summary>
         [XmlElement("translator", IsNullable = true)]
-        public string Transaltor;
+        public string Translator;
 
         /// <summary>
         /// nazwa wydawcy
@@ -75,18 +74,19 @@ namespace Libre_API
         public string Series;
 
         /// <summary>
-        /// – cena zakupu brutto po rabacie dla klienta
+        /// – cena zakupu hurtowa brutto po rabacie (dla Twilo)
         /// </summary>
         [XmlElement("purchasegrossprice")]
         public float PriceBruttoAferDiscount;
 
         /// <summary>
-        /// – cena zakupu netto po rabacie dla klienta
+        /// – cena zakupu netto po rabacie (dla Twilo)
+        /// pole dostępne przy pobraniu z dane3.aspx (dokumentacja)
         /// </summary>
         public float PriceNettoAferDiscount;
 
         /// <summary>
-        /// – rok wydania książki
+        /// – cena detaliczna brutto
         /// </summary>
         [XmlElement("grossprice")]
         public float PriceBrutto;
@@ -104,7 +104,7 @@ namespace Libre_API
         public string PublishDate;
 
         /// <summary>
-        /// – data rozpoczęcia dystrybucji, czyli moment, w którym towar fizycznie pojawia się 
+        /// – data rozpoczęcia dystrybucji, czyli moment, w którym towar fizycznie pojawia się
         ///   w magazynie Liber SA, format RRRR-MM-DD
         /// </summary>
         [XmlElement("dateofsale", IsNullable = true)]
