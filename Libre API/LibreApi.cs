@@ -43,8 +43,6 @@ namespace Libre_API
                 return null;
             }
 
-            //System.Diagnostics.Debug.WriteLine(odp.Content.ReadAsStringAsync().Result);
-
             return odp.Content;
         }
 

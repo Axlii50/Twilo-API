@@ -1,6 +1,8 @@
 ﻿using Allegro_Api;
 using Allegro_Api.Shipment;
 using AteneumAPI;
+using Libre_API;
+using Libre_API.OrderStructure;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -15,43 +17,43 @@ using System.Text.RegularExpressions;
 //string ClientID = "22054e3f234443a1bdaaa373b06d3053";
 
 ////twilo1
-//string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
-//string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
+string ClientSecret = "PjOcDyDm4ZdjOhrdgOqQQMCY6Row2DWJhnwjjPRAwdQcKLCqpV0fbSjrZ2drQnvf";
+string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 ////twilo2
 //string ClientSecret = "TWGWXn93FMpJg95ILioJvBrYr01pODTfSHfrPY2uX190OD9anosHhMEZrnNQGgXG";
 //string ClientID = "41eadd79d2dd475cb5697f3802f01775";
 
 //twilo3
-string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
-string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
+//string ClientSecret = "004VkOAgitQGHYgv6aiW8hLt1F2RpJpi1BxehNe6kIyM4TIbkxVty42hQX4EhaNP";
+//string ClientID = "731f01af7c8b46e68ddc12030e4f920c";
 
 
 
 
-var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-Console.WriteLine(t.device_code);
-Console.WriteLine(t.verification_uri_complete);
+//Console.WriteLine(t.device_code);
+//Console.WriteLine(t.verification_uri_complete);
 
-ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-sInfo.UseShellExecute = true;
-Process Verification = Process.Start(sInfo);
+//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+//sInfo.UseShellExecute = true;
+//Process Verification = Process.Start(sInfo);
 
-bool access = false;
-while (!access)
-{
-	Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write | AllegroPermissionState.allegro_api_shipments_read | AllegroPermissionState.allegro_api_shipments_write;
+//bool access = false;
+//while (!access)
+//{
+//	Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write | AllegroPermissionState.allegro_api_shipments_read | AllegroPermissionState.allegro_api_shipments_write;
 
-	access = AllegroApi.CheckForAccessToken(Permissions).Result;
+//	access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-	Thread.Sleep(5000);
-}
+//	Thread.Sleep(5000);
+//}
 
 
-var test = await AllegroApi.GetSpecifiedOffers(new string[] { "15045980652", "15045980469", "15045980311" });
+//var test = await AllegroApi.GetSpecifiedOffers(new string[] { "15045980652", "15045980469", "15045980311" });
 
 Console.ReadLine();
 
@@ -77,7 +79,7 @@ Console.ReadLine();
 //foreach (var order in orders)
 //{
 //	Console.Write(order.id + "   " + order.buyer.email + "    " + order.delivery.time.from + "     " + order.delivery.time.dispatch.to);
-//	if (order.delivery.time.from == "2024-01-09T23:00:00Z" /*order.status != "NEW" || order.status != "PROCESSING"*/)
+//	if (order.delivery.time.from == "2024-01-31T23:00:00Z" /*order.status != "NEW" || order.status != "PROCESSING"*/)
 //	{
 //		Console.Write("  Added \n");
 
@@ -122,46 +124,7 @@ Console.ReadLine();
 //}
 #endregion
 
-
-
-
-//static string[] SplitString(string input)
-//{
-//    string[] result = new string[2];
-
-//    // Wyrażenie regularne do odnalezienia pierwszej spacji i liczby po niej
-//    Regex regex = new Regex(@"\s+\d.*");
-
-//    Match match = regex.Match(input);
-
-//    if (match.Success)
-//    {
-//        // Grupa 1 zawiera tekst przed spacją, a grupa 2 zawiera liczbę
-//        result[0] = input.Replace(match.Groups[0].Value,"");
-//        result[1] = match.Groups[0].Value;
-//        return result;
-
-//    }
-//    // W przypadku braku dopasowania
-//    return null;
-//}
-//847bd2c0-a4b4-11ee-8db6-6ff55152933d
-
-//invoice id
-//49856987-c2fa-49ae-826e-0ac0ca4c8c9f
-
-//await AllegroApi.GetListOfDelivery();
-
-//var orders = await AllegroApi.GetOrders(Allegro_Api.OrderStatusType.NEW);
-
-//var order = orders.Find(or => or.id == "3add8360-b2e3-11ee-896b-cb253fa9f7e3");
-
-//var services = await AllegroApi.GetDeliveryServices();
-
-//var OrderService = services.services.Where(o => o.id.deliveryMethodId == order.delivery.method.id).FirstOrDefault();
-
-////await AllegroApi.GetParcelNumbers("d7a31770-a648-11ee-bda1-4bfbe848971d");
-
+#region Testing Packages
 ////var test = await AllegroApi.PostNewInvoice("847bd2c0-a4b4-11ee-8db6-6ff55152933d", "test.pdf", "FV 54/12/2023");
 
 //var shimpment = new ShipmentCreateRequestDto()
@@ -222,7 +185,8 @@ Console.ReadLine();
 //	Thread.Sleep(5000);
 //}
 
-//Console.WriteLine("");
+//Console.WriteLine(""); 
+#endregion
 
 #region PreSold
 //int count = 0;
@@ -264,71 +228,65 @@ Console.ReadLine();
 
 
 #endregion
-//}
 
 
-//Console.ReadLine();
+//LibreApi liber = new LibreApi("38231", "38231_3337");
 
-//var temp = offers.Result.offers.Where(x => x.id == "14636074368").FirstOrDefault();
-
-//var offer = await AllegroApi.GetDetailedOffer("14550670527");
-
-//WszystkoApi wszystkoApi = new(null);
-
-//var test = await wszystkoApi.GenerateDeviceCode();
-
-//bool authenticate = false;
-
-//Console.WriteLine(test.verificationUriPrettyComplete);
-
-//ProcessStartInfo sInfo2 = new ProcessStartInfo(test.verificationUriPrettyComplete);
-//sInfo2.UseShellExecute = true;
-//Process Verification2 = Process.Start(sInfo2);
-
-//while (!authenticate)
+//DocumentOrder documentOrder = new DocumentOrder()
 //{
-//	authenticate = await wszystkoApi.CheckForAccessToken();
-//	Console.WriteLine(authenticate);
-//}
+//    products = new OrderLines()
+//    {
+//        Line = new Line[]
+//        {
+//            new Line()
+//            {
+//                item =new LineItem()
+//                {
+//                    LineNumber = 1,
+//                    EAN = "9788322452165",
+//                    BuyerItemCode = "252287",
+//                    ItemDescription = "Zatrzymane dźwięki",
+//                    OrderedQuantity = 1,
+//                    OrderUnitNetPrice = 1
+//                }
+//            }
+//        }
+//    },
+//    summary = new OrderSummary()
+//    {
+//        TotalLines = 1,
+//        TotalOrderedAmount = 1
+//    },
+//    parties = new OrderParties()
+//    {
+//        Buyer = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = "38231"
+//        },
+//        Seller = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = ""
+//        },
+//        DeliveryPoint = new Libre_API.OrderStructure.Base()
+//        {
+//            ILN = "38231"
+//        }
+//    },
+//    Head = new OrderHead()
+//    {
+//        Remarks = DateTime.Now.ToString("yyyy-MM-dd-H-m-ss").Replace("-", ""),
+//        OrderNumber = DateTime.Now.ToString("yyyy MM dd H m ss").Replace(" ", ""),
+//        OrderDate = DateTime.Now.ToString("yyyy-MM-dd"),
+//        ExpectedDeliveryDate = DateTime.Now.ToString("yyyy-MM-dd")
+//    }
+//};
 
-////var test1 = await wszystkoApi.GetAllOffers();
-////IDownloadOffersModel[] model = test1.Offers;
-////foreach (var model2 in model)
-////{
-////	System.Diagnostics.Debug.WriteLine(model2.Title);
-////}
 
-//var test2 = await wszystkoApi.GetAllGuarantees();
-//foreach (var guarantee in test2)
-//{
-//	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
-//}
-//string AteneumLogin = "kempo_warszawa";
-//string AteneumPassword = "6KsSGWT6dhD9r8Xvvr";
+//liber.MakeOrder(documentOrder, "twilo", "gy$@msu!@3H");
 
-//AteneumApi ateneumApi = new AteneumApi(AteneumLogin, AteneumPassword);
 
-//var list = new List<string>();
+AteneumApi ateneumApi = new AteneumApi("twilo_krakow", "6mkfeEVRoUFVRF3QCz");
 
-//var TEST = await ateneumApi.GetAllBooksWithMagazin(0);
-
-//var ter = TEST.Where(t => t.ident_ate == "501339").FirstOrDefault();
-
-//foreach (var book in TEST)
-//    if (book.BookData.wydawnictwo == "IUVI Games")
-//        list.Add(book.BookData.Tytuł + ";" + book.PriceWholeSaleBrutto.ToString());
-
-//var test2 = await wszystkoApi.GetAllGuarantees();
-//foreach (var guarantee in test2)
-//{
-//	Debug.WriteLine($"{ guarantee.Name } { guarantee.GuaranteeDataDetails.Id } { guarantee.GuaranteeDataDetails.ProviderType } {guarantee.GuaranteeDataDetails.ProviderType} { guarantee.AdditionalInformation }\n\n");
-//}
-
-//var test3 = await wszystkoApi.GetAllOffers();
-//foreach (var offer in test3.Offers)
-//{
-//	System.Diagnostics.Debug.WriteLine(offer.Title);
-//}
-//System.IO.File.WriteAllLines("Ceny.csv",list.ToArray());; ;
+var test = await ateneumApi.GetAllBooksWithMagazin(10);
 
 Console.ReadLine();

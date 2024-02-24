@@ -20,6 +20,10 @@ namespace Allegro_Api.Shipment
 
         public CashOnDeliveryDto cachOnDelivery { get; set; }
 
+        public string referenceNumber { get; set; }
+
+        public string description { get; set; }
+
         public string labelFormat { get; set; } = "PDF";
 
     }
