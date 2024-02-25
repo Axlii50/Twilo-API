@@ -253,7 +253,7 @@ namespace AteneumAPI
                     MagazinCount = state.MagazinCount,
                     BookData = book,
                     PriceWholeSaleBrutto = pricewhole.cena_hurtowa_netto * ((pricewhole.vat_procentowy / 100f) + 1),
-                    PriceWholeSaleNetto =pricewhole.cena_hurtowa_netto,
+                    PriceWholeSaleNetto = pricewhole.cena_hurtowa_netto,
                     VAT = pricewhole.vat_procentowy
                 };
                 Books.Add(book1);

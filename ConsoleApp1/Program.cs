@@ -285,8 +285,25 @@ Console.ReadLine();
 //liber.MakeOrder(documentOrder, "twilo", "gy$@msu!@3H");
 
 
-AteneumApi ateneumApi = new AteneumApi("twilo_krakow", "6mkfeEVRoUFVRF3QCz");
+AteneumApi ateneumApiTwilo = new AteneumApi("twilo_krakow", "6mkfeEVRoUFVRF3QCz");
+AteneumApi ateneumApiKempo = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+List<string> strings = new List<string>();
 
-var test = await ateneumApi.GetAllBooksWithMagazin(10);
+var testtw = await ateneumApiTwilo.GetAllBooksWithMagazin(0);
+var testke = await ateneumApiKempo.GetAllBooksWithMagazin(0);
+
+//var twilob = testtw.FirstOrDefault(a => a.ident_ate == "10");
+//var kempob = testke.FirstOrDefault(a => a.ident_ate == "10");
+
+foreach(var b in testtw)
+{
+    var kempob = testke.FirstOrDefault(a => a.ident_ate == b.ident_ate);
+
+    //if (kempob.PriceWholeSaleNetto > b.PriceWholeSaleNetto)
+    if (b.PriceWholeSaleNetto - kempob.PriceWholeSaleNetto >= 2)
+        strings.Add($"{b.BookData.Tytuł}   k: {kempob.PriceWholeSaleNetto} < t: {b.PriceWholeSaleNetto}");
+}
+
+File.WriteAllLines("porównanie.txt", strings.ToArray());
 
 Console.ReadLine();
