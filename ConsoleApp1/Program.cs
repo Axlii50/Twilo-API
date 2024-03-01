@@ -1,4 +1,6 @@
 ﻿using Allegro_Api;
+using Allegro_Api.Models;
+using Allegro_Api.Models.Offer;
 using Allegro_Api.Shipment;
 using AteneumAPI;
 using Libre_API;
@@ -31,27 +33,53 @@ string ClientID = "31b0bc689e414c608d7098aa3966f8f4";
 
 
 
-//var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
+var AllegroApi = new AllegroApi(ClientID, ClientSecret, null);
 
-//Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
+Allegro_Api.Models.VerificationULRModel t = AllegroApi.Authenticate().Result;
 
-//Console.WriteLine(t.device_code);
-//Console.WriteLine(t.verification_uri_complete);
+Console.WriteLine(t.device_code);
+Console.WriteLine(t.verification_uri_complete);
 
-//ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
-//sInfo.UseShellExecute = true;
-//Process Verification = Process.Start(sInfo);
+ProcessStartInfo sInfo = new ProcessStartInfo(t.verification_uri_complete);
+sInfo.UseShellExecute = true;
+Process Verification = Process.Start(sInfo);
 
-//bool access = false;
-//while (!access)
-//{
-//	Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write | AllegroPermissionState.allegro_api_shipments_read | AllegroPermissionState.allegro_api_shipments_write;
+bool access = false;
+while (!access)
+{
+    Allegro_Api.AllegroPermissionState Permissions = AllegroPermissionState.allegro_api_sale_offers_read | AllegroPermissionState.allegro_api_sale_offers_write | AllegroPermissionState.allegro_api_shipments_read | AllegroPermissionState.allegro_api_shipments_write;
 
-//	access = AllegroApi.CheckForAccessToken(Permissions).Result;
+    access = AllegroApi.CheckForAccessToken(Permissions).Result;
 
-//	Thread.Sleep(5000);
-//}
+    Thread.Sleep(5000);
+}
 
+var Offers = await AllegroApi.GetAllOffers(OfferState.ACTIVE);
+var disable = new List<Allegro_Api.Models.Base>();
+foreach (var Offer in Offers.offers)
+{
+    if (Offer.external == null)
+        continue;
+
+    if (Offer.external.id.Contains("-1"))
+    {
+        disable.Add(new Allegro_Api.Models.Base() { id = Offer.id });
+    }
+
+}
+
+while (disable.Count > 0)
+{
+    var temp = disable.Take(1000).ToArray();
+
+    if (temp != null)
+    {
+        (HttpResponseMessage, string, PublicationModel) response = await AllegroApi.BatchChangePublication(temp, false);
+        disable.RemoveRange(0, temp.Count());
+        if (response.Item1 != null)
+            Console.WriteLine(response.Item1.Content.ReadAsStringAsync().Result);
+    }
+}
 
 //var test = await AllegroApi.GetSpecifiedOffers(new string[] { "15045980652", "15045980469", "15045980311" });
 
@@ -230,7 +258,12 @@ Console.ReadLine();
 #endregion
 
 
-//LibreApi liber = new LibreApi("38231", "38231_3337");
+
+LibreApi liber = new LibreApi("38231", "38231_3337");
+
+var b = await  liber.GetAllBooks(0);
+
+var tet = b.Where(bb => bb.ID == "220187").FirstOrDefault();
 
 //DocumentOrder documentOrder = new DocumentOrder()
 //{
@@ -285,25 +318,25 @@ Console.ReadLine();
 //liber.MakeOrder(documentOrder, "twilo", "gy$@msu!@3H");
 
 
-AteneumApi ateneumApiTwilo = new AteneumApi("twilo_krakow", "6mkfeEVRoUFVRF3QCz");
-AteneumApi ateneumApiKempo = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
-List<string> strings = new List<string>();
+//AteneumApi ateneumApiTwilo = new AteneumApi("twilo_krakow", "6mkfeEVRoUFVRF3QCz");
+//AteneumApi ateneumApiKempo = new AteneumApi("kempo_warszawa", "6KsSGWT6dhD9r8Xvvr");
+//List<string> strings = new List<string>();
 
-var testtw = await ateneumApiTwilo.GetAllBooksWithMagazin(0);
-var testke = await ateneumApiKempo.GetAllBooksWithMagazin(0);
+//var testtw = await ateneumApiTwilo.GetAllBooksWithMagazin(0);
+//var testke = await ateneumApiKempo.GetAllBooksWithMagazin(0);
 
-//var twilob = testtw.FirstOrDefault(a => a.ident_ate == "10");
-//var kempob = testke.FirstOrDefault(a => a.ident_ate == "10");
+////var twilob = testtw.FirstOrDefault(a => a.ident_ate == "10");
+////var kempob = testke.FirstOrDefault(a => a.ident_ate == "10");
 
-foreach(var b in testtw)
-{
-    var kempob = testke.FirstOrDefault(a => a.ident_ate == b.ident_ate);
+//foreach(var b in testtw)
+//{
+//    var kempob = testke.FirstOrDefault(a => a.ident_ate == b.ident_ate);
 
-    //if (kempob.PriceWholeSaleNetto > b.PriceWholeSaleNetto)
-    if (b.PriceWholeSaleNetto - kempob.PriceWholeSaleNetto >= 2)
-        strings.Add($"{b.BookData.Tytuł}   k: {kempob.PriceWholeSaleNetto} < t: {b.PriceWholeSaleNetto}");
-}
+//    //if (kempob.PriceWholeSaleNetto > b.PriceWholeSaleNetto)
+//    if (b.PriceWholeSaleNetto - kempob.PriceWholeSaleNetto >= 2)
+//        strings.Add($"{b.BookData.Tytuł}   k: {kempob.PriceWholeSaleNetto} < t: {b.PriceWholeSaleNetto}");
+//}
 
-File.WriteAllLines("porównanie.txt", strings.ToArray());
+//File.WriteAllLines("porównanie.txt", strings.ToArray());
 
 Console.ReadLine();

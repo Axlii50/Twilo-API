@@ -629,7 +629,7 @@ namespace Allegro_Api
         /// <param name="price"></param>
         /// <returns></returns>
         public async Task<(HttpContent, HttpStatusCode, OfferModel)> CreateOfferBasedOnExistingProduct(
-            ProductModel _product, string EAN, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price, string ShippingDate)
+            ProductModel _product, string EAN, BaseValue stock, string bookid, string deliveryid, string handlingTime, string offerName, string price, string ShippingDate = "")
         {
             using HttpClient client = new HttpClient();
 
@@ -718,8 +718,8 @@ namespace Allegro_Api
                 {
                     id = deliveryid
                 },
-                handlingTime = handlingTime, 
-                shipmentDate = ShippingDate
+                handlingTime = handlingTime,
+                shipmentDate = ShippingDate == string.Empty ? null : ShippingDate
             };
 
             allegrooffer.category = new Base()
