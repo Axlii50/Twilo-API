@@ -10,29 +10,32 @@ namespace Libre_API
 {
     public class LibreApi
     {
-        private string password = string.Empty;
-        private string login = string.Empty;
+        private HttpClient _client { get; set; }
 
-        private string UrlPhoto = "http://xml.liber.pl/foto.aspx";
-        private string UrlDane2 = "http://xml.liber.pl/dane2.aspx";
+        private string Password { get; set; } = string.Empty;
+        private string Login { get; set; } = string.Empty;
+
+        private string UrlPhoto { get; init; } = "http://xml.liber.pl/foto.aspx";
+        private string UrlDane2 { get; init; } = "http://xml.liber.pl/dane2.aspx";
 
         public LibreApi(string login, string password)
         {
-            this.password = password;
-            this.login = login;
+            this.Password = password;
+            this.Login = login;
+            _client = new HttpClient();
         }
 
         private async Task<HttpContent> DownloadDane2()
         {
-            HttpClient client = new HttpClient();
+            _client.DefaultRequestHeaders.Clear();
 
             //pewnie tego tutaj nie musi byc ale jebac, działa
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
             HttpResponseMessage odp = null;
             try
             {
-                odp = await client.GetAsync(UrlDane2 + $"?login={login}&password={password}");
+                odp = await _client.GetAsync(UrlDane2 + $"?login={Login}&password={Password}");
             }
             catch (TaskCanceledException e)
             {
@@ -141,14 +144,12 @@ namespace Libre_API
 
         public async Task<HttpContent> GetPhoto(string bookid)
         {
-            using HttpClient client = new HttpClient();
-
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
             HttpResponseMessage odp = null;
             try
             {
-                 odp = await client.GetAsync(UrlPhoto + $"?login={login}&password={password}&foto={bookid}");
+                 odp = await _client.GetAsync(UrlPhoto + $"?login={Login}&password={Password}&foto={bookid}");
             }
             catch (TaskCanceledException)
             {

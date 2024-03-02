@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>ConsoleApp_v2</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="31.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0-preview.1.24081.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AteneumAPI-v2">
+      <HintPath>..\AteneumAPI-v2\bin\Debug\net8.0\AteneumAPI-v2.dll</HintPath>
+    </Reference>
+    <Reference Include="LiberAPI-v2">
+      <HintPath>..\LiberAPI-v2\bin\Debug\net8.0\LiberAPI-v2.dll</HintPath>
+    </Reference>
+    <Reference Include="WholesalerApiCommons">
+      <HintPath>..\WholesalerApiCommons\bin\Debug\net8.0\WholesalerApiCommons.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

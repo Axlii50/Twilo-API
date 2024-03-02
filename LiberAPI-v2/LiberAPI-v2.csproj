@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>LiberAPI_v2</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Csv" Version="2.0.93" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="WholesalerApiCommons">
+      <HintPath>..\WholesalerApiCommons\bin\Debug\net8.0\WholesalerApiCommons.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
